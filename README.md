@@ -45,7 +45,7 @@
 
 <h4>Team Members</h4>
 <ul>
-	<li><b>Project Lead: </b> Stephen Gasperowich</li>
+	<li><b>Project Lead (495): </b> Stephen Gasperowich</li>
 	<li><b>Senior Dev (394): </b> - </li>
 	<li><b>Junior Dev (294): </b> - </li>
 	<li><b>Junior Dev (294): </b> - </li> 
