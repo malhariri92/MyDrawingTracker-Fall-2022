@@ -39,13 +39,13 @@ Project Scope
 
 
 Chosen Technology Stack  
-	Database: SQL Server Express 2019
-	Server Side: C# MVC
-	Client Side: C# Razor, HTML/CSS, JavaScript, jQuery
-	Email: ProtonMail via ProtonBridge SMTP
+	Database: SQL Server Express 2019  
+	Server Side: C# MVC  
+	Client Side: C# Razor, HTML/CSS, JavaScript, jQuery  
+	Email: ProtonMail via ProtonBridge SMTP  
 
 Team Members  
-	Project Lead - Stephen Gasperowich
-	Senior Dev (394) - 
-	Junior Dev (294) - 
-	Junior Dev (294) - 
+	Project Lead - Stephen Gasperowich  
+	Senior Dev (394) -   
+	Junior Dev (294) -   
+	Junior Dev (294) -   
