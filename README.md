@@ -23,6 +23,7 @@
 	Successful completion of this project will result in an app that allows the following functions: <br/ >
 <ul>
 	<li>User creation and sign ins</li>
+	<li>Group management</li>
 	<li>Drawing creation and management</li>  
 	<li>Drawing entry management</li>
 	<li>Transaction management</li>
