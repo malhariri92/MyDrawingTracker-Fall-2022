@@ -4,14 +4,16 @@ Project Name
 Project Description  
 	The My Drawing Tracker app will allow users to create, manage, and track drawings. 
 	These drawings can be internal (winners selected by the app) or external (winners selected by another method).
-	As an example, Company is holding a raffle drawing for Prize. The group admin for Company's group would create the drawing and indicate the time and method of determining a winner.
+	As an example, Company is holding a raffle drawing for Prize. The group admin for Company's group would create the 
+	drawing and indicate the time and method of determining a winner.
 	Employees at Company can purchase and manage their entries to the raffle in the app. 
 	For an internal drawing, a winning entry will be selected at the specified end date/time.
 	For an external drawing, the winning entry will be selected by some process outside the app and the group admin will enter the results in the app.
 
 	Real World Use Case 1: Company Christmas Raffles
 	Company is hosting several raffles at their annual Christmas party to which employees are given a limited number of entries. 
-	The group admin can create each drawing with an end date/time during the Cristmas party in the app and add a balance to each user that allows for the determined number of entries.
+	The group admin can create each drawing with an end date/time during the Cristmas party in the app and add a balance to each user that 
+	allows for the determined number of entries.
 	Employees, as group users, would be able to select which drawings they wish to enter and how many of their entries they wish to use.
 	At the time of the Christmas party, the app will select winning entries for each drawing and Company's employees can be given their prizes. 
 	
