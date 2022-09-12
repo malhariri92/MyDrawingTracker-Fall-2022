@@ -1,5 +1,5 @@
-Project Name  
-	My Drawing Tracker
+<h3>Project Name</h3><br />
+	<p><h3>My Drawing Tracker</h3></p>
 
 Project Description  
 	The My Drawing Tracker app will allow users to create, manage, and track drawings. 
