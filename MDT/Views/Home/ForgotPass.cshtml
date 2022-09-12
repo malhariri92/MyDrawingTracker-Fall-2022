@@ -1,0 +1,36 @@
+﻿@model MDT.ViewModels.UserPasswordResetSetupVM
+@{
+    ViewBag.Title = "Forgot Password";
+}
+<div id="passDiv">
+    @if (Model.Success)
+    {
+        <br /><br />
+        <h3>If the email address you entered match an existing account, you will receive an email with password reset instructions.</h3>
+        <br />
+    }
+    else
+    {
+        using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "passDiv" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
+        {
+            <div class="form-horizontal">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UserEmail, htmlAttributes: new { @class = "control-label col-xs-4" })
+                    <div class="col-xs-8">
+                        @Html.EditorFor(model => model.UserEmail, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+                        @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-xs-8 pull-right">
+                        <input type="submit" class="col-xs-6 btn btn-success" value="Reset Password" />
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

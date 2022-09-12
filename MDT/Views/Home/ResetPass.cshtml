@@ -1,0 +1,67 @@
+﻿@model MDT.ViewModels.UserPasswordResetVM
+@{
+    ViewBag.Title = $"{(Model.IsChangeRequest ? "Reset Password" : "Create Password")}";
+}
+
+@if (Model.Success)
+{
+    <h2 class="text-success">Your password has been @(Model.IsChangeRequest ? "reset" : "created").</h2>
+
+}
+else
+{
+    if (Model.Error)
+    {
+        <h2 class="text-danger">Problem @(Model.IsChangeRequest ? "resetting" : "creating") your password</h2>
+        <h3 class="text-danger">@Model.Message</h3>
+    }
+    else
+    {
+
+        using (Html.BeginForm("ResetPass", "User", FormMethod.Post, new { @id = "form0" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-md-10 col-md-offset-2">
+                            <h3>Requirements for New Password</h3>
+                            <ul>
+                                <li>10 to 24 characters</li>
+                                <li>At least 1 uppercase letter</li>
+                                <li>At least 1 lowecase letter</li>
+                                <li>At least 1 number</li>
+                                <li>At least 1 symbol character</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.NewPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.NewPassword, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.NewPassword, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ConfirmPassword, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="@(Model.IsChangeRequest ? "Reset" : "Create") Password" class="btn btn-success" />
+                        </div>
+                        <br />
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}

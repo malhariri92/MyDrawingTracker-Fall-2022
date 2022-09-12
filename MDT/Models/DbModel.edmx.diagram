@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="9238ab838c674ae2a697541c6b95d02a" Name="Diagram1">
+        <EntityTypeShape EntityType="DbModel.Balance" Width="1.5" PointX="8.25" PointY="17.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.Description" Width="1.5" PointX="10" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.DrawOption" Width="1.5" PointX="5.25" PointY="25.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.DrawResult" Width="1.5" PointX="7.5" PointY="23.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.Draw" Width="1.5" PointX="3" PointY="25.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.Entry" Width="1.5" PointX="5.25" PointY="21.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="0.75" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.GroupDrawType" Width="1.5" PointX="5.25" PointY="12.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.GroupInvite" Width="1.5" PointX="3" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.GroupUser" Width="1.5" PointX="8.25" PointY="14.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.Ledger" Width="1.5" PointX="3" PointY="13" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.NumberSet" Width="1.5" PointX="5.25" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.ObjectType" Width="1.5" PointX="7.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.Schedule" Width="1.5" PointX="5.25" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.TransactionType" Width="1.5" PointX="3" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.UserDrawTypeOption" Width="1.5" PointX="8.25" PointY="20.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DbModel.User" Width="1.5" PointX="3" PointY="19.25" IsExpanded="true" />
+        <AssociationConnector Association="DbModel.FK_Balances_Ledgers" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_Balances_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_Descriptions_ObjectTypes" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_DrawOptions_Draws" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_NextDraw" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_DrawResults_Draws" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_DrawResults_Entry" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_Entry_Draws" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_Entry_User" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_Group_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_GroupInvites_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_GroupUser_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_Ledgers_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_User_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_GroupDrawType_Ledgers" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_GroupUser_User" ManuallyRouted="false" />
+        <AssociationConnector Association="DbModel.FK_UserDrawTypeOptions_Users" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="DbModel.DrawType" Width="1.5" PointX="3" PointY="0.75" />
+        <EntityTypeShape EntityType="DbModel.Transaction" Width="1.5" PointX="5.25" PointY="16.75" />
+        <AssociationConnector Association="DbModel.FK_Draws_DrawType" />
+        <AssociationConnector Association="DbModel.FK_Transactions_Draws" />
+        <AssociationConnector Association="DbModel.FK_GroupDrawType_DrawType" />
+        <AssociationConnector Association="DbModel.FK_Schedule_DrawType" />
+        <AssociationConnector Association="DbModel.FK_UserDrawTypeOptions_DrawType" />
+        <AssociationConnector Association="DbModel.FK_DestinationLedger" />
+        <AssociationConnector Association="DbModel.FK_SourceLedger" />
+        <AssociationConnector Association="DbModel.FK_Transactions_TransactionType" />
+        <AssociationConnector Association="DbModel.FK_Transactions_User" />
+        <AssociationConnector Association="DbModel.DrawNumberSets" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

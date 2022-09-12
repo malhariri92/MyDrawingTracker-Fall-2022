@@ -1,0 +1,172 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+}
+
+.body-content {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 15px;
+    min-height: 84vh;
+}
+
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+
+input,
+select {
+    max-width: 280px;
+}
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        margin: 0;
+    }
+
+.bold {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 1.5em;
+    color: #666666;
+    font-variant: small-caps;
+    text-transform: none;
+    font-weight: 200;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+h1 {
+    font-size: 1.7em;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: 1.1em;
+}
+
+h5, h6 {
+    font-size: 1em;
+}
+
+
+.whitebg {
+    background-color: white;
+}
+
+.w500 {
+    width: 500px;
+}
+
+.big-check {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+}
+
+.big-input {
+    max-width: none;
+}
+
+
+
+.spinnerdiv {
+    width: 100%;
+    text-align: center;
+}
+
+
+.smallfont {
+    font-size: small;
+}
+
+
+.tooltip-inner {
+    max-width: 100% !important;
+}
+
+
+#navBar {
+    vertical-align: middle;
+    background-color: #a0003b;
+    padding: 10px;
+}
+
+.vertmid {
+    vertical-align: middle;
+}
+
+#LoginForm {
+    margin-top: 120px;
+}
+
+.hideElement {
+    display: none;
+}
+
+ul.nav li a, ul.nav li a:visited {
+    background-color: #000;
+    border: 1px #696969 solid;
+    color: #fff !important;
+    display: block;
+    line-height: 1.35em;
+    padding: 4px 20px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    ul.nav li a:hover, .active {
+        background-color: #a0003b;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    ul.nav li a:active {
+        background-color: #a0003b;
+        color: #fff;
+        text-decoration: none;
+    }
+
+.navbar-default .navbar-nav > li > a:focus, .navbar-default .navbar-nav > li > a:hover {
+    background-color: #a0003b;
+    color: #fff;
+    text-decoration: none;
+}
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+    background-color: #a0003b;
+    color: #fff;
+    text-decoration: none;
+}
+
+.navbar-nav > li > .dropdown-menu {
+    background-color: #a0003b;
+    padding: 5px;
+}
+
+
+@media (min-width: 768px) {
+    .body-content {
+        padding-top: 214px;
+    }
+
+   
+}
+
