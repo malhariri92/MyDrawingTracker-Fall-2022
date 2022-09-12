@@ -26,15 +26,15 @@ Project Description
 
 Project Scope  
 	Successful completion of this project will result in an app that allows the following functions:
-		User creation and sign ins
-		Drawing creation and management
-		Drawing entry management
-		Transaction management 
-			NOTE: actual monetary transactions are outside the scope of this project.
-			The app will allow group admins to report transactions and track user balances.
-			The app will not provide any method to transfer actual funds.
-		Drawing winner selection for internal drawings
-		Email notifications
+		User creation and sign ins  
+		Drawing creation and management  
+		Drawing entry management  
+		Transaction management  
+			NOTE: actual monetary transactions are outside the scope of this project. The app will allow 
+			group admins to report transactions and track user balances. The app will not provide any 
+			method to transfer actual funds.  
+		Drawing winner selection for internal drawings  
+		Email notifications  
 	
 
 
