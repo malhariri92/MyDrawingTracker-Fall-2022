@@ -1,7 +1,7 @@
-Project Name
+Project Name  
 	My Drawing Tracker
 
-Project Description
+Project Description  
 	The My Drawing Tracker app will allow users to create, manage, and track drawings. 
 	These drawings can be internal (winners selected by the app) or external (winners selected by another method).
 	As an example, Company is holding a raffle drawing for Prize. The group admin for Company's group would create the drawing and indicate the time and method of determining a winner.
@@ -21,7 +21,7 @@ Project Description
 	The group users can use the app to track their balance and know when they are due to contribute again.
 	This use case will also allow for the group admin to reinvest winnings as a virtual user of the app. 
 
-Project Scope
+Project Scope  
 	Successful completion of this project will result in an app that allows the following functions:
 		User creation and sign ins
 		Drawing creation and management
@@ -35,13 +35,13 @@ Project Scope
 	
 
 
-Chosen Technology Stack
+Chosen Technology Stack  
 	Database: SQL Server Express 2019
 	Server Side: C# MVC
 	Client Side: C# Razor, HTML/CSS, JavaScript, jQuery
 	Email: ProtonMail via ProtonBridge SMTP
 
-Team Members
+Team Members  
 	Project Lead - Stephen Gasperowich
 	Senior Dev (394) - 
 	Junior Dev (294) - 
