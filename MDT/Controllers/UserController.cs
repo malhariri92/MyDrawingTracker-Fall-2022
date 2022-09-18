@@ -10,6 +10,7 @@ using MDT.ViewModels;
 using System.Net;
 using MDT.Filters;
 using System.Data.Entity;
+using MDT.Models.DTO;
 
 namespace MDT.Controllers
 {
@@ -18,22 +19,29 @@ namespace MDT.Controllers
         
         public ActionResult Index()
         {
-            return View(user);
+            UserVM vm = new UserVM(db.Users.Where(u => user.UserId == u.UserId).Include(u => u.GroupUsers).FirstOrDefault());
+            return View(vm);
         }
 
         public bool ChangeGroup(int groupId)
         {
             if (WebManager.IsGroupMember(groupId, user.UserId))
             {
-                Session["Group"] = WebManager.GetGroupVM(groupId);
+                User u = db.Users.Find(user.UserId);
+                u.CurrentGroupId = groupId;
+                db.Entry(u).State = EntityState.Modified;
+                db.SaveChanges();
+                Session["User"] = new UserDTO(u);
+                Session["Group"] = WebManager.GetGroupDTO(groupId);
+
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public ActionResult ChangePass()
         {
-            UserVM user = (UserVM)Session["User"];
             if (user != null)
             {
                 return View(new UserPasswordChangeVM());
@@ -42,11 +50,10 @@ namespace MDT.Controllers
         }
 
         [HttpPost]
-        [LoginFilter]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePass(UserPasswordChangeVM vm)
         {
-            UserVM user = (UserVM)Session["User"];
+
             if (!ModelState.IsValid)
             {
                 return View(vm);

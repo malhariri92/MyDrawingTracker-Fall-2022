@@ -18,10 +18,10 @@ namespace MDT.Models
         public User()
         {
             this.Balances = new HashSet<Balance>();
-            this.Entries = new HashSet<Entry>();
+            this.DrawEntries = new HashSet<DrawEntry>();
             this.GroupUsers = new HashSet<GroupUser>();
-            this.UserDrawTypeOptions = new HashSet<UserDrawTypeOption>();
             this.Transactions = new HashSet<Transaction>();
+            this.UserDrawTypeOptions = new HashSet<UserDrawTypeOption>();
         }
     
         public int UserId { get; set; }
@@ -41,13 +41,13 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Balance> Balances { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Entry> Entries { get; set; }
+        public virtual ICollection<DrawEntry> DrawEntries { get; set; }
         public virtual Group Group { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupUser> GroupUsers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
     }
 }

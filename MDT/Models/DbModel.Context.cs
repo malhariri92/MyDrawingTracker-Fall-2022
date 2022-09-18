@@ -27,22 +27,24 @@ namespace MDT.Models
     
         public virtual DbSet<Balance> Balances { get; set; }
         public virtual DbSet<Description> Descriptions { get; set; }
+        public virtual DbSet<DrawEntry> DrawEntries { get; set; }
         public virtual DbSet<DrawOption> DrawOptions { get; set; }
         public virtual DbSet<DrawResult> DrawResults { get; set; }
         public virtual DbSet<Draw> Draws { get; set; }
-        public virtual DbSet<Entry> Entries { get; set; }
-        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<DrawType> DrawTypes { get; set; }
+        public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
         public virtual DbSet<GroupDrawType> GroupDrawTypes { get; set; }
         public virtual DbSet<GroupInvite> GroupInvites { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupUser> GroupUsers { get; set; }
         public virtual DbSet<Ledger> Ledgers { get; set; }
         public virtual DbSet<NumberSet> NumberSets { get; set; }
         public virtual DbSet<ObjectType> ObjectTypes { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<TransactionType> TransactionTypes { get; set; }
         public virtual DbSet<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<DrawType> DrawTypes { get; set; }
-        public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<SentEmail> SentEmails { get; set; }
     }
 }

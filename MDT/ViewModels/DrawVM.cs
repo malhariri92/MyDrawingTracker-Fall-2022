@@ -41,7 +41,7 @@ namespace MDT.ViewModels
                 DrawTypeId = d.DrawTypeId;
                 DrawTypeName = d.DrawType.DrawTypeName;
 
-                Entries = d.Entries.Select(e => new EntryVM(e)).ToList();
+                Entries = d.DrawEntries.Select(e => new EntryVM(e)).ToList();
             }
         }
 

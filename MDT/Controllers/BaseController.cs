@@ -1,5 +1,6 @@
 ﻿using MDT.Filters;
 using MDT.Models;
+using MDT.Models.DTO;
 using MDT.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -17,8 +18,8 @@ namespace MDT.Controllers
     public class BaseController : Controller
     {
         protected DbEntities db = new DbEntities();
-        protected UserVM user;
-        protected GroupVM group;
+        protected UserDTO user;
+        protected GroupDTO group;
         protected bool admin;
 
         public BaseController() : base()
@@ -28,8 +29,8 @@ namespace MDT.Controllers
 
         public void Setup()
         {
-            user = (UserVM)Session["User"];
-            group = (GroupVM)Session["Group"];
+            user = (UserDTO)Session["User"];
+            group = (GroupDTO)Session["Group"];
             admin = (bool)Session["IsAdmin"];
         }
 
@@ -38,8 +39,8 @@ namespace MDT.Controllers
             return await db.Draws
                      .Where(g => ids.Contains(g.DrawId))
                      .Include(g => g.DrawType)
-                     .Include(g => g.Entries)
-                     .Include(g => g.Entries.Select(e => e.User))
+                     .Include(g => g.DrawEntries)
+                     .Include(g => g.DrawEntries.Select(e => e.User))
                      .ToListAsync();
         }
 
@@ -73,8 +74,8 @@ namespace MDT.Controllers
                      .Include(g => g.GroupUsers)
                      .Include(g => g.UserDrawTypeOptions)
                      .Include(g => g.UserDrawTypeOptions.Select(pg => pg.DrawType))
-                     .Include(g => g.Entries)
-                     .Include(g => g.Entries.Select(e => e.Draw))
+                     .Include(g => g.DrawEntries)
+                     .Include(g => g.DrawEntries.Select(e => e.Draw))
                      .ToListAsync();
         }
 
@@ -91,8 +92,8 @@ namespace MDT.Controllers
                      .Include(g => g.User)
                      .Include(g => g.Draw)
                      .Include(g => g.Draw.DrawType)
-                     .Include(g => g.Draw.Entries)
-                     .Include(g => g.Draw.Entries.Select(e => e.User))
+                     .Include(g => g.Draw.DrawEntries)
+                     .Include(g => g.Draw.DrawEntries.Select(e => e.User))
                      .ToListAsync();
         }
 

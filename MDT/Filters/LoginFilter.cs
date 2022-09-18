@@ -1,4 +1,5 @@
 ﻿using MDT.Models;
+using MDT.Models.DTO;
 using MDT.ViewModels;
 using System.Web.Mvc;
 using System.Web.Mvc.Filters;
@@ -16,7 +17,7 @@ namespace MDT.Filters
         /// <param name="filterContext"></param>
         public void OnAuthentication(AuthenticationContext filterContext)
         {
-            UserVM user = (UserVM)filterContext.HttpContext.Session["User"];
+            UserDTO user = (UserDTO)filterContext.HttpContext.Session["User"];
 
             if (user == null )
             {
@@ -24,8 +25,8 @@ namespace MDT.Filters
             }
             else
             {
-                filterContext.HttpContext.Session["User"] = WebManager.GetUserVM(user.UserId);
-                filterContext.HttpContext.Session["Group"] = WebManager.GetGroupVM(user.CurrentGroupId);
+                filterContext.HttpContext.Session["User"] = WebManager.GetUserDTO(user.UserId);
+                filterContext.HttpContext.Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
                 filterContext.HttpContext.Session["IsAdmin"] = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId);
             }
         }

@@ -1,7 +1,7 @@
-﻿@using MDT.ViewModels;
+﻿@using MDT.Models.DTO;
 @{
-    UserVM user = (UserVM)Session["User"];
-    GroupVM group = (GroupVM)Session["Group"];
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
     bool admin = (bool?)Session["IsAdmin"] ?? false;
 }
 <!DOCTYPE html>
@@ -29,19 +29,25 @@
             </div>
             <div id="InfoBox" class="col-xs-12 col-md-6">
 
-                @if (user != null)
-                {
-                    <div class="row">
-                        <div class="col-xs-0 col-md-6"></div>
-                        <div class="col-xs-12 col-md-6">
+                <div class="row">
+                    <div class="col-xs-0 col-md-6"></div>
+                    <div class="col-xs-12 col-md-6">
+                        @if (user == null)
+                        {
                             <h2 style="margin-top:unset;">
-
+                                Anonymous<br />
+                                Unknown
+                            </h2>
+                        }
+                        else
+                        {
+                            <h2 style="margin-top:unset;">
                                 @user.UserName<br />
                                 @group.GroupName @(admin ? "(Admin)" : "")
                             </h2>
-                        </div>
+                        }
                     </div>
-                }
+                </div>
             </div>
         </div>
         <nav class="navbar navbar-default" style="vertical-align:middle;background-color: #000;padding:10px;">
@@ -64,11 +70,11 @@
                     @if (user == null)
                     {
                         <li>@Html.ActionLink("Sign In", "SignIn", "Home")</li>
- }
+                    }
                     else
                     {
                         <li>@Html.ActionLink("Sign Out", "SignOut", "Home")</li>
-}
+                    }
                 </ul>
             </div>
         </nav>
@@ -76,11 +82,11 @@
     <div class="container body-content">
         @RenderBody()
         <br />
-        <hr />
-        <footer class="text-center">
-            <p>&copy; @DateTime.Now.Year - My Drawing Tracker</p>
-        </footer>
     </div>
+    <footer class="text-center">
+        <hr />
+        <p>&copy; @DateTime.Now.Year - My Drawing Tracker</p>
+    </footer>
 
 </body>
 

@@ -1,4 +1,5 @@
-﻿using MDT.ViewModels;
+﻿using MDT.Models.DTO;
+using MDT.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -29,19 +30,12 @@ namespace MDT.Models
             return null;
         }
 
-        internal static UserVM GetUserVMByEmail(string email)
+        internal static UserDTO GetUserDTOByEmail(string email)
         {
             using (var db = new DbEntities())
             {
-                User player = db.Users.Where(p => p.EmailAddress.Equals(email))
-                                          .Include(p => p.GroupUsers)
-                                          .Include(p => p.GroupUsers.Select(pg => pg.Group))
-                                          .Include(p => p.Entries)
-                                          .Include(p => p.Entries.Select(e => e.Draw))
-                                          .Include(p => p.Transactions)
-                                          .FirstOrDefault();
-                return player == null ? null : new UserVM(player);
-
+                User user = db.Users.Where(u => u.EmailAddress.Equals(email)).FirstOrDefault();
+                return user == null ? null : new UserDTO(user);
             }
         }
 
@@ -60,20 +54,25 @@ namespace MDT.Models
 
         }
 
-        internal static UserVM GetUserVM(int userId)
+        internal static UserDTO GetUserDTO(int userId)
         {
             using (var db = new DbEntities())
             {
-                return new UserVM(db.Users.Where(u => u.UserId == userId).Include(u => u.GroupUsers).FirstOrDefault());
-                
+                return new UserDTO(db.Users.Where(u => u.UserId == userId).FirstOrDefault());
+
             }
 
         }
-        internal static GroupVM GetGroupVM(int groupId)
+        internal static GroupDTO GetGroupDTO(int groupId)
         {
             using (var db = new DbEntities())
-            {                
-                return new GroupVM(db.Groups.Where(g => g.GroupId == groupId).Include(u => u.GroupUsers).FirstOrDefault());
+            {
+                return new GroupDTO(db.Groups.Where(g => g.GroupId == groupId)
+                                             .Include(g => g.ParentGroup)
+                                             .Include(g => g.GroupUsers)
+                                             .Include(g => g.SubGroups)
+                                             .Include(g => g.SubGroups.Select(sg => sg.GroupUsers))
+                                             .FirstOrDefault());
             }
         }
 
@@ -93,13 +92,52 @@ namespace MDT.Models
             }
         }
 
+        public static bool SendTemplateEmail(List<string> recipients, int templateId, Dictionary<string, string> variables)
+        {
+            if (recipients == null  || !recipients.Any())
+            {
+                throw new ArgumentException($"Cannot send mail without recipients");
+            }
+
+            using (var db = new DbEntities())
+            {
+                EmailTemplate template = db.EmailTemplates.Find(templateId);
+                if (template == null)
+                {
+                    throw new ArgumentException($"Template for id: {templateId} not found");
+                }
+
+                EmailMessage email = new EmailMessage();
+                email.AddTo(recipients);
+                email.SetSubject(template.SubjectLine);
+                email.SetTemplateBody(template.FileName, variables);
+                SentEmail msg = new SentEmail()
+                {
+                    TemplateId = templateId,
+                    Recipients = string.Join(";", recipients),
+                    VariablesJSON = Newtonsoft.Json.JsonConvert.SerializeObject(variables)
+                };
+
+                if (email.SendMessage())
+                {
+                    msg.SentOn = DateTime.Now;
+                }
+
+                db.Entry(msg).State = EntityState.Added;
+                db.SaveChanges();
+
+                return msg.SentOn != null;
+
+            }
+        }
+
 
         internal static string RandomString(int l)
         {
             Random r = new Random();
             string rand = "";
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-           
+
             for (int i = 0; i < l; i++)
             {
                 rand += $"{chars[r.Next(chars.Length)]}";
@@ -108,6 +146,6 @@ namespace MDT.Models
             return rand;
         }
 
-        
+
     }
 }

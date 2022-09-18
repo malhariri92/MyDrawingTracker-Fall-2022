@@ -64,6 +64,31 @@ h5, h6 {
     font-size: 1em;
 }
 
+#Banner {
+    width: 100%;
+    background-color: white;
+    position: static;
+    z-index: 101;
+}
+
+#BannerRow {
+    padding: 10px 20px;
+}
+
+#LogoBox {
+    width: 100%;
+    text-align: center;
+}
+
+#Logo {
+    width: 100%;
+    max-width: 400px;
+}
+
+#InfoBox {
+    width: 100%;
+    text-align: center;
+}
 
 .whitebg {
     background-color: white;
@@ -163,10 +188,29 @@ ul.nav li a, ul.nav li a:visited {
 
 
 @media (min-width: 768px) {
-    .body-content {
-        padding-top: 214px;
+    #Banner {
+        position: fixed;
     }
 
-   
+    #LogoBox {
+        width: 50%;
+        text-align: left;
+    }
+
+
+    #InfoBox {
+        width: 50%;
+        text-align: right;
+    }
+
+    .navbar-right {
+        margin-right: 0;
+    }
+
+    .body-content {
+        padding-top: 160px;
+    }
 }
+
+
 
