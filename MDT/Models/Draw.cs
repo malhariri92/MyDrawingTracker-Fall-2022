@@ -17,9 +17,9 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Draw()
         {
+            this.DrawEntries = new HashSet<DrawEntry>();
             this.DrawOptions = new HashSet<DrawOption>();
             this.DrawResults = new HashSet<DrawResult>();
-            this.Entries = new HashSet<Entry>();
             this.Transactions = new HashSet<Transaction>();
         }
     
@@ -30,13 +30,13 @@ namespace MDT.Models
         public string Results { get; set; }
         public string DrawCode { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DrawEntry> DrawEntries { get; set; }
         public virtual DrawOption DrawOption { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawOption> DrawOptions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawResult> DrawResults { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Entry> Entries { get; set; }
         public virtual DrawType DrawType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }

@@ -17,9 +17,9 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Group()
         {
-            this.Subgroups = new HashSet<Group>();
             this.GroupDrawTypes = new HashSet<GroupDrawType>();
             this.GroupInvites = new HashSet<GroupInvite>();
+            this.SubGroups = new HashSet<Group>();
             this.GroupUsers = new HashSet<GroupUser>();
             this.Ledgers = new HashSet<Ledger>();
             this.Users = new HashSet<User>();
@@ -34,12 +34,12 @@ namespace MDT.Models
         public bool JoinConfirmationRequired { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Group> Subgroups { get; set; }
-        public virtual Group ParentGroup { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupInvite> GroupInvites { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Group> SubGroups { get; set; }
+        public virtual Group ParentGroup { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupUser> GroupUsers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -19,8 +19,8 @@ namespace MDT.Models
         {
             this.Balances = new HashSet<Balance>();
             this.GroupDrawTypes = new HashSet<GroupDrawType>();
-            this.Transactions = new HashSet<Transaction>();
-            this.Transactions1 = new HashSet<Transaction>();
+            this.TransactionsTo = new HashSet<Transaction>();
+            this.TransactionsFrom = new HashSet<Transaction>();
         }
     
         public int LedgerId { get; set; }
@@ -30,12 +30,12 @@ namespace MDT.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Balance> Balances { get; set; }
-        public virtual Group Group { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
+        public virtual Group Group { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Transaction> Transactions { get; set; }
+        public virtual ICollection<Transaction> TransactionsTo { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Transaction> Transactions1 { get; set; }
+        public virtual ICollection<Transaction> TransactionsFrom { get; set; }
     }
 }

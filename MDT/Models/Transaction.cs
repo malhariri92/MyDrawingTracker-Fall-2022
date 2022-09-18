@@ -24,8 +24,8 @@ namespace MDT.Models
         public int DestinationLedger { get; set; }
     
         public virtual Draw Draw { get; set; }
-        public virtual Ledger Ledger { get; set; }
-        public virtual Ledger Ledger1 { get; set; }
+        public virtual Ledger ToLedger { get; set; }
+        public virtual Ledger FromLedger { get; set; }
         public virtual TransactionType TransactionType { get; set; }
         public virtual User User { get; set; }
     }

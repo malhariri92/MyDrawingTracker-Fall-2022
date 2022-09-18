@@ -1,4 +1,5 @@
 ﻿using MDT.Models;
+using MDT.Models.DTO;
 using MDT.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace MDT.Controllers
         [AllowAnonymous]
         public ActionResult SignIn()
         {
-            UserVM user = (UserVM)Session["User"];
+            UserDTO user = (UserDTO)Session["User"];
             if (user == null)
             {
                 using (var db = new DbEntities())
@@ -60,8 +61,8 @@ namespace MDT.Controllers
                     Session["RedirectUrl"] = null;
                     using (var db = new DbEntities())
                     {
-                        Session["User"] = WebManager.GetUserVM(user.UserId);
-                        Session["Group"] = WebManager.GetGroupVM(user.CurrentGroupId);
+                        Session["User"] = WebManager.GetUserDTO(user.UserId);
+                        Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
 
                     }
 
@@ -83,7 +84,7 @@ namespace MDT.Controllers
         [AllowAnonymous]
         public ActionResult ForgotPass()
         {
-            UserVM user = (UserVM)Session["User"];
+            UserDTO user = (UserDTO)Session["User"];
             if (user == null)
             {
                 return View("ForgotPass", new UserPasswordResetSetupVM());
@@ -97,7 +98,7 @@ namespace MDT.Controllers
         public ActionResult ForgotPass(UserPasswordResetSetupVM vm)
         {
 
-            UserVM user = WebManager.GetUserVMByEmail(vm.UserEmail);
+            UserDTO user = WebManager.GetUserDTOByEmail(vm.UserEmail);
             vm.UserId = user?.UserId ?? 0;
 
             vm.UserName = user?.UserName ?? "";
@@ -128,7 +129,7 @@ namespace MDT.Controllers
         [AllowAnonymous]
         public ActionResult ResetPass(string k)
         {
-            UserVM user = (UserVM)Session["User"];
+            UserDTO user = (UserDTO)Session["User"];
             if (user == null)
             {
                 UserPasswordResetVM vm = new UserPasswordResetVM();
@@ -164,7 +165,7 @@ namespace MDT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ResetPass(UserPasswordResetVM vm)
         {
-            UserVM user = (UserVM)Session["User"];
+            UserDTO user = (UserDTO)Session["User"];
             if (User == null)
             {
                 User key = (User)Session["UserKey"];

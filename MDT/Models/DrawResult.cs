@@ -19,7 +19,7 @@ namespace MDT.Models
         public int EntryId { get; set; }
         public System.DateTime DrawnDateTime { get; set; }
     
+        public virtual DrawEntry DrawEntry { get; set; }
         public virtual Draw Draw { get; set; }
-        public virtual Entry Entry { get; set; }
     }
 }

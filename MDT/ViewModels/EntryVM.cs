@@ -16,7 +16,7 @@ namespace MDT.ViewModels
         public EntryVM()
         { }
         
-        public EntryVM(Entry e)
+        public EntryVM(DrawEntry e)
         {
             DrawId = e.DrawId;
             DrawDate = e.Draw.EndDateTime;

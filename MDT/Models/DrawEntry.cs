@@ -12,10 +12,10 @@ namespace MDT.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Entry
+    public partial class DrawEntry
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Entry()
+        public DrawEntry()
         {
             this.DrawResults = new HashSet<DrawResult>();
         }

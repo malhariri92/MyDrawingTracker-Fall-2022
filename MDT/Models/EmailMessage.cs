@@ -17,8 +17,6 @@ namespace MDT.Models
     /// </summary>
     public class EmailMessage
     {
-        private readonly string server;
-        private readonly int port;
         private MailMessage email;
 
 
@@ -27,8 +25,6 @@ namespace MDT.Models
         /// </summary>
         public EmailMessage()
         {
-            server = "127.0.0.1";
-            port = 1025;
             email = new MailMessage()
             {
                 BodyEncoding = Encoding.UTF8
@@ -68,11 +64,12 @@ namespace MDT.Models
         /// <param name="recipients">List of recipient emails</param>
         public void AddTo(List<string> recipients)
         {
-            foreach (string s in recipients)
+            foreach (string r in recipients)
             {
-                if (email.To.Where(to => to.Address.Equals(s.Trim())).Count() == 0)
+                string[] s = r.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
+                if (email.To.Where(to => to.Address.Equals(s[0].Trim())).Count() == 0)
                 {
-                    email.To.Add(s.Trim());
+                    email.To.Add(new MailAddress(s[0].Trim(), s.Length > 1 ? s[1].Trim() : ""));
                 }
             }
         }
@@ -80,7 +77,7 @@ namespace MDT.Models
         /// <summary>
         /// Adds recipients in the CC field of the email 
         /// </summary>
-        /// <param name="recipients">a semi-colon delimited list of recipients</param>
+        /// <param name="recipients">a semi-colon delimited list of recipients, optionally each address can include a tab character followed by a display name</param>
         public void AddCC(string recipients)
         {
             if (recipients != null)
@@ -92,14 +89,15 @@ namespace MDT.Models
         /// <summary>
         /// Adds recipients in the CC field of the email 
         /// </summary>
-        /// <param name="recipients">List of recipient emails</param>
+        /// <param name="recipients">List of recipient emails, optionally each address can include a tab character followed by a display name</param>
         public void AddCC(List<string> recipients)
         {
-            foreach (string s in recipients)
+            foreach (string r in recipients)
             {
-                if (email.CC.Where(cc => cc.Address.Equals(s.Trim())).Count() == 0)
+                string[] s = r.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
+                if (email.CC.Where(to => to.Address.Equals(s[0].Trim())).Count() == 0)
                 {
-                    email.CC.Add(s.Trim());
+                    email.CC.Add(new MailAddress(s[0].Trim(), s.Length > 1 ? s[1].Trim() : ""));
                 }
             }
         }
@@ -107,7 +105,7 @@ namespace MDT.Models
         /// <summary>
         /// Adds recipients in the BCC field of the email 
         /// </summary>
-        /// <param name="recipients">a semi-colon delimited list of recipients</param>
+        /// <param name="recipients">a semi-colon delimited list of recipients, optionally each address can include a tab character followed by a display name</param>
         public void AddBCC(string recipients)
         {
             if (recipients != null)
@@ -119,14 +117,15 @@ namespace MDT.Models
         /// <summary>
         /// Adds recipients in the BCC field of the email 
         /// </summary>
-        /// <param name="recipients">List of recipient emails</param>
+        /// <param name="recipients">List of recipient emails, optionally each address can include a tab character followed by a display name</param>
         public void AddBCC(List<string> recipients)
         {
-            foreach (string s in recipients)
+            foreach (string r in recipients)
             {
-                if (email.Bcc.Where(bcc => bcc.Address.Equals(s.Trim())).Count() == 0)
+                string[] s = r.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
+                if (email.Bcc.Where(to => to.Address.Equals(s[0].Trim())).Count() == 0)
                 {
-                    email.Bcc.Add(s.Trim());
+                    email.Bcc.Add(new MailAddress(s[0].Trim(), s.Length > 1 ? s[1].Trim() : ""));
                 }
             }
         }
@@ -134,7 +133,7 @@ namespace MDT.Models
         /// <summary>
         /// Adds recipients in the Reply To field of the email 
         /// </summary>
-        /// <param name="recipients">a semi-colon delimited list of recipients</param>
+        /// <param name="recipients">a semi-colon delimited list of recipients, optionally each address can include a tab character followed by a display name</param>
         public void AddReplyTo(string recipients)
         {
             if (recipients != null)
@@ -146,14 +145,15 @@ namespace MDT.Models
         /// <summary>
         /// Adds recipients in the Reply To field of the email 
         /// </summary>
-        /// <param name="recipients">List of recipient emails</param>
+        /// <param name="recipients">List of recipient emails, optionally each address can include a tab character followed by a display name</param>
         public void AddReplyTo(List<string> recipients)
         {
-            foreach (string s in recipients)
+            foreach (string r in recipients)
             {
-                if (email.ReplyToList.Where(rt => rt.Address.Equals(s.Trim())).Count() == 0)
+                string[] s = r.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
+                if (email.ReplyToList.Where(to => to.Address.Equals(s[0].Trim())).Count() == 0)
                 {
-                    email.CC.Add(s.Trim());
+                    email.ReplyToList.Add(new MailAddress(s[0].Trim(), s.Length > 1 ? s[1].Trim() : ""));
                 }
             }
         }
@@ -235,11 +235,11 @@ namespace MDT.Models
                 {
                     ServicePointManager.ServerCertificateValidationCallback += ValidateCertificate;
 
-                    using (SmtpClient smtpClient = new SmtpClient(server, port))
+                    using (SmtpClient smtpClient = new SmtpClient("142.11.247.164", 60447))
                     {
                         smtpClient.UseDefaultCredentials = false;
                         smtpClient.EnableSsl = true;
-                        smtpClient.Credentials = new NetworkCredential("web@mydrawingtracker.com", "password"); 
+                        smtpClient.Credentials = new NetworkCredential("web@mydrawingtracker.com", "29IQH3xyyDGMubY0q1jl6A"); 
                         smtpClient.Send(email);
                     }
                     return true;
@@ -249,9 +249,12 @@ namespace MDT.Models
                 {
                     email.Body += $"\n\nEXCEPTION:{e.Message} \n {e.StackTrace}";
                     System.Diagnostics.Debug.WriteLine(e.Message);
-                    if (e.InnerException != null)
+                    Exception ie = e.InnerException;
+                    while (ie != null)
                     {
-                        System.Diagnostics.Debug.WriteLine(e.InnerException.Message);
+                        email.Body += $"\n\nINNER EXCEPTION:{ie.Message} \n {ie.StackTrace}";
+                        System.Diagnostics.Debug.WriteLine(ie.Message);
+                        ie = e.InnerException;
                     }
                 }
             }
@@ -274,7 +277,7 @@ namespace MDT.Models
         {
             try
             {
-                using (SmtpClient smtpClient = new SmtpClient(server, port))
+                using (SmtpClient smtpClient = new SmtpClient())
                 {
                     string unsentfolder = Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "UnsentEmails");
                     if (!Directory.Exists(unsentfolder))
