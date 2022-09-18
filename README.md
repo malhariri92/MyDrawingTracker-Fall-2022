@@ -48,7 +48,7 @@
 <ul>
 	<li><b>Project Lead (495): </b> Stephen Gasperowich</li>
 	<li><b>Senior Dev (394): </b> Mutasem Alhariri</li>
-	<li><b>Senior Dev (394): </b> Kyle Boldman</li>
+	<li><b>Junior Dev (294): </b> Kyle Boldman</li>
 	<li><b>Junior Dev (294): </b> Samuel Quaye</li>
 	<li><b>Junior Dev (294): </b> Ryan Morgan</li> 
 	</ul>
