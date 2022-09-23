@@ -1,10 +1,14 @@
 ﻿using MDT.Models;
 using MDT.Models.DTO;
 using MDT.ViewModels;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 
@@ -85,6 +89,7 @@ namespace MDT.Controllers
         public ActionResult ForgotPass()
         {
             UserDTO user = (UserDTO)Session["User"];
+            Console.WriteLine("TEst");
             if (user == null)
             {
                 return View("ForgotPass", new UserPasswordResetSetupVM());
@@ -99,6 +104,7 @@ namespace MDT.Controllers
         {
 
             UserDTO user = WebManager.GetUserDTOByEmail(vm.UserEmail);
+    
             vm.UserId = user?.UserId ?? 0;
 
             vm.UserName = user?.UserName ?? "";
@@ -111,13 +117,23 @@ namespace MDT.Controllers
                     { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
                     { "[[key]]", key},
                     { "[[UserEmail]]", vm.UserEmail},
+                    { "[[greeting]]", $"Hello {user.UserName}," },
+                    { "[[body1]]", "We have received a password reset request for the My Drawing Tracker account associated with this e-mail address. " +
+                        "If you have not made a password reset request for your My Drawing Tracker account, you may safely ignore this e-mail. If you " +
+                        "have made a password request, please "},
+                    { "[[body2]]", " within one hour of receiving this message in order to change your password." },
+                    { "[[TemplateName]]", "Password Reset Request" },
                 };
 
                 EmailMessage email = new EmailMessage();
                 email.AddTo(user.EmailAddress);
                 email.SetSubject("Password Reset Request");
-                email.SetTextOnlyBody($"https://mydrawingtracker.com/Home/ResetPass?k={key}");
-                email.SendMessage();
+                email.SetTemplateBody("ForgotPass.html", variables);
+                //email.SetTextOnlyBody($"https://mydrawingtracker.com/Home/ResetPass?k={key}");
+                //email.SendMessage();
+                List<string> recipients = new List<string>();
+                recipients.Add(user.EmailAddress);
+                WebManager.SendTemplateEmail(recipients, 1, variables);
 
             }
             vm.Success = true;
