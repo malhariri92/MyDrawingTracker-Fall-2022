@@ -11,7 +11,64 @@
         <p>
             <b>Name: </b> @Model.UserName <br />
             <b>Email: </b> @Model.EmailAddress <br />
-            @Html.ActionLink("Change Password", "ChangePass")
+            <b>Phone Number: </b> @Model.PhoneNumber <br />
+            <b>Balance: </b> @Model.Balance<br />
+            <b>CurrentGroupID: </b> @Model.CurrentGroupId<br />
+            <b>Verification Status: </b>
+            @{
+                if (@Model.IsVerified)
+                {
+                    <b>Verified</b>
+                }
+                else
+                {
+                    <b>Not Verified</b>
+                }
+            }
+            <br />
+            <b>Activity Status: </b>
+            @{
+                if (@Model.IsActive)
+                {
+                    <b>Active</b>
+                }
+                else
+                {
+                    <b>InActive</b>
+                }
+            }
+            <br />
+            <b>Admin Groups: </b>
+            @{
+                if (@Model.AdminGroups.Count == 0)
+                {
+                    <b>None</b>
+                }
+                else
+                {
+                    foreach (var group in @Model.AdminGroups)
+                    {
+                        <br /><b>group</b>
+                    }
+                }
+            }
+            <br />
+            <b>Member Groups: </b>
+            @{
+                if (@Model.MemberGroups.Count == 0)
+                {
+                    <b>None</b>
+                }
+                else
+                {
+                    foreach (var member in @Model.MemberGroups)
+                    {
+                        <br /><b>member</b>
+                    }
+                }
+            }
+            <br />
+            @Html.ActionLink("Change Password", "ChangePass", null, new { @class="btn btn-info" })
         </p>
     </div>
     <div class="col-md-6">
