@@ -133,7 +133,12 @@ namespace MDT.Controllers
                 //email.SendMessage();
                 List<string> recipients = new List<string>();
                 recipients.Add(user.EmailAddress);
-                WebManager.SendTemplateEmail(recipients, 1, variables);
+                WebManager.SendTemplateEmail(
+                    recipients, 
+                    1,
+                    variables
+                );
+         
 
             }
             vm.Success = true;
@@ -152,12 +157,18 @@ namespace MDT.Controllers
                 using (var db = new DbEntities())
                 {
                     User key = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
+
                     if (key == null)
                     {
                         vm.Success = false;
                         vm.Error = true;
                         vm.Message = "Invalid authentication key. Please try again.";
                         return View(vm);
+                    }
+
+                    if (key.ResetKey == null)
+                    {
+                        return RedirectToAction("ForgotPass");
                     }
 
                     if (key.ResetKeyExpires < DateTime.Now)
