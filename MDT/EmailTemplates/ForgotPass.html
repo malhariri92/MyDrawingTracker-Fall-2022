@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>My Drawing Tracker - [[TemplateName]]</title>
+    <style>
+        .spacer {
+            height: 2px;
+        }
+
+        .ct {
+            width: 800px;
+            margin: auto;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <table class="ct" align="center" style="border: 1px solid black;">
+        <tr width="100%" style="background-color: black; font-size:large; color:white; text-align: center; padding-bottom:5px;">
+            <td style="text-decoration:none;">
+                <a class="syslink" href="[[RootUrl]]" style="text-decoration:none;">
+                    <strong style="text-decoration:none; font-weight:normal; color:white;">
+                        My Drawing Tracker
+                        <br />
+                        [[TemplateName]]
+                    </strong>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                [[greeting]]
+            </td>
+        </tr>
+        <tr class="spacer"><td></td></tr>
+        <tr>
+            <td>
+                &emsp;[[body1]] <a href="[[authUrl]]">click here</a> [[body2]]
+            </td>
+        </tr>
+        <tr style="font-size:smaller; color:darkgrey; text-align:center;">
+            <td>
+                <hr style="color:darkgrey; width:75%;" />
+                Do not reply to this email, the mailbox is not monitored.<br />
+                &copy; [[Year]] - <a href="[[RootUrl]]">My Drawing Tracker</a>.
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
