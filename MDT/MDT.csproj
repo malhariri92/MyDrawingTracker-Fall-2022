@@ -232,6 +232,7 @@
     </Compile>
     <Compile Include="Models\WebManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AdminUserVM.cs" />
     <Compile Include="ViewModels\DrawVM.cs" />
     <Compile Include="ViewModels\EntryVM.cs" />
     <Compile Include="ViewModels\GameSettingsVM.cs" />
@@ -395,6 +396,7 @@
     <Content Include="webfonts\fa-brands-400.woff" />
     <Content Include="webfonts\fa-brands-400.ttf" />
     <Content Include="webfonts\fa-brands-400.eot" />
+    <Content Include="Views\Home\CreateAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
