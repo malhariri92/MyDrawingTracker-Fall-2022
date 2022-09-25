@@ -1,0 +1,66 @@
+@model MDT.ViewModels.UserDetailsChangeVM
+@{
+    ViewBag.Title = "Edit Details";
+}
+
+@if (Model.Success)
+{
+    <h2 class="text-success">Your profile has been updated.</h2>
+
+}
+else
+{
+    if (Model.Error)
+    {
+        <h2 class="text-danger">Problem updating your profile</h2>
+        <h3 class="text-danger">@Model.Message</h3>
+    }
+    else
+    {
+
+        using (Html.BeginForm("ChangeUserDetails", "User", FormMethod.Post, new { @id = "form0" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.UserId);
+            @Html.HiddenFor(model => model.EmailAddress);
+            @Html.HiddenFor(model => model.IsVerified);
+            @Html.HiddenFor(model => model.IsActive);
+            <div class="row">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CurrentGroupId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.CurrentGroupId, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.CurrentGroupId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Submit Changes" class="btn btn-success" />
+                        </div>
+                        <br />
+                    </div>
+
+                </div>
+            </div>
+        }
+        @Html.ActionLink("Return", "Index", null, new { @class = "btn btn-danger" })
+    }
+}

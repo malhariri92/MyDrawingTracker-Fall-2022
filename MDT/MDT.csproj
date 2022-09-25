@@ -134,6 +134,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
+	<Compile Include="Attributes\PhoneNumberValidation.cs" />
+	<Compile Include="Attributes\UserNameValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -232,6 +234,7 @@
     </Compile>
     <Compile Include="Models\WebManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AdminUserVM.cs" />
     <Compile Include="ViewModels\DrawVM.cs" />
     <Compile Include="ViewModels\EntryVM.cs" />
     <Compile Include="ViewModels\GameSettingsVM.cs" />
@@ -245,6 +248,7 @@
     <Compile Include="ViewModels\UserPasswordChangeVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetSetupVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetVM.cs" />
+	<Compile Include="ViewModels\UserDetailsChangeVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\all.css" />
@@ -376,6 +380,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\ChangePass.cshtml" />
+	<Content Include="Views\User\ChangeUserDetails.cshtml" />
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
@@ -397,6 +402,7 @@
     <Content Include="webfonts\fa-brands-400.woff" />
     <Content Include="webfonts\fa-brands-400.ttf" />
     <Content Include="webfonts\fa-brands-400.eot" />
+    <Content Include="Views\Home\CreateAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
