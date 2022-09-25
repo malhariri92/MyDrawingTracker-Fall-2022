@@ -31,7 +31,6 @@ namespace MDT.Controllers
             return PartialView();
         }
 
-        [AllowAnonymous]
         public ActionResult SignIn()
         {
             UserDTO user = (UserDTO)Session["User"];
@@ -116,8 +115,7 @@ namespace MDT.Controllers
                 email.AddTo(user.EmailAddress);
                 email.SetSubject("Password Reset Request");
                 email.SetTemplateBody("ForgotPass.html", variables);
-                //email.SetTextOnlyBody($"https://mydrawingtracker.com/Home/ResetPass?k={key}");
-                //email.SendMessage();
+               
                 List<string> recipients = new List<string>();
                 recipients.Add(user.EmailAddress);
                 WebManager.SendTemplateEmail(
@@ -308,7 +306,7 @@ namespace MDT.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(vm);
+                return PartialView(vm);
             }
 
             // Create a new group
