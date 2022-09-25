@@ -254,7 +254,7 @@ namespace MDT.Models
                     {
                         email.Body += $"\n\nINNER EXCEPTION:{ie.Message} \n {ie.StackTrace}";
                         System.Diagnostics.Debug.WriteLine(ie.Message);
-                        ie = e.InnerException;
+                        ie = ie.InnerException;
                     }
                 }
             }

@@ -16,14 +16,24 @@ namespace MDT.Models
             using (var db = new DbEntities())
             {
                 User user = db.Users.Find(vm.UserId);
-                if (user != null && user.EmailAddress.Equals(vm.UserEmail) && user.IsActive)
+    
+                //I had to convert the email address all to lower case so it could be sent without issue.
+                if (user != null && user.EmailAddress.ToLower().Equals(vm.UserEmail.ToLower()) && user.IsActive)
                 {
+                    //25-char long string is randomly generated.
                     string key = RandomString(25);
+
+                    //Reset key is added to the user object.
                     user.ResetKey = key;
+
+                    //The user has an hour to user the reset.
                     user.ResetKeyExpires = DateTime.Now.AddMinutes(60);
 
+                    // The state of the user is set to modified and then saved.
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();
+  
+                    //Return the key.
                     return key;
                 }
             }
@@ -140,7 +150,11 @@ namespace MDT.Models
 
             for (int i = 0; i < l; i++)
             {
-                rand += $"{chars[r.Next(chars.Length)]}";
+                int index = r.Next(chars.Length);
+        
+                char c = chars[index];
+ 
+                rand += $"{c}";
             }
 
             return rand;
