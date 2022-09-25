@@ -134,6 +134,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
+	<Compile Include="Attributes\PhoneNumberValidation.cs" />
+	<Compile Include="Attributes\UserNameValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -245,6 +247,7 @@
     <Compile Include="ViewModels\UserPasswordChangeVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetSetupVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetVM.cs" />
+	<Compile Include="ViewModels\UserDetailsChangeVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\all.css" />
@@ -376,6 +379,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\ChangePass.cshtml" />
+	<Content Include="Views\User\ChangeUserDetails.cshtml" />
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />

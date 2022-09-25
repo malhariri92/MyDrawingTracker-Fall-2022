@@ -34,14 +34,14 @@ else
                     <br />
                     <div class="form-group">
                         <div class="col-md-10 col-md-offset-2">
-                        <h3>Requirements for New Password</h3>
-                        <ul>
-                            <li>10 to 24 characters</li>
-                            <li>At least 1 uppercase letter</li>
-                            <li>At least 1 lowecase letter</li>
-                            <li>At least 1 number</li>
-                            <li>At least 1 symbol character</li>
-                        </ul>
+                            <h3>Requirements for New Password</h3>
+                            <ul>
+                                <li>10 to 24 characters</li>
+                                <li>At least 1 uppercase letter</li>
+                                <li>At least 1 lowecase letter</li>
+                                <li>At least 1 number</li>
+                                <li>At least 1 symbol character</li>
+                            </ul>
                         </div>
                     </div>
                     <div class="form-group">
@@ -70,5 +70,6 @@ else
                 </div>
             </div>
         }
+        @Html.ActionLink("Return", "Index", null, new { @class = "btn btn-danger" })
     }
 }
