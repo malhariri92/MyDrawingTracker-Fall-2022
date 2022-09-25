@@ -1,0 +1,32 @@
+﻿@using MDT.Models.DTO
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+}
+
+@if (user == null)
+{
+    Html.RenderPartial("SignIn");
+}
+else
+{
+    if (user.IsVerified)
+    {
+        if (group.IsApproved ?? false)
+        {
+            Html.RenderPartial("Welcome", user);
+
+        }
+        else
+        {
+            Html.RenderPartial("UnverifiedGroup");
+        }
+
+
+    }
+    else
+    {
+        Html.RenderPartial("UnverifiedEmail");
+    }
+} 
