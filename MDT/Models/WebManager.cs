@@ -86,7 +86,7 @@ namespace MDT.Models
             }
         }
 
-        internal static bool IsGroupAdmin(int groupId, int userId)
+        public static bool IsGroupAdmin(int groupId, int userId)
         {
             using (var db = new DbEntities())
             {

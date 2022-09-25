@@ -18,14 +18,7 @@ namespace MDT.Filters
         
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
-            if (filterContext.HttpContext.Request.IsAjaxRequest())
-            {
-                filterContext.Result = new PartialViewResult { ViewName = "Nope" };
-            }
-            else
-            {
-                filterContext.Result = new ViewResult { ViewName = "Nope" };
-            }
+            filterContext.Result = new RedirectResult("~/Home/Index");
         }
     }
 }

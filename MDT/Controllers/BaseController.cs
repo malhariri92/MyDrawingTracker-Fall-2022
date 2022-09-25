@@ -14,6 +14,7 @@ namespace MDT.Controllers
 {
     [LoginFilter]
     [SetupFilter]
+    [VerifiedFilter]
     public class BaseController : Controller
     {
         protected DbEntities db = new DbEntities();

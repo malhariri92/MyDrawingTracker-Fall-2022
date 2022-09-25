@@ -9,19 +9,19 @@ namespace MDT.ViewModels
 {
 	public class UserDetailsChangeVM
 	{
-        [Display(Name = "Username")]
+		[Display(Name = "Display Name")]
 		[Required(ErrorMessage = "{0} is required")]
 		[DataType(DataType.Text)]
-		[UserNameValidation]
+		[MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
 		public string UserName { get; set; }
 
 		public string EmailAddress { get; set; }
 
-		[Display(Name = "Phone Number")]
-		[Required(ErrorMessage = "{0} is required")]
-		[DataType(DataType.PhoneNumber)]
-		[PhoneNumberValidation]
-		public string PhoneNumber { get; set; }
+		//[Display(Name = "Phone Number")]
+		//[Required(ErrorMessage = "{0} is required")]
+		//[DataType(DataType.PhoneNumber)]
+		//[PhoneNumberValidation]
+		//public string PhoneNumber { get; set; }
 
         [Display(Name = "Current Group ID")]
         [Required(ErrorMessage = "{0} is required")]
@@ -48,7 +48,7 @@ namespace MDT.ViewModels
 				UserId = user.UserId;
 				UserName = user.UserName;
 				EmailAddress = user.EmailAddress;
-				PhoneNumber = user.PhoneNumber;
+				//PhoneNumber = user.PhoneNumber;
 				CurrentGroupId = user.CurrentGroupId;
 				IsVerified = user.IsVerified;
 				IsActive = user.IsActive;

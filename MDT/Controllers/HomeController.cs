@@ -14,14 +14,21 @@ using System.Web.Mvc;
 
 namespace MDT.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private DbEntities db = new DbEntities();
-        [AllowAnonymous]
+        
         public ActionResult Index()
         {
 
             return View();
+        }
+
+        public ActionResult NewUser()
+        {
+
+            return PartialView();
         }
 
         [AllowAnonymous]
@@ -30,27 +37,14 @@ namespace MDT.Controllers
             UserDTO user = (UserDTO)Session["User"];
             if (user == null)
             {
-                using (var db = new DbEntities())
-                {
-                    if (Request.IsAjaxRequest())
-                    {
-                        return PartialView();
-                    }
-                    else
-                    {
-                        return View();
-                    }
-                }
+                 return PartialView();
+                
             }
-            string url = (string)Session["RedirectUrl"] ?? "/Home/Index";
-            Session["RedirectUrl"] = null;
-
-            return Redirect(url);
+            return PartialView("GroupInfo");
 
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult SignIn(LoginDTO cred)
         {
@@ -61,31 +55,10 @@ namespace MDT.Controllers
 
                 if (cred.LoginResult == PasswordManager.Result.SuccessfulLogin)
                 {
-                    User user = cred.User;
-                    string url = (string)Session["RedirectUrl"] ?? "/User/Index";
-                    string role;
-                    if (WebManager.IsGroupAdmin(0, user.UserId))
-                    {
-                        role = "Site Admin";
-                    }
-                    else
-                    {
-                        if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
-                        {
-                            role = "Admin";
-                        }
-                        else
-                        {
-                            role = "User";
-                        }
-                    }
+                    SessionSetup(WebManager.GetUserDTO(cred.User.UserId));
 
-                    Session["RedirectUrl"] = null;
-                    Session["User"] = WebManager.GetUserDTO(user.UserId);
-                    Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
-                    Session["Ident"] = new GenericPrincipal(new GenericIdentity(user.EmailAddress), new string[] { role  });
-
-                    return Redirect(url);
+                    return PartialView("UserAccess");
+                   
                 }
 
                 if (cred.UserLocked)
@@ -95,25 +68,24 @@ namespace MDT.Controllers
             }
 
 
-            return View(cred);
+            return PartialView(cred);
         }
 
 
 
-        [AllowAnonymous]
+
         public ActionResult ForgotPass()
         {
             UserDTO user = (UserDTO)Session["User"];
             Console.WriteLine("TEst");
             if (user == null)
             {
-                return View("ForgotPass", new UserPasswordResetSetupVM());
+                return PartialView("ForgotPass", new UserPasswordResetSetupVM());
             }
-            return RedirectToAction("Index", "User");
+            return PartialView("Nope");
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult ForgotPass(UserPasswordResetSetupVM vm)
         {
@@ -169,17 +141,14 @@ namespace MDT.Controllers
             if (user == null)
             {
                 UserPasswordResetVM vm = new UserPasswordResetVM();
-                using (var db = new DbEntities())
+                User key = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
+                if (key == null)
                 {
-                    User key = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
-
-                    if (key == null)
-                    {
-                        vm.Success = false;
-                        vm.Error = true;
-                        vm.Message = "Invalid authentication key. Please try again.";
-                        return View(vm);
-                    }
+                    vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "Invalid authentication key. Please try again.";
+                    return View(vm);
+                }
 
                     if (key.ResetKey == null)
                     {
@@ -194,21 +163,19 @@ namespace MDT.Controllers
                         return View(vm);
                     }
 
-                    Session["UserKey"] = key;
+                Session["UserKey"] = key;
 
-                }
                 return View("ResetPass", vm);
             }
-            return RedirectToAction("ChangePass");
+            return RedirectToAction("ChangePass", "User");
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult ResetPass(UserPasswordResetVM vm)
         {
             UserDTO user = (UserDTO)Session["User"];
-            
+
             if (User == null)
             {
                 User key = (User)Session["UserKey"];
@@ -281,6 +248,140 @@ namespace MDT.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateUser(GroupUserVM vm)
+        {
+            if (db.Users.Any(u => u.EmailAddress.Equals(vm.EmailAddress)))
+            {
+                ModelState.AddModelError("EmailAddress", "Email addrress is already in use.");
+            }
+
+            Group groupMatch = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
+            if (groupMatch == null)
+            {
+                ModelState.AddModelError("AccessCode", "Invalid Group Access Code.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return PartialView(vm);
+            }
+            User user = new User()
+            {
+                UserName = vm.UserName,
+                EmailAddress = vm.EmailAddress,
+                CurrentGroupId = groupMatch.GroupId,
+                IsActive = true,
+                IsVerified = false,
+            };
+
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            PasswordManager.SetNewHash(user.UserId, vm.Password);
+
+            //Create the GroupUser entry
+            var newGroupUser = new GroupUser()
+            {
+                GroupId = groupMatch.GroupId,
+                UserId = user.UserId,
+                IsAdmin = false,
+            };
+            db.GroupUsers.Add(newGroupUser);
+
+            SessionSetup(WebManager.GetUserDTO(user.UserId));
+            return PartialView("UnverifiedEmail");
+        }
+
+       
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateAdmin(AdminUserVM vm)
+        {
+
+            User user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
+            if (user != null)
+            {
+                ModelState.AddModelError("EmailAddress", "Email addrress is already in use.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            // Create a new group
+            Group group = new Group()
+            {
+                GroupName = vm.GroupName,
+                IsActive = true,
+                IsPrimary = true,
+                JoinConfirmationRequired = true,
+            };
+
+            db.Groups.Add(group);
+            db.SaveChanges();
+
+
+            // Create a new user
+            user = new User()
+            {
+                UserName = vm.UserName,
+                EmailAddress = vm.EmailAddress,
+                CurrentGroupId = group.GroupId,
+                IsActive = true,
+                IsVerified = false,
+            };
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            //Hash the password and add to the newly created user.
+            //user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
+            PasswordManager.SetNewHash(user.UserId, vm.Password);
+
+            //Create the admin group user.
+            var groupUser = new GroupUser()
+            {
+                GroupId = group.GroupId,
+                UserId = user.UserId,
+                IsAdmin = true,
+            };
+            db.GroupUsers.Add(groupUser);
+            db.SaveChanges();
+
+            ViewBag.SuccessMessage = "Your account has been created successfully!";
+            ModelState.Clear();
+
+            SessionSetup(WebManager.GetUserDTO(user.UserId));
+            return PartialView("UnverifiedEmail");
+        }
+
+        public void SessionSetup(UserDTO user)
+        {
+            string role;
+
+            if (WebManager.IsGroupAdmin(0, user.UserId))
+            {
+                role = "Site Admin";
+            }
+            else
+            {
+                if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+                {
+                    role = "Admin";
+                }
+                else
+                {
+                    role = "User";
+                }
+            }
+            Session["RedirectUrl"] = null;
+            Session["User"] = WebManager.GetUserDTO(user.UserId);
+            Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
+            Session["Ident"] = new GenericPrincipal(new GenericIdentity(user.EmailAddress), new string[] { role });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -288,136 +389,6 @@ namespace MDT.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-
-        public ActionResult CreateUser()
-        {
-            return View();
-        }
-        
-        public ActionResult CreateAdmin()
-        {
-            return View();
-        }
-
-
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult CreateUser(GroupUserVM vm)
-        {
-        using (var db = new DbEntities())
-            {
-                var user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
-                 var groupMatch = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
-
-                if (!ModelState.IsValid)
-                {
-                    return PartialView(vm);
-                }
-
-                if (groupMatch != null && user == null)
-                {
-                 user = new User()
-                    {
-                        UserName = vm.UserName,
-                        EmailAddress = vm.EmailAddress,
-                        CurrentGroupId = groupMatch.GroupId,
-                        IsActive = true,
-                        IsVerified = false,
-                    };
-                    db.Users.Add(user);
-                    db.SaveChanges();
-                    
-                    //Hash the password
-                    user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
-                    PasswordManager.SetNewHash(user.UserId, vm.Password);
-
-                    //Create the GroupUser entry
-                    var newGroupUser = new GroupUser()
-                    {
-                        GroupId = groupMatch.GroupId,
-                        UserId = user.UserId,
-                        IsAdmin = false,
-                    };
-                    db.GroupUsers.Add(newGroupUser);
-                      return PartialView();
-                }
-            }
-            ViewBag.FailureMessage = "Something went wrong, please review input and try again.";
-            return PartialView(vm);
-        }
-        
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult CreateAdmin(AdminUserVM vm)
-        {
-            using (var db = new DbEntities())
-            {
-                var user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
-                if(user != null)
-                {
-                    ModelState.AddModelError("EmailAddress","Email addrress is already in use.");
-                }
-
-                var group = db.Groups.Where(g => g.GroupName.Equals(vm.GroupName)).FirstOrDefault();
-                if (group != null)
-                {
-                    ModelState.AddModelError("GroupName", "A group with this name already exists.");
-                }
-                else
-                {
-                    // Create a new group
-                    group = new Group()
-                    {
-                        GroupName = vm.GroupName,
-                        IsActive = true,
-                        IsPrimary = true,
-                        JoinConfirmationRequired = true,
-                    };
-
-                    db.Groups.Add(group);
-                    db.SaveChanges();
-                    
-
-                    // Create a new user
-                    user = new User()
-                    {
-                        UserName = vm.UserName,
-                        EmailAddress = vm.EmailAddress,
-                        CurrentGroupId = group.GroupId,
-                        IsActive = true,
-                        IsVerified = false,
-                    };
-                    db.Users.Add(user);
-                    db.SaveChanges();
-
-                    //Hash the password and add to the newly created user.
-                    user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
-                    PasswordManager.SetNewHash(user.UserId, vm.Password);
-
-                    //Create the admin group user.
-                    var groupUser = new GroupUser()
-                    {
-                        GroupId = group.GroupId,
-                        UserId = user.UserId,
-                        IsAdmin = true,
-                    };
-                    db.GroupUsers.Add(groupUser);
-                    db.SaveChanges();
-
-                    ViewBag.SuccessMessage = "Your account has been created successfully!";
-                    ModelState.Clear();
-
-                    return View();
-
-                }
-
-            }
-                
-            return View();
         }
     }
 }

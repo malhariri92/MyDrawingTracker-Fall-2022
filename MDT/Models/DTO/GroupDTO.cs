@@ -13,6 +13,7 @@ namespace MDT.Models.DTO
         public string ParentGroupName { get; set; }
         public bool IsActive { get; set; }
         public bool IsPrimary { get; set; }
+        public bool? IsApproved { get; set; }
         public bool JoinConfirmationRequired { get; set; }
 
         public List<UserDTO> Admins { get; set; }
@@ -36,6 +37,7 @@ namespace MDT.Models.DTO
                 ParentGroupName = group.ParentGroup?.GroupName;
                 IsActive = group.IsActive;
                 IsPrimary = group.IsPrimary;
+                IsApproved = group.IsApproved;
                 JoinConfirmationRequired = group.JoinConfirmationRequired;
 
                 foreach (GroupUser gu in group.GroupUsers)
