@@ -237,7 +237,6 @@
           </Key>
           <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="10" />
           <Property Name="EmailAddress" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Hash" Type="nvarchar" MaxLength="100" />
           <Property Name="CurrentGroupId" Type="int" Nullable="false" />
@@ -1141,7 +1140,6 @@
           </Key>
           <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Hash" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CurrentGroupId" Type="Int32" Nullable="false" />
@@ -1753,7 +1751,6 @@
                 <ScalarProperty Name="CurrentGroupId" ColumnName="CurrentGroupId" />
                 <ScalarProperty Name="Hash" ColumnName="Hash" />
                 <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>

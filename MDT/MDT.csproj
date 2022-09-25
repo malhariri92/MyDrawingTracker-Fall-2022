@@ -140,9 +140,6 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Attributes\PhoneNumberValidation.cs" />
     <Compile Include="Attributes\UserNameValidation.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filters\VerifiedFilter.cs" />
     <Compile Include="Filters\AdminFilter.cs" />
     <Compile Include="Filters\LoginFilter.cs" />
