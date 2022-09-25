@@ -241,6 +241,7 @@
     <Compile Include="ViewModels\DrawTypeVM.cs" />
     <Compile Include="ViewModels\GroupListVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
+	<Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
@@ -384,6 +385,7 @@
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
     <Content Include="Views\Home\Nope.cshtml" />
+	<Content Include="Views\Home\CreateUser.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="webfonts\fa-brands-400.svg" />
     <Content Include="webfonts\fa-regular-400.svg" />

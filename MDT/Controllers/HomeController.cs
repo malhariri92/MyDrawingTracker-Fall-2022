@@ -242,11 +242,64 @@ namespace MDT.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+
+        public ActionResult CreateUser()
+        {
+            return View();
+        }
+        
         public ActionResult CreateAdmin()
         {
             return View();
         }
 
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CreateUser(GroupUserVM vm)
+        {
+        using (var db = new DbEntities())
+            {
+                var user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
+                 var groupMatch = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
+
+                if (!ModelState.IsValid)
+                {
+                    return PartialView(vm);
+                }
+
+                if (groupMatch != null && user == null)
+                {
+                 user = new User()
+                    {
+                        UserName = vm.UserName,
+                        EmailAddress = vm.EmailAddress,
+                        CurrentGroupId = groupMatch.GroupId,
+                        IsActive = true,
+                        IsVerified = false,
+                    };
+                    db.Users.Add(user);
+                    db.SaveChanges();
+                    
+                    //Hash the password
+                    user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
+                    PasswordManager.SetNewHash(user.UserId, vm.Password);
+
+                    //Create the GroupUser entry
+                    var newGroupUser = new GroupUser()
+                    {
+                        GroupId = groupMatch.GroupId,
+                        UserId = user.UserId,
+                        IsAdmin = false,
+                    };
+                    db.GroupUsers.Add(newGroupUser);
+                      return PartialView();
+                }
+            }
+            ViewBag.FailureMessage = "Something went wrong, please review input and try again.";
+            return PartialView(vm);
+        }
+        
         [HttpPost]
         [AllowAnonymous]
         public ActionResult CreateAdmin(AdminUserVM vm)
@@ -277,7 +330,7 @@ namespace MDT.Controllers
 
                     db.Groups.Add(group);
                     db.SaveChanges();
-                    group = db.Groups.Where(g => g.GroupName.Equals(vm.GroupName)).FirstOrDefault();
+                    
 
                     // Create a new user
                     user = new User()
@@ -307,6 +360,7 @@ namespace MDT.Controllers
 
                     ViewBag.SuccessMessage = "Your account has been created successfully!";
                     ModelState.Clear();
+
                     return View();
 
                 }
