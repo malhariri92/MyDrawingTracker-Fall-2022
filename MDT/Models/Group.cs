@@ -28,6 +28,7 @@ namespace MDT.Models
         public int GroupId { get; set; }
         public string GroupName { get; set; }
         public Nullable<int> ParentGroupId { get; set; }
+        public Nullable<bool> IsApproved { get; set; }
         public bool IsActive { get; set; }
         public bool IsPrimary { get; set; }
         public string AccessCode { get; set; }

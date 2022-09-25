@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -31,10 +30,22 @@ namespace MDT.Controllers
         {
             user = (UserDTO)Session["User"];
             group = (GroupDTO)Session["Group"];
-            admin = (bool)Session["IsAdmin"];
         }
 
-        protected async Task<List<Draw>> GetDraws(List<int> ids)
+        protected async Task<List<Group>> GetGroups(List<int> ids)
+        {
+            return await db.Groups.Where(g => ids.Contains(g.GroupId))
+                                      .Include(g => g.GroupUsers)
+                                      .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                      .ToListAsync();
+        }
+
+        protected async Task<Group> GetGroup(int id)
+        {
+            return (await GetGroups(new List<int>() { id })).FirstOrDefault();
+        }
+
+         protected async Task<List<Draw>> GetDraws(List<int> ids)
         {
             return await db.Draws
                      .Where(g => ids.Contains(g.DrawId))

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 
@@ -12,6 +13,7 @@ namespace MDT.Controllers
 {
     public class HomeController : Controller
     {
+        private DbEntities db = new DbEntities();
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -58,13 +60,27 @@ namespace MDT.Controllers
                 {
                     User user = cred.User;
                     string url = (string)Session["RedirectUrl"] ?? "/User/Index";
-                    Session["RedirectUrl"] = null;
-                    using (var db = new DbEntities())
+                    string role;
+                    if (WebManager.IsGroupAdmin(0, user.UserId))
                     {
-                        Session["User"] = WebManager.GetUserDTO(user.UserId);
-                        Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
-
+                        role = "Site Admin";
                     }
+                    else
+                    {
+                        if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+                        {
+                            role = "Admin";
+                        }
+                        else
+                        {
+                            role = "User";
+                        }
+                    }
+
+                    Session["RedirectUrl"] = null;
+                    Session["User"] = WebManager.GetUserDTO(user.UserId);
+                    Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
+                    Session["Ident"] = new GenericPrincipal(new GenericIdentity(user.EmailAddress), new string[] { role  });
 
                     return Redirect(url);
                 }
@@ -166,6 +182,7 @@ namespace MDT.Controllers
         public ActionResult ResetPass(UserPasswordResetVM vm)
         {
             UserDTO user = (UserDTO)Session["User"];
+            
             if (User == null)
             {
                 User key = (User)Session["UserKey"];
@@ -173,7 +190,7 @@ namespace MDT.Controllers
 
                 if (key == null)
                 {
-                    return View("Unauthorized");
+                    return View("Nope");
                 }
 
 
@@ -205,13 +222,12 @@ namespace MDT.Controllers
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
                     vm.Success = true;
-                    using (var db = new DbEntities())
-                    {
-                        key.ResetKey = null;
-                        key.ResetKeyExpires = null;
-                        db.Entry(key).State = System.Data.Entity.EntityState.Modified;
-                        db.SaveChanges();
-                    }
+
+                    key.ResetKey = null;
+                    key.ResetKeyExpires = null;
+                    db.Entry(key).State = EntityState.Modified;
+                    db.SaveChanges();
+
                 }
                 else
                 {
@@ -229,15 +245,23 @@ namespace MDT.Controllers
         public ActionResult SignOut()
         {
             Session["SignedOutUser"] = Session["User"];
-            //SessionSetup(null);
             HttpContext.User = null;
             Session.RemoveAll();
             Session.Clear();
             Session.Abandon();
             Response.Cookies.Add(new HttpCookie(System.Web.Helpers.AntiForgeryConfig.CookieName) { Expires = DateTime.Now.AddMilliseconds(1) });
-            Response.Cookies.Add(new HttpCookie("_z_", ""));
+            Response.Cookies.Add(new HttpCookie("_mdt_", ""));
 
             return RedirectToAction("Index", "Home");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         [HttpGet]

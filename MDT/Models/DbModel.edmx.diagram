@@ -15,7 +15,6 @@
         <EntityTypeShape EntityType="DbModel.EmailTemplate" Width="1.5" PointX="5.75" PointY="1" />
         <EntityTypeShape EntityType="DbModel.GroupDrawType" Width="1.5" PointX="5.25" PointY="9.375" />
         <EntityTypeShape EntityType="DbModel.GroupInvite" Width="1.5" PointX="3" PointY="13.625" />
-        <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="0.75" PointY="10.5" />
         <EntityTypeShape EntityType="DbModel.GroupUser" Width="1.5" PointX="5.25" PointY="20.75" />
         <EntityTypeShape EntityType="DbModel.Ledger" Width="1.5" PointX="3" PointY="7" />
         <EntityTypeShape EntityType="DbModel.NumberSet" Width="1.5" PointX="6" PointY="32.125" />
@@ -39,13 +38,7 @@
         <AssociationConnector Association="DbModel.FK_GroupDrawType_DrawType" />
         <AssociationConnector Association="DbModel.FK_Schedule_DrawType" />
         <AssociationConnector Association="DbModel.FK_UserDrawTypeOptions_DrawType" />
-        <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_Ledgers" />
-        <AssociationConnector Association="DbModel.FK_GroupInvites_Group" />
-        <AssociationConnector Association="DbModel.FK_Group_Group" />
-        <AssociationConnector Association="DbModel.FK_GroupUser_Group" />
-        <AssociationConnector Association="DbModel.FK_Ledgers_Group" />
-        <AssociationConnector Association="DbModel.FK_User_Group" />
         <AssociationConnector Association="DbModel.FK_GroupUser_User" />
         <AssociationConnector Association="DbModel.FK_DestinationLedger" />
         <AssociationConnector Association="DbModel.FK_SourceLedger" />
@@ -55,6 +48,13 @@
         <AssociationConnector Association="DbModel.DrawNumberSets" />
         <EntityTypeShape EntityType="DbModel.SentEmail" Width="1.5" PointX="8" PointY="0.875" />
         <AssociationConnector Association="DbModel.FK_EmailMessages_EmailTemplates" />
+        <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="0.75" PointY="12.875" />
+        <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" />
+        <AssociationConnector Association="DbModel.FK_GroupInvites_Group" />
+        <AssociationConnector Association="DbModel.FK_Group_Group" />
+        <AssociationConnector Association="DbModel.FK_GroupUser_Group" />
+        <AssociationConnector Association="DbModel.FK_Ledgers_Group" />
+        <AssociationConnector Association="DbModel.FK_User_Group" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

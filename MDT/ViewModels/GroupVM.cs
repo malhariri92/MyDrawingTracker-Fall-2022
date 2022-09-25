@@ -12,22 +12,38 @@ namespace MDT.ViewModels
         public int GroupId { get; set; }
         public string GroupName { get; set; }
         public List<GroupVM> SubGroups { get; set; }
-        public List<UserVM> Users { get; set; }
-        List<int> GroupMembers { get; set; }
-        List<int> GroupAdmins { get; set; }
+        public List<UserVM> Admins { get; set; }
+        public List<UserVM> Members { get; set; }
+        public Dictionary<int, List<Description>> Descriptions { get; set; }
+        public string TextArea { get; set; }
 
-        public GroupVM() { }
+        public GroupVM()
+        { }
 
         public GroupVM(Group g)
         {
+            Admins = new List<UserVM>();
+            Members = new List<UserVM>();
+            Descriptions = new Dictionary<int, List<Description>>();
             if (g != null)
             {
                 GroupId = g.GroupId;
                 GroupName = g.GroupName;
-                GroupMembers = g.GroupUsers.Where(u => u.IsAdmin).Select(u => u.UserId).ToList();
-                GroupAdmins = g.GroupUsers.Select(u => u.UserId).ToList();
-               // SubGroups = g.SubGroups?.Select(sg => new GroupVM(sg)).ToList();
-               // Users = g.GroupUsers.Select(gp => new UserVM(gp)).ToList();
+                Admins = g.GroupUsers.Where(u => u.IsAdmin).Select(u =>new UserVM(u)).ToList();
+                Members = g.GroupUsers.Select(u => new UserVM(u)).ToList();
+            }
+        }
+
+        public void SetDescriptions(List<Description> desc)
+        {
+            foreach(Description d in desc.OrderBy(ds => ds.ObjectTypeId).ThenBy(ds => ds.SortOrder))
+            {
+                if (!Descriptions.ContainsKey(d.ObjectTypeId))
+                {
+                    Descriptions.Add(d.ObjectTypeId, new List<Description>());
+                }
+
+                Descriptions[d.ObjectTypeId].Add(d);
             }
         }
     }
