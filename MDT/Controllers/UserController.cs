@@ -11,6 +11,7 @@ using System.Net;
 using MDT.Filters;
 using System.Data.Entity;
 using MDT.Models.DTO;
+using System.Text.RegularExpressions;
 
 namespace MDT.Controllers
 {
@@ -85,5 +86,85 @@ namespace MDT.Controllers
             return View(vm);
         }
 
+        public ActionResult ChangeUserDetails()
+        {
+            if (user != null)
+            {
+                return View(new UserDetailsChangeVM(user));
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeUserDetails(UserDetailsChangeVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            /*if (vm.UserName.Length < 6)
+            {
+                vm.Success = false;
+                vm.Error = true;
+                vm.Message = "Please make sure that your username is more than 1 characters.";
+                return View(vm);
+            }
+
+            if (vm.UserName.Length > 25)
+            {
+                vm.Success = false;
+                vm.Error = true;
+                vm.Message = "Please make sure that your username is at most 25 characters.";
+                return View(vm);
+            }*/
+
+            GroupDTO groupDTO = WebManager.GetGroupDTO(vm.CurrentGroupId);
+            if (groupDTO == null || String.IsNullOrEmpty(groupDTO.GroupName))
+            {
+                vm.Success = false;
+                vm.Error = true;
+                vm.Message = "Invalid GroupId";
+                return View(vm);
+            }
+
+            try
+            {
+                using (var db = new DbEntities())
+                {
+                    User user = db.Users.Find(vm.UserId);
+                    if (user == null)
+                    {
+                        vm.Success = false;
+                        vm.Error = true;
+                        vm.Message = "User Retrieval Error (1)";
+                        return View(vm);
+                    }
+
+                    user.UserName = vm.UserName;
+                    user.PhoneNumber = vm.PhoneNumber;
+                    user.CurrentGroupId = vm.CurrentGroupId;
+
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    Session["User"] = new UserDTO(vm);
+                    Session["Group"] = groupDTO;
+                }
+            }
+            catch
+            {
+                vm.Success = false;
+                vm.Error = true;
+                vm.Message = "User Retrieval Error (2)";
+                return View(vm);
+            }
+
+            vm.Success = true;
+            vm.Error = false;
+            return View(vm);
+
+        }
     }
 }
