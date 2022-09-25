@@ -25,7 +25,7 @@ namespace MDT
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/themes/base/jquery-ui.css",
                 "~/Content/bootstrap.css",
-                "~/Content/fontawesome.css",
+                "~/Content/font-awesome.css",
                 "~/Content/Site.css",
                 "~/Content/bootstrap-toggle.less"));
         }

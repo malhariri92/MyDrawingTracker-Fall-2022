@@ -1,0 +1,20 @@
+﻿@using MDT.Models.DTO
+@model UserDTO
+@{
+    string url = (string)Session["RedirectUrl"];
+    Session["RedirectUrl"] = null;
+}
+
+<div class="row">
+    <h2>Welcome back, @Model.UserName</h2>
+    @if (!string.IsNullOrEmpty(url))
+    {
+        <a href="@url">Continue</a>
+    }
+    else
+    {
+        @Html.ActionLink("Continue", "Index", "Home", null, null)
+    }
+
+
+</div>

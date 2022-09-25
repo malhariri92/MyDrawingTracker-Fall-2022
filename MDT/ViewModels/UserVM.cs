@@ -31,7 +31,6 @@ namespace MDT.ViewModels
                 UserId = u.UserId;
                 UserName = u.UserName;
                 EmailAddress = u.EmailAddress;
-                PhoneNumber = u.PhoneNumber;
                 CurrentGroupId = u.CurrentGroupId;
                 IsVerified = u.IsVerified;
                 IsActive = u.IsActive;
@@ -41,14 +40,13 @@ namespace MDT.ViewModels
             }
         }
 
-        public UserVM(GroupUser p)
+        public UserVM(GroupUser gu)
         {
-            if (p != null)
+            if (gu != null)
             {
-                UserId = p.UserId;
-                UserName = p.User.UserName;
-                EmailAddress = p.User.EmailAddress;
-                PhoneNumber = p.User.PhoneNumber;
+                UserId = gu.UserId;
+                UserName = gu.User.UserName;
+                EmailAddress = gu.User.EmailAddress;
 
             }
         }

@@ -35,7 +35,6 @@ namespace MDT.Models
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
         public virtual DbSet<GroupDrawType> GroupDrawTypes { get; set; }
         public virtual DbSet<GroupInvite> GroupInvites { get; set; }
-        public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupUser> GroupUsers { get; set; }
         public virtual DbSet<Ledger> Ledgers { get; set; }
         public virtual DbSet<NumberSet> NumberSets { get; set; }
@@ -46,5 +45,6 @@ namespace MDT.Models
         public virtual DbSet<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<SentEmail> SentEmails { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
     }
 }

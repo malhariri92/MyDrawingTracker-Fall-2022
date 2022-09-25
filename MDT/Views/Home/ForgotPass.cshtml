@@ -1,22 +1,22 @@
 ﻿@model MDT.ViewModels.UserPasswordResetSetupVM
-@{
-    ViewBag.Title = "Forgot Password";
-}
+
 <div id="passDiv">
     @if (Model.Success)
     {
-        <br /><br />
-        <h3>If the email address you entered match an existing account, you will receive an email with password reset instructions.</h3>
-        <br />
+        <div class="row text-center">
+            <h3>Check your email for password reset instructions.</h3>
+            <br />
+            <button type="button" class="btn btn-warning" id="btnCancelForgot">Back</button>
+        </div>
     }
     else
     {
-        using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "passDiv" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
+        using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "userAccess" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
         {
             <div class="form-horizontal">
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                
+
                 <div class="form-group">
                     @Html.LabelFor(model => model.UserEmail, htmlAttributes: new { @class = "control-label col-xs-4" })
                     <div class="col-xs-8">
@@ -27,7 +27,8 @@
 
                 <div class="form-group">
                     <div class="col-xs-8 pull-right">
-                        <input type="submit" class="col-xs-6 btn btn-success" value="Reset Password" />
+                        <button type="button" class="btn btn-warning btnBackToSignIn">Back</button>
+                        <button type="submit" class="btn btn-success">Reset Password</button>
                     </div>
                 </div>
             </div>

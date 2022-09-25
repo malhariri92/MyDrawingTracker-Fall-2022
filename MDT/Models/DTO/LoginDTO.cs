@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace MDT.Models
+namespace MDT.Models.DTO
 {
     /// <summary>
     /// Login in object for user account.

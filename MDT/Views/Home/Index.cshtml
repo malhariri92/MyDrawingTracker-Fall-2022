@@ -4,11 +4,48 @@
 
 }
 
-<div class="jumbotron">
-    <h1>My Drawing Tracker</h1>
-    <p class="lead">Coming Soon </p>
+
+
+<div class="row">
+    <div class="col-md-7  col-sm-12">
+        <div class="jumbotron">
+            <h1>My Drawing Tracker</h1>
+            <p class="lead">Coming Soon </p>
+            <p>
+                Some stuff about the site
+
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-5 col-sm-12" id="userAccess" style="border:2px solid black;padding:25px;">
+        @{
+            Html.RenderPartial("UserAccess");
+        }
+    </div>
 </div>
 
-<div id="CreateUser">
-    @{Html.RenderPartial("CreateUser");}
-</div>
+<script type="text/javascript">
+    $(document).on('click', '#btnForgotPass', function () {
+        $('#userAccess').load('@Url.Action("ForgotPass", "Home", null, null)');
+    });
+    $(document).on('click', '.btnBackToSignIn', function () {
+        $('#userAccess').load('@Url.Action("SignIn", "Home", null, null)');
+    });
+    $(document).on('click', '#btnCreateAccount', function () {
+        $('#userAccess').load('@Url.Action("NewUser", "Home", null, null)');
+    });
+    $(document).on('click', '#btnSendVerification', function () {
+        $('#userAccess').load('@Url.Action("SendVerification", "Home", null, null)');
+    });
+
+    $(document).on('change', '#createToggle', function () {
+        if ($(this).is(':checked')) {
+            $('#groupAdmin').show();
+            $('#groupUser').hide();
+        } else {
+            $('#groupAdmin').hide();
+            $('#groupUser').show();
+        }
+    });
+</script>

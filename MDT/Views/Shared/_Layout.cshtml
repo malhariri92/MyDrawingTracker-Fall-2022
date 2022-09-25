@@ -1,4 +1,5 @@
-﻿@using MDT.Models.DTO;
+﻿@using MDT.Models;
+@using MDT.Models.DTO;
 @{
     UserDTO user = (UserDTO)Session["User"];
     GroupDTO group = (GroupDTO)Session["Group"];
@@ -63,17 +64,17 @@
                 <ul class="nav navbar-nav">
                     @if (user != null)
                     {
-                        <li>@Html.ActionLink("My Page", "Index", "User", null, null)</li>
+                        <li>@Html.ActionLink("Home", "Index", "Home", null, null)</li>
+                        <li>@Html.ActionLink("My Profile", "Index", "User")</li>
                     }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    @if (user == null)
+                    @if (user != null)
                     {
-                        <li>@Html.ActionLink("Sign In", "SignIn", "Home")</li>
-                    }
-                    else
-                    {
-                        <li>@Html.ActionLink("Edit User", "ChangeUserDetails", "User")</li>
+                        if (WebManager.IsGroupAdmin(0, user.UserId))
+                        {
+                            <li>@Html.ActionLink("Site Admin", "Index", "Admin")</li>
+                        }
                         <li>@Html.ActionLink("Sign Out", "SignOut", "Home")</li>
                     }
                 </ul>
@@ -83,6 +84,14 @@
     <div class="container body-content">
         @RenderBody()
         <br />
+    </div>
+
+    <div class="modal fade" id="popup" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modaldiv">
+
+            </div>
+        </div>
     </div>
     <footer class="text-center">
         <hr />

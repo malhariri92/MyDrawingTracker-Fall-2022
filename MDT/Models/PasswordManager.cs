@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data.Entity;
+using MDT.Models.DTO;
 
 namespace MDT.Models
 {
@@ -113,9 +114,9 @@ namespace MDT.Models
 
         /// <summary>
         /// Determine if the provided username and password combination are valid for user login. The Result and UserDTO properties
-        /// of the NonADUserLogin object will be changed based on the result of this attempt.
+        /// of the LoginDTO object will be changed based on the result of this attempt.
         /// </summary>
-        /// <param name="usr">A NonADUserLogin object with the username and password properties set.</param>
+        /// <param name="usr">A LoginDTO object with the username and password properties set.</param>
         public static void AttemptLogin(LoginDTO usr)
         {
             using (var db = new DbEntities())
@@ -176,7 +177,7 @@ namespace MDT.Models
         }
 
         /// <summary>
-        /// Updates the hash in the Users table and adds the current hash to the history if the current hash is not null.
+        /// Updates the hash in the Users table.
         /// </summary>
         /// <param name="userId">The Entity id of the user to update</param>
         /// <param name="str">The unhashed string to be hashed and saved</param>
@@ -192,15 +193,7 @@ namespace MDT.Models
                     {
                         return false;
                     }
-                    //if (user.Hash != null)
-                    //{
-                    //    db.HashHistories.Add(new HashHistory()
-                    //    {
-                    //        UserId = user.UserId,
-                    //        Hash = user.Hash,
-                    //        LastDate = DateTime.Now
-                    //    });
-                    //}
+                    
                     user.Hash = GetHash(str);
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();

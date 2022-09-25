@@ -143,7 +143,7 @@ namespace MDT.Controllers
                     }
 
                     user.UserName = vm.UserName;
-                    user.PhoneNumber = vm.PhoneNumber;
+                   // user.PhoneNumber = vm.PhoneNumber;
                     user.CurrentGroupId = vm.CurrentGroupId;
 
                     db.Entry(user).State = EntityState.Modified;

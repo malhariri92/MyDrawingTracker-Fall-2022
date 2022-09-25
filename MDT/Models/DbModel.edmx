@@ -139,6 +139,7 @@
           <Property Name="GroupId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="GroupName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="ParentGroupId" Type="int" />
+          <Property Name="IsApproved" Type="bit" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsPrimary" Type="bit" Nullable="false" />
           <Property Name="AccessCode" Type="nvarchar" MaxLength="10" />
@@ -236,7 +237,6 @@
           </Key>
           <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="10" />
           <Property Name="EmailAddress" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Hash" Type="nvarchar" MaxLength="100" />
           <Property Name="CurrentGroupId" Type="int" Nullable="false" />
@@ -767,7 +767,6 @@
           <EntitySet Name="EmailTemplates" EntityType="DbModel.EmailTemplate" />
           <EntitySet Name="GroupDrawTypes" EntityType="DbModel.GroupDrawType" />
           <EntitySet Name="GroupInvites" EntityType="DbModel.GroupInvite" />
-          <EntitySet Name="Groups" EntityType="DbModel.Group" />
           <EntitySet Name="GroupUsers" EntityType="DbModel.GroupUser" />
           <EntitySet Name="Ledgers" EntityType="DbModel.Ledger" />
           <EntitySet Name="NumberSets" EntityType="DbModel.NumberSet" />
@@ -833,33 +832,9 @@
             <End Role="DrawType" EntitySet="DrawTypes" />
             <End Role="UserDrawTypeOption" EntitySet="UserDrawTypeOptions" />
           </AssociationSet>
-          <AssociationSet Name="FK_GroupDrawType_Group" Association="DbModel.FK_GroupDrawType_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
-          </AssociationSet>
           <AssociationSet Name="FK_GroupDrawType_Ledgers" Association="DbModel.FK_GroupDrawType_Ledgers">
             <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GroupInvites_Group" Association="DbModel.FK_GroupInvites_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="GroupInvite" EntitySet="GroupInvites" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Group_Group" Association="DbModel.FK_Group_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="Group1" EntitySet="Groups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GroupUser_Group" Association="DbModel.FK_GroupUser_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="GroupUser" EntitySet="GroupUsers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ledgers_Group" Association="DbModel.FK_Ledgers_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="Ledger" EntitySet="Ledgers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_Group" Association="DbModel.FK_User_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="User" EntitySet="Users" />
           </AssociationSet>
           <AssociationSet Name="FK_GroupUser_User" Association="DbModel.FK_GroupUser_User">
             <End Role="User" EntitySet="Users" />
@@ -893,6 +868,31 @@
           <AssociationSet Name="FK_EmailMessages_EmailTemplates" Association="DbModel.FK_EmailMessages_EmailTemplates">
             <End Role="EmailTemplate" EntitySet="EmailTemplates" />
             <End Role="SentEmail" EntitySet="SentEmails" />
+          </AssociationSet>
+          <EntitySet Name="Groups" EntityType="DbModel.Group" />
+          <AssociationSet Name="FK_GroupDrawType_Group" Association="DbModel.FK_GroupDrawType_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GroupInvites_Group" Association="DbModel.FK_GroupInvites_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="GroupInvite" EntitySet="GroupInvites" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Group_Group" Association="DbModel.FK_Group_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="Group1" EntitySet="Groups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GroupUser_Group" Association="DbModel.FK_GroupUser_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="GroupUser" EntitySet="GroupUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ledgers_Group" Association="DbModel.FK_Ledgers_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="Ledger" EntitySet="Ledgers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Group" Association="DbModel.FK_User_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="User" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Balance">
@@ -1026,8 +1026,8 @@
           <Property Name="LedgerId" Type="Int32" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="DrawType" Relationship="DbModel.FK_GroupDrawType_DrawType" FromRole="GroupDrawType" ToRole="DrawType" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="GroupDrawType" ToRole="Group" />
           <NavigationProperty Name="Ledger" Relationship="DbModel.FK_GroupDrawType_Ledgers" FromRole="GroupDrawType" ToRole="Ledger" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="GroupDrawType" ToRole="Group" />
         </EntityType>
         <EntityType Name="GroupInvite">
           <Key>
@@ -1040,25 +1040,6 @@
           <Property Name="InviteCount" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupInvites_Group" FromRole="GroupInvite" ToRole="Group" />
         </EntityType>
-        <EntityType Name="Group">
-          <Key>
-            <PropertyRef Name="GroupId" />
-          </Key>
-          <Property Name="GroupId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ParentGroupId" Type="Int32" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="IsPrimary" Type="Boolean" Nullable="false" />
-          <Property Name="AccessCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="JoinConfirmationRequired" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="Group" ToRole="GroupDrawType" />
-          <NavigationProperty Name="GroupInvites" Relationship="DbModel.FK_GroupInvites_Group" FromRole="Group" ToRole="GroupInvite" />
-          <NavigationProperty Name="SubGroups" Relationship="DbModel.FK_Group_Group" FromRole="Group" ToRole="Group1" />
-          <NavigationProperty Name="ParentGroup" Relationship="DbModel.FK_Group_Group" FromRole="Group1" ToRole="Group" />
-          <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_Group" FromRole="Group" ToRole="GroupUser" />
-          <NavigationProperty Name="Ledgers" Relationship="DbModel.FK_Ledgers_Group" FromRole="Group" ToRole="Ledger" />
-          <NavigationProperty Name="Users" Relationship="DbModel.FK_User_Group" FromRole="Group" ToRole="User" />
-        </EntityType>
         <EntityType Name="GroupUser">
           <Key>
             <PropertyRef Name="GroupId" />
@@ -1067,8 +1048,8 @@
           <Property Name="GroupId" Type="Int32" Nullable="false" />
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_GroupUser_User" FromRole="GroupUser" ToRole="User" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
         </EntityType>
         <EntityType Name="Ledger">
           <Key>
@@ -1080,9 +1061,9 @@
           <Property Name="Balance" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <NavigationProperty Name="Balances" Relationship="DbModel.FK_Balances_Ledgers" FromRole="Ledger" ToRole="Balance" />
           <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Ledgers" FromRole="Ledger" ToRole="GroupDrawType" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_Ledgers_Group" FromRole="Ledger" ToRole="Group" />
           <NavigationProperty Name="TransactionsTo" Relationship="DbModel.FK_DestinationLedger" FromRole="Ledger" ToRole="Transaction" />
           <NavigationProperty Name="TransactionsFrom" Relationship="DbModel.FK_SourceLedger" FromRole="Ledger" ToRole="Transaction" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_Ledgers_Group" FromRole="Ledger" ToRole="Group" />
         </EntityType>
         <EntityType Name="NumberSet">
           <Key>
@@ -1159,7 +1140,6 @@
           </Key>
           <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Hash" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CurrentGroupId" Type="Int32" Nullable="false" />
@@ -1172,10 +1152,10 @@
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Balances" Relationship="DbModel.FK_Balances_Users" FromRole="User" ToRole="Balance" />
           <NavigationProperty Name="DrawEntries" Relationship="DbModel.FK_Entry_User" FromRole="User" ToRole="DrawEntry" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_User_Group" FromRole="User" ToRole="Group" />
           <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_User" FromRole="User" ToRole="GroupUser" />
           <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_User" FromRole="User" ToRole="Transaction" />
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_Users" FromRole="User" ToRole="UserDrawTypeOption" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_User_Group" FromRole="User" ToRole="Group" />
         </EntityType>
         <Association Name="FK_Balances_Ledgers">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
@@ -1345,18 +1325,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_GroupDrawType_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="GroupDrawType">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_GroupDrawType_Ledgers">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
           <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
@@ -1366,66 +1334,6 @@
             </Principal>
             <Dependent Role="GroupDrawType">
               <PropertyRef Name="LedgerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GroupInvites_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.GroupInvite" Role="GroupInvite" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="GroupInvite">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Group_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
-          <End Type="DbModel.Group" Role="Group1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="Group1">
-              <PropertyRef Name="ParentGroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GroupUser_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.GroupUser" Role="GroupUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="GroupUser">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Ledgers_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
-          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="Ledger">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_User_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.User" Role="User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="CurrentGroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1525,6 +1433,98 @@
             </Principal>
             <Dependent Role="SentEmail">
               <PropertyRef Name="TemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Group">
+          <Key>
+            <PropertyRef Name="GroupId" />
+          </Key>
+          <Property Name="GroupId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ParentGroupId" Type="Int32" />
+          <Property Name="IsApproved" Type="Boolean" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsPrimary" Type="Boolean" Nullable="false" />
+          <Property Name="AccessCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="JoinConfirmationRequired" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="Group" ToRole="GroupDrawType" />
+          <NavigationProperty Name="GroupInvites" Relationship="DbModel.FK_GroupInvites_Group" FromRole="Group" ToRole="GroupInvite" />
+          <NavigationProperty Name="SubGroups" Relationship="DbModel.FK_Group_Group" FromRole="Group" ToRole="Group1" />
+          <NavigationProperty Name="ParentGroup" Relationship="DbModel.FK_Group_Group" FromRole="Group1" ToRole="Group" />
+          <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_Group" FromRole="Group" ToRole="GroupUser" />
+          <NavigationProperty Name="Ledgers" Relationship="DbModel.FK_Ledgers_Group" FromRole="Group" ToRole="Ledger" />
+          <NavigationProperty Name="Users" Relationship="DbModel.FK_User_Group" FromRole="Group" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_GroupDrawType_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="GroupDrawType">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GroupInvites_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.GroupInvite" Role="GroupInvite" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="GroupInvite">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Group_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
+          <End Type="DbModel.Group" Role="Group1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="Group1">
+              <PropertyRef Name="ParentGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GroupUser_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.GroupUser" Role="GroupUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="GroupUser">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ledgers_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="Ledger">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="CurrentGroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1656,19 +1656,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Groups">
-            <EntityTypeMapping TypeName="DbModel.Group">
-              <MappingFragment StoreEntitySet="Groups">
-                <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
-                <ScalarProperty Name="AccessCode" ColumnName="AccessCode" />
-                <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="ParentGroupId" ColumnName="ParentGroupId" />
-                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
-                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="GroupUsers">
             <EntityTypeMapping TypeName="DbModel.GroupUser">
               <MappingFragment StoreEntitySet="GroupUsers">
@@ -1764,7 +1751,6 @@
                 <ScalarProperty Name="CurrentGroupId" ColumnName="CurrentGroupId" />
                 <ScalarProperty Name="Hash" ColumnName="Hash" />
                 <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
@@ -1786,6 +1772,20 @@
                 <ScalarProperty Name="Recipients" ColumnName="Recipients" />
                 <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
                 <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Groups">
+            <EntityTypeMapping TypeName="DbModel.Group">
+              <MappingFragment StoreEntitySet="Groups">
+                <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
+                <ScalarProperty Name="AccessCode" ColumnName="AccessCode" />
+                <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="ParentGroupId" ColumnName="ParentGroupId" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

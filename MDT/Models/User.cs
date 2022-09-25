@@ -26,7 +26,6 @@ namespace MDT.Models
     
         public int UserId { get; set; }
         public string UserName { get; set; }
-        public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
         public string Hash { get; set; }
         public int CurrentGroupId { get; set; }
@@ -42,12 +41,12 @@ namespace MDT.Models
         public virtual ICollection<Balance> Balances { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawEntry> DrawEntries { get; set; }
-        public virtual Group Group { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupUser> GroupUsers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
+        public virtual Group Group { get; set; }
     }
 }

@@ -25,7 +25,6 @@ namespace MDT.Models.DTO
             {
                 UserId = user.UserId;
                 UserName = user.UserName;
-                PhoneNumber = user.PhoneNumber;
                 EmailAddress = user.EmailAddress;
                 CurrentGroupId = user.CurrentGroupId;
                 IsVerified = user.IsVerified;
@@ -39,7 +38,7 @@ namespace MDT.Models.DTO
             {
                 UserId = user.UserId;
                 UserName = user.UserName;
-                PhoneNumber = user.PhoneNumber;
+                //PhoneNumber = user.PhoneNumber;
                 EmailAddress = user.EmailAddress;
                 CurrentGroupId = user.CurrentGroupId;
                 IsVerified = user.IsVerified;

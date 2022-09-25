@@ -1,9 +1,45 @@
-﻿@model System.Web.Mvc.HandleErrorInfo
+﻿@using MDT.Models.DTO;
+@model System.Web.Mvc.HandleErrorInfo
 
-@{
+@{ 
     ViewBag.Title = "Error";
-}
+    UserDTO user = (UserDTO)Session["user"];
+ }
 
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
+
+
+@if (user != null)
+{
+    <p>
+        <b>Action: </b> @Model.ActionName <br />
+        <b>Controller: </b> @Model.ControllerName <br />
+        <b>Message: </b> @Model.Exception.Message <br />
+    </p>
+    <p>
+        <b>Stack Trace: </b> @Model.Exception.StackTrace <br />
+    </p>
+    Exception inner = Model.Exception.InnerException;
+    while (inner != null)
+    {
+        <p>
+            <b>Inner Exception </b><br />
+            <b>Message: </b> @Model.Exception.InnerException.Message <br />
+            <b>Stack Trace: </b> @Model.Exception.InnerException.StackTrace <br />
+        </p>
+    }
+    
+    if (Model.Exception is System.Data.Entity.Validation.DbEntityValidationException)
+    {
+        System.Data.Entity.Validation.DbEntityValidationException exception = (System.Data.Entity.Validation.DbEntityValidationException)Model.Exception;
+        <p>
+            <b>Validation Exception </b><br />
+            @foreach (string msg in exception.EntityValidationErrors.Select(e => string.Join(", ", e.ValidationErrors.Select(ve => ve.ErrorMessage))).ToList())
+            {
+                <b>Message: </b> @msg <br />
+            }
+        </p>
+    }
+}
 

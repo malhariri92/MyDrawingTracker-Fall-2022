@@ -1,0 +1,28 @@
+﻿<div class="row text-center">
+    <input type="checkbox" id="createToggle" data-toggle="toggle" data-on="Group Admin" data-off="Group User" />
+</div>
+<div class="row">
+    <div id="groupAdmin" style="display:none">
+        @{
+            Html.RenderPartial("CreateAdmin");
+        }
+    </div>
+    <div id="groupUser" style="display:none">
+        @{
+            Html.RenderPartial("CreateUser");
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#createToggle').bootstrapToggle();
+        if ($('#createToggle').is(':checked')) {
+            $('#groupAdmin').show();
+            $('#groupUser').hide();
+        } else {
+            $('#groupAdmin').hide();
+            $('#groupUser').show();
+        }
+    });
+</script>

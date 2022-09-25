@@ -76,8 +76,8 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -134,11 +134,14 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
-	<Compile Include="Attributes\PhoneNumberValidation.cs" />
-	<Compile Include="Attributes\UserNameValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Attributes\PhoneNumberValidation.cs" />
+    <Compile Include="Attributes\UserNameValidation.cs" />
+    <Compile Include="Filters\VerifiedFilter.cs" />
+    <Compile Include="Filters\AdminFilter.cs" />
     <Compile Include="Filters\LoginFilter.cs" />
     <Compile Include="Filters\SetupFilter.cs" />
     <Compile Include="Global.asax.cs">
@@ -206,7 +209,7 @@
     <Compile Include="Models\Ledger.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\LoginDTO.cs" />
+    <Compile Include="Models\DTO\LoginDTO.cs" />
     <Compile Include="Models\NumberSet.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -241,32 +244,22 @@
     <Compile Include="ViewModels\DrawTypeVM.cs" />
     <Compile Include="ViewModels\GroupListVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
-	<Compile Include="ViewModels\GroupUserVM.cs" />
+    <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="ViewModels\UserPasswordChangeVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetSetupVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetVM.cs" />
-	<Compile Include="ViewModels\UserDetailsChangeVM.cs" />
+    <Compile Include="ViewModels\UserDetailsChangeVM.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\all.css" />
-    <Content Include="Content\all.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\brands.css" />
-    <Content Include="Content\brands.min.css" />
-    <Content Include="Content\fontawesome.css" />
-    <Content Include="Content\fontawesome.min.css" />
-    <Content Include="Content\regular.css" />
-    <Content Include="Content\regular.min.css" />
-    <Content Include="Content\solid.css" />
-    <Content Include="Content\solid.min.css" />
-    <Content Include="Content\svg-with-js.css" />
-    <Content Include="Content\svg-with-js.min.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -313,6 +306,7 @@
     <Content Include="EmailTemplates\ForgotPass.html" />
     <Content Include="EmailTemplates\TemplateBase.html" />
     <Content Include="favicon.ico" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -337,21 +331,12 @@
       <DependentUpon>DbModel.edmx</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap-toggle.less" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
     <None Include="Scripts\jquery-3.6.0.intellisense.js" />
-    <Content Include="Scripts\fontawesome\all.js" />
-    <Content Include="Scripts\fontawesome\all.min.js" />
-    <Content Include="Scripts\fontawesome\brands.js" />
-    <Content Include="Scripts\fontawesome\brands.min.js" />
-    <Content Include="Scripts\fontawesome\conflict-detection.js" />
-    <Content Include="Scripts\fontawesome\conflict-detection.min.js" />
-    <Content Include="Scripts\fontawesome\fontawesome.js" />
-    <Content Include="Scripts\fontawesome\fontawesome.min.js" />
-    <Content Include="Scripts\fontawesome\regular.js" />
-    <Content Include="Scripts\fontawesome\regular.min.js" />
-    <Content Include="Scripts\fontawesome\solid.js" />
-    <Content Include="Scripts\fontawesome\solid.min.js" />
-    <Content Include="Scripts\fontawesome\v4-shims.js" />
-    <Content Include="Scripts\fontawesome\v4-shims.min.js" />
     <Content Include="Scripts\jquery-3.6.0.js" />
     <Content Include="Scripts\jquery-3.6.0.min.js" />
     <Content Include="Scripts\jquery-3.6.0.slim.js" />
@@ -381,13 +366,17 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\ChangePass.cshtml" />
-	<Content Include="Views\User\ChangeUserDetails.cshtml" />
+    <Content Include="Views\User\ChangeUserDetails.cshtml" />
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
     <Content Include="Views\Home\Nope.cshtml" />
-	<Content Include="Views\Home\CreateUser.cshtml" />
+    <Content Include="Views\Home\CreateUser.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Home\NewUser.cshtml" />
+    <Content Include="Views\Shared\Nope.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Admin\Reject.cshtml" />
     <Content Include="webfonts\fa-brands-400.svg" />
     <Content Include="webfonts\fa-regular-400.svg" />
     <Content Include="webfonts\fa-solid-900.svg" />
@@ -404,6 +393,10 @@
     <Content Include="webfonts\fa-brands-400.ttf" />
     <Content Include="webfonts\fa-brands-400.eot" />
     <Content Include="Views\Home\CreateAdmin.cshtml" />
+    <Content Include="Views\Home\UserAccess.cshtml" />
+    <Content Include="Views\Home\UnverifiedEmail.cshtml" />
+    <Content Include="Views\Home\UnverifiedGroup.cshtml" />
+    <Content Include="Views\Home\Welcome.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -457,6 +450,8 @@
     <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
     <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
   </Target>
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.3.6.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" />

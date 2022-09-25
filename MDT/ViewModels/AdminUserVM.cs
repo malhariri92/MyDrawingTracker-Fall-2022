@@ -5,7 +5,7 @@ namespace MDT.ViewModels
 {
     public class AdminUserVM
     {
-        [Display(Name = "Username")]
+        [Display(Name = "Display Name")]
         [Required(ErrorMessage = "{0} is required")]
         public string UserName { get; set; }
 

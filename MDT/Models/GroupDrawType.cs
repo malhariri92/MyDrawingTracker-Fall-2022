@@ -20,7 +20,7 @@ namespace MDT.Models
         public bool IsActive { get; set; }
     
         public virtual DrawType DrawType { get; set; }
-        public virtual Group Group { get; set; }
         public virtual Ledger Ledger { get; set; }
+        public virtual Group Group { get; set; }
     }
 }
