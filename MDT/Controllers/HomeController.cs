@@ -239,5 +239,60 @@ namespace MDT.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult CreateUser()
+        {
+            return View();
+        }
+
+        public ActionResult CreateUser(GroupUserVM vm)
+        {
+            using (var db = new DbEntities())
+            {
+                var user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
+                var groupMatch = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
+
+                if (!ModelState.IsValid)
+                {
+                    return PartialView(vm);
+                }
+
+                if (groupMatch != null && user == null)
+                {
+                    user = new User()
+                    {
+                        UserName = vm.UserName,
+                        EmailAddress = vm.EmailAddress,
+                        CurrentGroupId = groupMatch.GroupId,
+                        IsActive = true,
+                        IsVerified = false,
+                    };
+                    db.Users.Add(user);
+                    db.SaveChanges();
+
+                    //Hash the password
+                    user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
+                    PasswordManager.SetNewHash(user.UserId, vm.Password);
+
+                    //Create the GroupUser entry
+                    var newGroupUser = new GroupUser()
+                    {
+                        GroupId = groupMatch.GroupId,
+                        UserId = user.UserId,
+                        IsAdmin = false,
+                    };
+                    db.GroupUsers.Add(newGroupUser);
+                    db.SaveChanges();
+
+                    ViewBag.SuccessMessage = "Your account has been created successfully!";
+                    ModelState.Clear();
+                    return PartialView();
+                }
+            }
+            ViewBag.FailureMessage = "Something went wrong, please review input and try again.";
+            return PartialView(vm);
+        }
     }
 }
