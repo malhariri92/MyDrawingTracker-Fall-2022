@@ -374,7 +374,7 @@ namespace MDT.Controllers
                     role = "User";
                 }
             }
-            Session["RedirectUrl"] = null;
+            
             Session["User"] = WebManager.GetUserDTO(user.UserId);
             Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
             Session["Ident"] = new GenericPrincipal(new GenericIdentity(user.EmailAddress), new string[] { role });
