@@ -367,6 +367,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\ChangePass.cshtml" />
     <Content Include="Views\User\ChangeUserDetails.cshtml" />
+	<Content Include="Views\User\SeeMembersList.cshtml" />
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
