@@ -4,7 +4,7 @@
     UserDTO user = (UserDTO)Session["User"];
     GroupDTO group = (GroupDTO)Session["Group"];
     bool isGroupAdmin = user != null && group != null ? WebManager.IsGroupAdmin(group.GroupId, user.UserId) : false;
-    bool admin = group != null ? group.Admins.Contains(user) : false;//(bool?)Session["IsAdmin"] ?? false;
+    bool admin = (bool?)Session["IsAdmin"] ?? false;
 }
 <!DOCTYPE html>
 <html>
