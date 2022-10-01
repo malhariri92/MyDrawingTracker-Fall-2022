@@ -12,7 +12,7 @@
             <tr>
                 <th>Username</th>
                 <th>Email Address</th>
-                <th>Group Id</th>
+                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -22,7 +22,7 @@
                 <tr>
                     <td>@member.UserName</td>
                     <td>@member.EmailAddress</td>
-                    <td>@member.CurrentGroupId</td>
+                    <td></td>
                     <td>@Html.ActionLink("Kick from Group", "RemoveFromGroup", new {uId = member.UserId, guId = member.CurrentGroupId}, new { @class = "btn btn-danger" })</td>
                 </tr>
             }
