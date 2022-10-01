@@ -303,7 +303,9 @@
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\v4-shims.css" />
     <Content Include="Content\v4-shims.min.css" />
+    <Content Include="EmailTemplates\ConfirmNewUser.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
+    <Content Include="EmailTemplates\NewUser.html" />
     <Content Include="EmailTemplates\TemplateBase.html" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
