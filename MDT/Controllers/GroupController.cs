@@ -14,12 +14,19 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using System.Drawing.Printing;
 using System.Media;
+using System.Web.UI;
 
 namespace MDT.Controllers
 {
     public class GroupController : BaseController
     {
-        const int INV_INDEX = 6;
+        const int INV_ID = 6;
+
+        const int INV_EX_ID = 10;
+
+        const int REM_ID = 11;
+
+        const int REM_EX_ID = 12;
 
         public ActionResult GroupIndex()
         {
@@ -147,6 +154,18 @@ namespace MDT.Controllers
                 GroupInvite dBGroupInvite =
                 db.GroupInvites.Where(gI => grpInvite.EmailAddress == gI.EmailAddress && group.GroupId == gI.GroupId).FirstOrDefault();
 
+                User dbUser = db.Users.Where(u => u.EmailAddress == grpInvite.EmailAddress).FirstOrDefault();
+
+                Models.Group dbGroup = db.Groups.Where(g => g.GroupId == group.GroupId).FirstOrDefault();
+
+                if (dbUser != null)
+                {
+                    if (db.GroupUsers.Where(gU => gU.UserId == dbUser.UserId && gU.GroupId == dbGroup.GroupId).FirstOrDefault() != null)
+                    {
+                        return PartialView("ExistingInGroup", dbUser);
+                    }
+                }
+
                 if (dBGroupInvite == null)
                 {
                     grpInvite.LastInviteDate = DateTime.Now;
@@ -158,14 +177,23 @@ namespace MDT.Controllers
 
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
+                    { "[[receiver]]", dbUser != null ? dbUser.UserName : "" },
                     { "[[sender]]", user.UserName },
                     { "[[groupName]]", group.GroupName },
+                    { "[[accessCode]]", dbGroup != null ? dbGroup.AccessCode : "" },
                 };
 
                 List<string> recipients = new List<string>();
                 recipients.Add(grpInvite.EmailAddress);
 
-                WebManager.SendTemplateEmail(recipients, INV_INDEX, variables);
+                bool sent = WebManager.SendTemplateEmail(recipients, dbUser != null ? INV_EX_ID : INV_ID, variables);
+
+                Session["sent"] = sent;
+
+                if (!sent)
+                {
+                    return PartialView("EmailFailed");
+                }
 
                 return PartialView(grpInvite);
             }
@@ -190,9 +218,7 @@ namespace MDT.Controllers
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
-                    //{ "[[authUrl]]", $"https://localhost:44361/Home/ResetPass?k={key}" },// for testing purposes
                     { "[[key]]", key},
-                    //{ "[[UserEmail]]", vm.UserEmail},
                     { "[[name]]", user.UserName },
                 };
 
@@ -229,8 +255,12 @@ namespace MDT.Controllers
 
             if (user != null && group != null && WebManager.IsGroupAdmin(group.GroupId, user.UserId))
             {
-                sendReminder(grpInvite.EmailAddress, group.GroupId);
-
+                bool sent = sendReminder(grpInvite.EmailAddress, group.GroupId);
+                Session["sent"] = sent;
+                if (!sent)
+                {
+                    return PartialView("EmailFailed");
+                }
                 return PartialView(grpInvite);
             }
             return RedirectToAction("Index", "Home");
@@ -267,7 +297,7 @@ namespace MDT.Controllers
             return db.GroupInvites.Where(gI => gI.GroupId == group.GroupId).ToList();
         }
 
-        private void sendReminder(string EmailAddress, int GroupId)
+        private bool sendReminder(string EmailAddress, int GroupId)
         {
             GroupInvite reminding = db.GroupInvites.Where(gI => gI.EmailAddress == EmailAddress && gI.GroupId == GroupId).FirstOrDefault();
 
@@ -277,17 +307,23 @@ namespace MDT.Controllers
                 db.Entry(reminding).State = EntityState.Modified;
                 db.SaveChanges();
 
+                User dbUser = db.Users.Where(u => u.EmailAddress == EmailAddress).FirstOrDefault();
+                Models.Group dbGroup = db.Groups.Where(g => g.GroupId == group.GroupId).FirstOrDefault();
+
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
+                    { "[[receiver]]", dbUser != null ? dbUser.UserName : ""},
                     { "[[sender]]", user.UserName },
                     { "[[groupName]]", group.GroupName },
+                    { "[[accessCode]]", dbGroup != null ? dbGroup.AccessCode : "" },
                 };
 
                 List<string> recipients = new List<string>();
                 recipients.Add(EmailAddress);
 
-                WebManager.SendTemplateEmail(recipients, INV_INDEX, variables);
+                return WebManager.SendTemplateEmail(recipients, dbUser != null ? REM_EX_ID : REM_ID, variables);
             }
+            return false;
         }
 
         private void deleteInvitation(string EmailAddress, int GroupId)
