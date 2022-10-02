@@ -1,0 +1,9 @@
+﻿@model MDT.Models.GroupInvite
+
+@using (Ajax.BeginForm("ConfirmDelete", "Group", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "inviteTable" }))
+{
+    <div>
+        @Html.HiddenFor(model => model.EmailAddress)
+        <button type="submit" class="btn btn-sm btn-warning" id="btnDeleteInvitation">Delete Invitation</button>
+    </div>
+}
