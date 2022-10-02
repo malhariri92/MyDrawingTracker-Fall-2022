@@ -12,18 +12,14 @@ using System.Data.Entity;
 using MDT.Models.DTO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using System.Data.Entity;
 using System.Drawing.Printing;
-using System.Linq;
 using System.Media;
-using System.Web;
-using System.Web.Mvc;
 
 namespace MDT.Controllers
 {
     public class GroupController : BaseController
     {
-
+        const int INV_INDEX = 6;
 
         public ActionResult GroupIndex()
         {
@@ -121,10 +117,10 @@ namespace MDT.Controllers
                     db.Entry(gremoved2).State = EntityState.Deleted;
                     db.SaveChanges();
                 }
-                catch{}
+                catch { }
             }
             return RedirectToAction("Index", "Group");
-        const int INV_INDEX = 6;
+        }
 
 
         public ActionResult InviteList()
@@ -194,16 +190,10 @@ namespace MDT.Controllers
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
-                    { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
                     //{ "[[authUrl]]", $"https://localhost:44361/Home/ResetPass?k={key}" },// for testing purposes
                     { "[[key]]", key},
-                    { "[[UserEmail]]", vm.UserEmail},
-                    { "[[greeting]]", $"Hello {user.UserName}," },
-                    { "[[body1]]", "We have received a password reset request for the My Drawing Tracker account associated with this e-mail address. " +
-                        "If you have not made a password reset request for your My Drawing Tracker account, you may safely ignore this e-mail. If you " +
-                        "have made a password request, please "},
-                    { "[[body2]]", " within one hour of receiving this message in order to change your password." },
-                    { "[[TemplateName]]", "Password Reset Request" },
+                    //{ "[[UserEmail]]", vm.UserEmail},
+                    { "[[name]]", user.UserName },
                 };
 
                 EmailMessage em = new EmailMessage();
@@ -230,6 +220,8 @@ namespace MDT.Controllers
             }
 
             return RedirectToAction("Index", "Group");
+        }
+
         public ActionResult SendReminder(GroupInvite grpInvite)
         {
             UserDTO user = (UserDTO)Session["User"];
