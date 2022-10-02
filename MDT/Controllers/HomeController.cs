@@ -76,7 +76,6 @@ namespace MDT.Controllers
         public ActionResult ForgotPass()
         {
             UserDTO user = (UserDTO)Session["User"];
-            Console.WriteLine("TEst");
             if (user == null)
             {
                 return PartialView("ForgotPass", new UserPasswordResetSetupVM());
@@ -100,6 +99,7 @@ namespace MDT.Controllers
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
+
                     { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
                     //{ "[[authUrl]]", $"https://localhost:44361/Home/ResetPass?k={key}" }, for testing purposes
                     { "[[key]]", key},
@@ -110,6 +110,10 @@ namespace MDT.Controllers
                         "have made a password request, please "},
                     { "[[body2]]", " within one hour of receiving this message in order to change your password." },
                     { "[[TemplateName]]", "Password Reset Request" },
+
+                    { "[[key]]", key },
+                    //{ "[[UserEmail]]", vm.UserEmail},
+                    { "[[name]]", user.UserName },
                 };
 
                 EmailMessage email = new EmailMessage();

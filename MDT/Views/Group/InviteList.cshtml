@@ -1,0 +1,59 @@
+﻿@using MDT.Models
+@model List<GroupInvite>
+@{
+    ViewBag.Title = "Invite List";
+}
+
+<!DOCTYPE html>
+
+<html>
+<style>
+    .invitecell {
+        border: 1px solid;
+        box-shadow: 0;
+        padding: 1em;
+    }
+    
+</style>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <h2>Group Invitations</h2>
+    <br />
+    <div id="inviteTable">
+        @if (Model.Count != 0)
+        {
+            <table>
+                <tr class="inviterow">
+                    <th class="invitecell">E-Mail Address</th>
+                    <th class="invitecell">Last Invite Sent</th>
+                    <th class="invitecell"></th>
+                    <th class="invitecell"></th>
+                </tr>
+                @{
+                    foreach (GroupInvite u in Model)
+                    {
+                        <tr>
+                            <td class="invitecell">@u.EmailAddress</td>
+                            <td class="invitecell">@u.LastInviteDate.ToString("MM/dd/yyyy") at @u.LastInviteDate.ToString("hh:mm")</td>
+                            <td class="invitecell">
+                                @Html.Partial("RemindForm", u)
+                            </td>
+                            <td class="invitecell">
+                                @Html.Partial("DeleteForm", u)
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        }
+        else
+        {
+            <p>There are no pending invites for this group.</p>
+        }
+        @Html.Partial("InviteForm", new GroupInvite())
+    </div>
+</body>
+</html>
