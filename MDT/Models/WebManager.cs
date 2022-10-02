@@ -18,11 +18,7 @@ namespace MDT.Models
                 User user = db.Users.Find(vm.UserId);
     
                 //I had to convert the email address all to lower case so it could be sent without issue.
-                if (user != null 
-                    && user.EmailAddress != null 
-                    && vm.UserEmail != null 
-                    && user.EmailAddress.ToLower().Equals(vm.UserEmail.ToLower()) 
-                    && user.IsActive)
+                if (user != null && user.EmailAddress.ToLower().Equals(vm.UserEmail.ToLower()) && user.IsActive)
                 {
                     //25-char long string is randomly generated.
                     string key = RandomString(25);
@@ -104,6 +100,11 @@ namespace MDT.Models
             {
                 return db.GroupUsers.Find(groupId, userId) != null;
             }
+        }
+
+        public static bool SendTemplateEmail(string recipient, int templateId, Dictionary<string, string> variables)
+        {
+            return SendTemplateEmail(new List<string> { recipient }, templateId, variables);
         }
 
         public static bool SendTemplateEmail(List<string> recipients, int templateId, Dictionary<string, string> variables)

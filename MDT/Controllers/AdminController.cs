@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace MDT.Controllers
 {
-    [AdminFilter(Role ="Site Admin")]
+    [AdminFilter(Role = "Site Admin")]
     public class AdminController : BaseController
     {
         public ActionResult Index()
@@ -30,16 +30,16 @@ namespace MDT.Controllers
 
             List<GroupVM> vm = db.Groups.Where(g => g.IsApproved == null)
                                       .Include(g => g.GroupUsers)
-                                      .Include(g => g.GroupUsers.Select(gu =>gu.User))
+                                      .Include(g => g.GroupUsers.Select(gu => gu.User))
                                       .ToList()
                                       .Select(g => new GroupVM(g))
                                       .ToList();
 
-            foreach(GroupVM gvm in vm)
+            foreach (GroupVM gvm in vm)
             {
                 gvm.SetDescriptions(db.Descriptions.Where(d => new List<int>() { 1, 5, 6 }.Contains(d.ObjectTypeId) && d.ObjectId == gvm.GroupId).ToList());
             }
-            
+
 
             return View(vm);
         }

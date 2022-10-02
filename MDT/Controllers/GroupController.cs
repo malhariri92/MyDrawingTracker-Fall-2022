@@ -22,6 +22,7 @@ namespace MDT.Controllers
     {
         const int INV_ID = 6;
 
+        [AdminFilter(Role = "Admin")]
         const int INV_EX_ID = 10;
 
         const int REM_ID = 11;
@@ -47,6 +48,7 @@ namespace MDT.Controllers
         }
 
         [HttpPost]
+        [AdminFilter(Role = "Admin")]
         public ActionResult Reject(UserVM vm)
         {
             User user = db.Users.Find(vm.UserId);
@@ -58,6 +60,7 @@ namespace MDT.Controllers
         }
 
         [HttpPost]
+        [AdminFilter(Role = "Admin")]
         public ActionResult Approve(UserVM vm)
         {
             User user = db.Users.Find(vm.UserId);

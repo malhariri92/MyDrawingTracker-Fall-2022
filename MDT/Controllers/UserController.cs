@@ -17,10 +17,11 @@ namespace MDT.Controllers
 {
     public class UserController : BaseController
     {
-        
+
         public ActionResult Index()
         {
             UserVM vm = new UserVM(db.Users.Where(u => user.UserId == u.UserId).Include(u => u.GroupUsers).FirstOrDefault());
+
             return View(vm);
         }
 
@@ -143,7 +144,7 @@ namespace MDT.Controllers
                     }
 
                     user.UserName = vm.UserName;
-                   // user.PhoneNumber = vm.PhoneNumber;
+                    // user.PhoneNumber = vm.PhoneNumber;
                     user.CurrentGroupId = vm.CurrentGroupId;
 
                     db.Entry(user).State = EntityState.Modified;
@@ -165,6 +166,31 @@ namespace MDT.Controllers
             vm.Error = false;
             return View(vm);
 
+        }
+
+        public ActionResult Verify(string key)
+        {
+            User u = db.Users.Find(user.UserId);
+            VerificationKey vk = u.VerificationKeys.Where(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) && 
+                                                               k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            if (vk != null)
+            {
+                vk.VerifiedOn = DateTime.Now;
+                u.IsVerified = true;
+                db.Entry(vk).State = EntityState.Modified;
+                db.Entry(u).State = EntityState.Modified;
+                db.SaveChanges();
+                TempData["VerificationSuccess"] = $"Email address {user.EmailAddress} has been verified.";   
+            }
+            else
+            {
+                if (u.VerificationKeys.Any(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) ||  k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    TempData["VerificationFailure"] = $"The email address you are attempting to verify does not match your current email address.";
+                }
+            }
+            
+            return RedirectToAction("Index", "Home", null);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MDT.Models;
+﻿using MDT.Filters;
+using MDT.Models;
 using MDT.Models.DTO;
 using MDT.ViewModels;
 using Microsoft.Ajax.Utilities;
@@ -55,6 +56,9 @@ namespace MDT.Controllers
                 if (cred.LoginResult == PasswordManager.Result.SuccessfulLogin)
                 {
                     SessionSetup(WebManager.GetUserDTO(cred.User.UserId));
+                    string url = (string)Session["RedirectUrl"];
+                    Session["RedirectUrl"] = null;
+                    return Redirect(url ?? "/Home/Index");
 
                     return PartialView("UserAccess");
                    
@@ -76,6 +80,7 @@ namespace MDT.Controllers
         public ActionResult ForgotPass()
         {
             UserDTO user = (UserDTO)Session["User"];
+            Console.WriteLine("TEst");
             if (user == null)
             {
                 return PartialView("ForgotPass", new UserPasswordResetSetupVM());
@@ -126,6 +131,7 @@ namespace MDT.Controllers
          
 
             }
+            vm.Success = true;
 
             return PartialView("ForgotPass", vm);
 
@@ -160,11 +166,10 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-                UserDTO userDTO = new UserDTO(userViaKey);
-                Session["User"] = userDTO;
-                Session["UserKey"] = userViaKey;
-                Session["Group"] = WebManager.GetGroupDTO(userViaKey.CurrentGroupId);
+                Session["UserKey"] = key;
 
+                UserDTO uvkDTO = new UserDTO(userViaKey);
+                Session["User"] = uvkDTO;
                 vm.IsChangeRequest = true;
 
                 return View("ResetPass", vm);
@@ -178,7 +183,7 @@ namespace MDT.Controllers
         {
             UserDTO user = (UserDTO)Session["User"];
 
-            if (user != null)
+            if (User == null)
             {
                 User key = (User)Session["UserKey"];
 
@@ -216,20 +221,12 @@ namespace MDT.Controllers
 
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
-                    key = db.Users.Find(key.UserId);
                     vm.Success = true;
-                    vm.IsChangeRequest = true;
-                    using (var db = new DbEntities())
-                    {
-                        key = db.Users.Find(key.UserId); //grab user as it is changed by SetNewHash function
-                        vm.Success = true;
-                        vm.IsChangeRequest = true;
 
-                        key.ResetKey = null;
-                        key.ResetKeyExpires = null;
-                        db.Entry(key).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
+                    key.ResetKey = null;
+                    key.ResetKeyExpires = null;
+                    db.Entry(key).State = EntityState.Modified;
+                    db.SaveChanges();
 
                 }
                 else
@@ -238,21 +235,11 @@ namespace MDT.Controllers
                     vm.Error = true;
                     vm.Message = "Something went wrong updating your password. Please try again.";
                     Session["UserKey"] = key;
-
-                    return View(vm);
                 }
-                if(!(PasswordManager.UpdateReset(key.UserId)))
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Something went wrong updating your password reset key status. Please try again.";
-                    Session["UserKey"] = key;
-                }
-                
                 return View(vm);
             }
 
-            return RedirectToAction("ChangePass", "User");
+            return RedirectToAction("ChangePass");
         }
 
         public ActionResult SignOut()
@@ -297,39 +284,17 @@ namespace MDT.Controllers
             };
 
             db.Users.Add(user);
-            db.SaveChanges();
-
-            PasswordManager.SetNewHash(user.UserId, vm.Password);
-
-            //Generate notification email
-            GroupUser groupUser = db.GroupUsers.Where(u =>  u.GroupId == groupMatch.GroupId && u.IsAdmin).FirstOrDefault();
-            User groupAdmin = db.Users.Find(groupUser.UserId);
-
-            string subject = groupMatch.JoinConfirmationRequired ? "Confirm New User" : "A New User Joined Your Group";
-            string templateName = groupMatch.JoinConfirmationRequired ? "Confirm New Group User" : "New Group User";
-            int templateId = groupMatch.JoinConfirmationRequired ? 8 : 7;
 
             Dictionary<string, string> variables = new Dictionary<string, string>()
-                {
-                    { "[[userName]]", user.UserName },
-                    { "[[adminName]]", groupAdmin.UserName },
-                    { "[[groupName]]", groupMatch.GroupName },
-                    { "[[TemplateName]]", templateName },
-                    { "[[confirmUrl]]", "" },
-                };
+            {
+                { "[[Name]]", user.UserName },
+                { "[[VerifyKey]]", key },
+            };
 
-            EmailMessage email = new EmailMessage();
-            email.AddTo(groupAdmin.EmailAddress);
-            email.SetSubject(subject);
-            email.SetTemplateBody(templateName, variables);
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
 
-            List<string> recipients = new List<string>();
-            recipients.Add(groupAdmin.EmailAddress);
-            WebManager.SendTemplateEmail(
-                recipients,
-                templateId,
-                variables
-            );
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
+            PasswordManager.SetNewHash(user.UserId, vm.Password);
 
             //Create the GroupUser entry
             var newGroupUser = new GroupUser()
@@ -339,7 +304,6 @@ namespace MDT.Controllers
                 IsAdmin = false,
             };
             db.GroupUsers.Add(newGroupUser);
-            db.SaveChanges();
 
             SessionSetup(WebManager.GetUserDTO(user.UserId));
             return PartialView("UnverifiedEmail");
@@ -372,8 +336,15 @@ namespace MDT.Controllers
             };
 
             db.Groups.Add(group);
-            db.SaveChanges();
 
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+            {
+                { "[[GroupName]]", group.GroupName }
+            };
+            List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
+            WebManager.SendTemplateEmail(recipients, 3, variables);
+
+            WebManager.SendTemplateEmail(recipients, 3, variables);
 
             // Create a new user
             user = new User()
@@ -385,7 +356,25 @@ namespace MDT.Controllers
                 IsVerified = false,
             };
             db.Users.Add(user);
+            string key = WebManager.GetUniqueKey(10);
+            db.VerificationKeys.Add(new VerificationKey()
+            {
+                UserId = user.UserId,
+                EmailAddress = user.EmailAddress,
+                VKey = key,
+                SentOn = DateTime.Now
+            });
             db.SaveChanges();
+
+            variables = new Dictionary<string, string>()
+            {
+                { "[[Name]]", user.UserName },
+                { "[[VerifyKey]]", key },
+            };
+
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
+
+            WebManager.SendTemplateEmail( $"{user.EmailAddress}\t{user.UserName}", 2, variables);
 
             //Hash the password and add to the newly created user.
             //user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
@@ -405,9 +394,61 @@ namespace MDT.Controllers
             ModelState.Clear();
 
             SessionSetup(WebManager.GetUserDTO(user.UserId));
-            return PartialView("UnverifiedEmail");
+
+        public ActionResult SendVerification()
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            string key = WebManager.GetUniqueKey(10);
+            db.VerificationKeys.Add(new VerificationKey()
+            {
+                UserId = user.UserId,
+                EmailAddress = user.EmailAddress,
+                VKey = key,
+                SentOn = DateTime.Now
+            });
+            db.SaveChanges();
+
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+            {
+                { "[[Name]]", user.UserName },
+                { "[[VerifyKey]]", key },
+            };
+
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
+            return PartialView("VerificationEmailSent");
         }
 
+        [LoginFilter]
+        public ActionResult Verify(string key)
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            User u = db.Users.Find(user.UserId);
+            VerificationKey vk = u.VerificationKeys.Where(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) &&
+                                                               k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            if (vk != null)
+            {
+                vk.VerifiedOn = DateTime.Now;
+                u.IsVerified = true;
+                db.Entry(vk).State = EntityState.Modified;
+                db.Entry(u).State = EntityState.Modified;
+                db.SaveChanges();
+                TempData["VerificationSuccess"] = $"Email address {user.EmailAddress} has been verified.";
+                Session["User"] = new UserDTO(u);
+            }
+            else
+            {
+                if (u.VerificationKeys.Any(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) || k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    TempData["VerificationFailure"] = $"The email address you are attempting to verify does not match your current email address.";
+                }
+            }
+
+            return RedirectToAction("Index", "Home", null);
+        }
+
+            return PartialView("VerificationEmailSent");
+        }
         public void SessionSetup(UserDTO user)
         {
             string role;

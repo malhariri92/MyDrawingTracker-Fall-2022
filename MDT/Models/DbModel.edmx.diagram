@@ -55,6 +55,9 @@
         <AssociationConnector Association="DbModel.FK_GroupUser_Group" />
         <AssociationConnector Association="DbModel.FK_Ledgers_Group" />
         <AssociationConnector Association="DbModel.FK_User_Group" />
+        <EntityTypeShape EntityType="DbModel.UniqueKey" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="DbModel.VerificationKey" Width="1.5" PointX="5.25" PointY="35.5" />
+        <AssociationConnector Association="DbModel.FK_VerificationKeys_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

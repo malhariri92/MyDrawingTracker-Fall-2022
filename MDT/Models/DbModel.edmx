@@ -248,6 +248,17 @@
           <Property Name="LockOutStart" Type="datetime" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="VerificationKeys">
+          <Key>
+            <PropertyRef Name="VerificationId" />
+          </Key>
+          <Property Name="VerificationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="EmailAddress" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="VKey" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="SentOn" Type="datetime" />
+          <Property Name="VerifiedOn" Type="datetime" />
+        </EntityType>
         <Association Name="FK_Balances_Ledgers">
           <End Role="Ledgers" Type="Self.Ledgers" Multiplicity="1" />
           <End Role="Balances" Type="Self.Balances" Multiplicity="*" />
@@ -1525,6 +1536,38 @@
             </Principal>
             <Dependent Role="User">
               <PropertyRef Name="CurrentGroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="UniqueKey">
+          <Key>
+            <PropertyRef Name="KeyLength" />
+            <PropertyRef Name="KeyValue" />
+          </Key>
+          <Property Name="KeyLength" Type="Int32" Nullable="false" />
+          <Property Name="KeyValue" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="VerificationKey">
+          <Key>
+            <PropertyRef Name="VerificationId" />
+          </Key>
+          <Property Name="VerificationId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="EmailAddress" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="VKey" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="SentOn" Type="DateTime" Precision="3" />
+          <Property Name="VerifiedOn" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="User" Relationship="DbModel.FK_VerificationKeys_Users" FromRole="VerificationKey" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_VerificationKeys_Users">
+          <End Type="DbModel.User" Role="User" Multiplicity="1" />
+          <End Type="DbModel.VerificationKey" Role="VerificationKey" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="VerificationKey">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
