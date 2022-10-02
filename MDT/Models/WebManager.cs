@@ -111,7 +111,7 @@ namespace MDT.Models
         {
             return SendTemplateEmail(new List<string> { recipient }, templateId, variables);
         }
-      
+
         public static bool SendTemplateEmail(List<string> recipients, int templateId, Dictionary<string, string> variables)
         {
             if (recipients == null || !recipients.Any())

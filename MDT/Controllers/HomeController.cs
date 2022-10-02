@@ -70,8 +70,6 @@ namespace MDT.Controllers
                     Session["RedirectUrl"] = null;
                     return Redirect(url ?? "/Home/Index");
 
-                    return PartialView("UserAccess");
-
                 }
 
                 if (cred.UserLocked)
@@ -160,10 +158,6 @@ namespace MDT.Controllers
                 }
 
                 Session["UserKey"] = key;
-
-                UserDTO uvkDTO = new UserDTO(userViaKey);
-                Session["User"] = uvkDTO;
-                vm.IsChangeRequest = true;
 
                 return View("ResetPass", vm);
             }
@@ -283,7 +277,7 @@ namespace MDT.Controllers
             });
             db.SaveChanges();
 
-          
+
             Dictionary<string, string> variables = new Dictionary<string, string>()
             {
                 { "[[Name]]", user.UserName },
@@ -361,7 +355,7 @@ namespace MDT.Controllers
             List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
             WebManager.SendTemplateEmail(recipients, 3, variables);
 
-           
+
             Dictionary<string, string> variables = new Dictionary<string, string>()
             {
                 { "[[GroupName]]", group.GroupName }
@@ -405,7 +399,7 @@ namespace MDT.Controllers
                 { "[[VerifyKey]]", key },
             };
 
-            WebManager.SendTemplateEmail( $"{user.EmailAddress}\t{user.UserName}", 2, variables);
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
 
             //Hash the password and add to the newly created user.
             //user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
@@ -477,7 +471,7 @@ namespace MDT.Controllers
 
             return RedirectToAction("Index", "Home", null);
         }
-        
+
         public ActionResult SendVerification()
         {
             UserDTO user = (UserDTO)Session["User"];
@@ -501,6 +495,35 @@ namespace MDT.Controllers
             WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
             return PartialView("VerificationEmailSent");
         }
+
+        [LoginFilter]
+        public ActionResult Verify(string key)
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            User u = db.Users.Find(user.UserId);
+            VerificationKey vk = u.VerificationKeys.Where(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) &&
+                                                               k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            if (vk != null)
+            {
+                vk.VerifiedOn = DateTime.Now;
+                u.IsVerified = true;
+                db.Entry(vk).State = EntityState.Modified;
+                db.Entry(u).State = EntityState.Modified;
+                db.SaveChanges();
+                TempData["VerificationSuccess"] = $"Email address {user.EmailAddress} has been verified.";
+                Session["User"] = new UserDTO(u);
+            }
+            else
+            {
+                if (u.VerificationKeys.Any(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) || k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    TempData["VerificationFailure"] = $"The email address you are attempting to verify does not match your current email address.";
+                }
+            }
+
+            return RedirectToAction("Index", "Home", null);
+        }
+
         public void SessionSetup(UserDTO user)
         {
             string role;
