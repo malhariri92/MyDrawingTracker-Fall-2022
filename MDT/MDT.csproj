@@ -135,6 +135,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -367,7 +368,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\ChangePass.cshtml" />
     <Content Include="Views\User\ChangeUserDetails.cshtml" />
-	<Content Include="Views\User\SeeMembersList.cshtml" />
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
@@ -398,6 +398,7 @@
     <Content Include="Views\Home\UnverifiedEmail.cshtml" />
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Group\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
