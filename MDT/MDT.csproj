@@ -289,6 +289,7 @@
     <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\invitetable.css" />
     <Content Include="Content\themes\base\jquery-ui.css" />
     <Content Include="Content\themes\base\jquery-ui.min.css" />
     <Content Include="Content\themes\base\menu.css" />
@@ -307,6 +308,7 @@
     <Content Include="EmailTemplates\ConfirmNewUser.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
     <Content Include="EmailTemplates\NewUser.html" />
+    <Content Include="EmailTemplates\Invite.html" />
     <Content Include="EmailTemplates\TemplateBase.html" />
     <Content Include="EmailTemplates\UserApproved.html" />
     <Content Include="favicon.ico" />
@@ -402,6 +404,15 @@
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Group\GroupIndex.cshtml" />
+    <Content Include="Views\Group\Index.cshtml" />
+    <Content Include="Views\Group\InviteList.cshtml" />
+    <Content Include="Views\Group\InviteForm.cshtml" />
+    <Content Include="Views\Group\RemindForm.cshtml" />
+    <Content Include="Views\Group\DeleteForm.cshtml" />
+    <Content Include="Views\Group\SendInvite.cshtml" />
+    <Content Include="Views\Group\SendReminder.cshtml" />
+    <Content Include="Views\Group\ConfirmDelete.cshtml" />
+    <Content Include="Views\Group\DeleteInvite.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

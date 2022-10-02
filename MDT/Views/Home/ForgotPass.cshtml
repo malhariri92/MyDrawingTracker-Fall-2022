@@ -1,15 +1,24 @@
 ﻿@model MDT.ViewModels.UserPasswordResetSetupVM
 
 <div id="passDiv">
+    @if (Model.Error)
+    {
+        <div class="row text-center">
+            <h3>Could not send password reset email.</h3>
+            <h3>Please Contact your administrator.</h3>
+            <br />
+            <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
+        </div>
+    }
     @if (Model.Success)
     {
         <div class="row text-center">
             <h3>Check your email for password reset instructions.</h3>
             <br />
-            <button type="button" class="btn btn-warning" id="btnCancelForgot">Back</button>
+            <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
         </div>
     }
-    else
+    @if(!Model.Success && !Model.Error)
     {
         using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "userAccess" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
         {

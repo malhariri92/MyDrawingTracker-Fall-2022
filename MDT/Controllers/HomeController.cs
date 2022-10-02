@@ -76,7 +76,6 @@ namespace MDT.Controllers
         public ActionResult ForgotPass()
         {
             UserDTO user = (UserDTO)Session["User"];
-            Console.WriteLine("TEst");
             if (user == null)
             {
                 return PartialView("ForgotPass", new UserPasswordResetSetupVM());
@@ -100,6 +99,7 @@ namespace MDT.Controllers
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
+
                     { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
                     { "[[key]]", key},
                     { "[[UserEmail]]", vm.UserEmail},
@@ -109,6 +109,10 @@ namespace MDT.Controllers
                         "have made a password request, please "},
                     { "[[body2]]", " within one hour of receiving this message in order to change your password." },
                     { "[[TemplateName]]", "Password Reset Request" },
+
+                    { "[[key]]", key },
+                    //{ "[[UserEmail]]", vm.UserEmail},
+                    { "[[name]]", user.UserName },
                 };
 
                 EmailMessage email = new EmailMessage();
@@ -118,15 +122,21 @@ namespace MDT.Controllers
                
                 List<string> recipients = new List<string>();
                 recipients.Add(user.EmailAddress);
-                WebManager.SendTemplateEmail(
-                    recipients, 
+                if (WebManager.SendTemplateEmail(
+                    recipients,
                     1,
                     variables
-                );
+                ))
+                {
+                    vm.Success = true;
+                }
+                else
+                {
+                    vm.Error=true;
+                }
          
 
             }
-            vm.Success = true;
 
             return PartialView("ForgotPass", vm);
 
@@ -139,8 +149,8 @@ namespace MDT.Controllers
             if (user == null)
             {
                 UserPasswordResetVM vm = new UserPasswordResetVM();
-                User key = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
-                if (key == null)
+                User userViaKey = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
+                if (userViaKey == null)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -148,20 +158,30 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-                    if (key.ResetKey == null)
-                    {
-                        return RedirectToAction("ForgotPass");
-                    }
+                if (userViaKey.ResetKey == null)
+                {
+                    return RedirectToAction("ForgotPass");
+                }
 
-                    if (key.ResetKeyExpires < DateTime.Now)
-                    {
-                        vm.Success = false;
-                        vm.Error = true;
-                        vm.Message = "Key has expired. Please request a new key.";
-                        return View(vm);
-                    }
+                if (userViaKey.ResetKeyExpires < DateTime.Now)
+                {
+                    vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "Key has expired. Please request a new key.";
+                    return View(vm);
+                }
 
                 Session["UserKey"] = key;
+                Session["Group"] = WebManager.GetGroupDTO(key.CurrentGroupId);
+
+                UserDTO userDTO = new UserDTO(key);
+                Session["User"] = userDTO;
+                Session["UserKey"] = userViaKey;
+                Session["Group"] = WebManager.GetGroupDTO(userViaKey.CurrentGroupId);
+
+                UserDTO uvkDTO = new UserDTO(userViaKey);
+                Session["User"] = uvkDTO;
+                vm.IsChangeRequest = true;
 
                 return View("ResetPass", vm);
             }
@@ -174,7 +194,7 @@ namespace MDT.Controllers
         {
             UserDTO user = (UserDTO)Session["User"];
 
-            if (User == null)
+            if (user != null)
             {
                 User key = (User)Session["UserKey"];
 
@@ -185,7 +205,7 @@ namespace MDT.Controllers
                 }
 
 
-                if (key.ResetKey != null)
+                /*if (key.ResetKey != null)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -212,12 +232,20 @@ namespace MDT.Controllers
 
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
+                    key = db.Users.Find(key.UserId);
                     vm.Success = true;
+                    vm.IsChangeRequest = true;
+                    using (var db = new DbEntities())
+                    {
+                        key = db.Users.Find(key.UserId); //grab user as it is changed by SetNewHash function
+                        vm.Success = true;
+                        vm.IsChangeRequest = true;
 
-                    key.ResetKey = null;
-                    key.ResetKeyExpires = null;
-                    db.Entry(key).State = EntityState.Modified;
-                    db.SaveChanges();
+                        key.ResetKey = null;
+                        key.ResetKeyExpires = null;
+                        db.Entry(key).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
 
                 }
                 else
@@ -226,11 +254,21 @@ namespace MDT.Controllers
                     vm.Error = true;
                     vm.Message = "Something went wrong updating your password. Please try again.";
                     Session["UserKey"] = key;
+
+                    return View(vm);
                 }
+                if(!(PasswordManager.UpdateReset(key.UserId)))
+                {
+                    vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "Something went wrong updating your password reset key status. Please try again.";
+                    Session["UserKey"] = key;
+                }
+                
                 return View(vm);
             }
 
-            return RedirectToAction("ChangePass");
+            return RedirectToAction("ChangePass", "User");
         }
 
         public ActionResult SignOut()

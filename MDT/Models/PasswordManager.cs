@@ -206,5 +206,29 @@ namespace MDT.Models
             return true;
         }
 
+        public static bool UpdateReset(int userId)
+        {
+            try
+            {
+                using (var db = new DbEntities())
+                {
+                    User user = db.Users.Find(userId);
+                    if (user == null)
+                    {
+                        return false;
+                    }
+
+                    user.ResetKey = null;
+                    user.ResetKeyExpires = null;
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

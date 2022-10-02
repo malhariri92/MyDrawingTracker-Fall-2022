@@ -3,6 +3,7 @@
 @{
     UserDTO user = (UserDTO)Session["User"];
     GroupDTO group = (GroupDTO)Session["Group"];
+    bool isGroupAdmin = user != null && group != null ? WebManager.IsGroupAdmin(group.GroupId, user.UserId) : false;
     bool admin = (bool?)Session["IsAdmin"] ?? false;
 }
 <!DOCTYPE html>
@@ -66,6 +67,10 @@
                     {
                         <li>@Html.ActionLink("Home", "Index", "Home", null, null)</li>
                         <li>@Html.ActionLink("My Profile", "Index", "User")</li>
+                        if (isGroupAdmin)
+                        {
+                            <li>@Html.ActionLink("My Group", "Index", "Group") </li>
+                        }
                     }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -74,6 +79,10 @@
                         if (WebManager.IsGroupAdmin(0, user.UserId))
                         {
                             <li>@Html.ActionLink("Site Admin", "Index", "Admin")</li>
+                        }
+                        if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+                        {
+                            <li>@Html.ActionLink("See Members", "Index", "Group")</li>
                         }
                         <li>@Html.ActionLink("Sign Out", "SignOut", "Home")</li>
                     }
