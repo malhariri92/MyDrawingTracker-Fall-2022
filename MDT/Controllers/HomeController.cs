@@ -101,7 +101,6 @@ namespace MDT.Controllers
                 {
 
                     { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
-                    //{ "[[authUrl]]", $"https://localhost:44361/Home/ResetPass?k={key}" }, for testing purposes
                     { "[[key]]", key},
                     { "[[UserEmail]]", vm.UserEmail},
                     { "[[greeting]]", $"Hello {user.UserName}," },
@@ -172,6 +171,11 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
+                Session["UserKey"] = key;
+                Session["Group"] = WebManager.GetGroupDTO(key.CurrentGroupId);
+
+                UserDTO userDTO = new UserDTO(key);
+                Session["User"] = userDTO;
                 Session["UserKey"] = userViaKey;
                 Session["Group"] = WebManager.GetGroupDTO(userViaKey.CurrentGroupId);
 
@@ -208,8 +212,6 @@ namespace MDT.Controllers
                     vm.Message = "Key has been used. Please request a new key.";
                     return View(vm);
                 }
-                Seems to be unncessary as the ResetPass get method already checks for a matching key. 
-                This statement will always be true, so it doesn't make sense to yield an error page here.*/
 
                 if (key.ResetKeyExpires < DateTime.Now)
                 {
@@ -230,6 +232,9 @@ namespace MDT.Controllers
 
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
+                    key = db.Users.Find(key.UserId);
+                    vm.Success = true;
+                    vm.IsChangeRequest = true;
                     using (var db = new DbEntities())
                     {
                         key = db.Users.Find(key.UserId); //grab user as it is changed by SetNewHash function
@@ -249,7 +254,17 @@ namespace MDT.Controllers
                     vm.Error = true;
                     vm.Message = "Something went wrong updating your password. Please try again.";
                     Session["UserKey"] = key;
+
+                    return View(vm);
                 }
+                if(!(PasswordManager.UpdateReset(key.UserId)))
+                {
+                    vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "Something went wrong updating your password reset key status. Please try again.";
+                    Session["UserKey"] = key;
+                }
+                
                 return View(vm);
             }
 
