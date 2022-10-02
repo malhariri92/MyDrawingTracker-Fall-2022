@@ -100,19 +100,8 @@ namespace MDT.Controllers
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
 
-                    { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
-                    { "[[key]]", key},
-                    { "[[UserEmail]]", vm.UserEmail},
-                    { "[[greeting]]", $"Hello {user.UserName}," },
-                    { "[[body1]]", "We have received a password reset request for the My Drawing Tracker account associated with this e-mail address. " +
-                        "If you have not made a password reset request for your My Drawing Tracker account, you may safely ignore this e-mail. If you " +
-                        "have made a password request, please "},
-                    { "[[body2]]", " within one hour of receiving this message in order to change your password." },
-                    { "[[TemplateName]]", "Password Reset Request" },
-
-                    { "[[key]]", key },
-                    //{ "[[UserEmail]]", vm.UserEmail},
                     { "[[name]]", user.UserName },
+                    { "[[key]]", key },
                 };
 
                 EmailMessage email = new EmailMessage();
@@ -171,16 +160,11 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-                Session["UserKey"] = key;
-                Session["Group"] = WebManager.GetGroupDTO(key.CurrentGroupId);
-
-                UserDTO userDTO = new UserDTO(key);
+                UserDTO userDTO = new UserDTO(userViaKey);
                 Session["User"] = userDTO;
                 Session["UserKey"] = userViaKey;
                 Session["Group"] = WebManager.GetGroupDTO(userViaKey.CurrentGroupId);
 
-                UserDTO uvkDTO = new UserDTO(userViaKey);
-                Session["User"] = uvkDTO;
                 vm.IsChangeRequest = true;
 
                 return View("ResetPass", vm);
@@ -205,7 +189,7 @@ namespace MDT.Controllers
                 }
 
 
-                /*if (key.ResetKey != null)
+                if (key.ResetKey != null)
                 {
                     vm.Success = false;
                     vm.Error = true;

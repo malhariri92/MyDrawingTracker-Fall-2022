@@ -307,8 +307,11 @@
     <Content Include="Content\v4-shims.min.css" />
     <Content Include="EmailTemplates\ConfirmNewUser.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
+    <Content Include="EmailTemplates\InviteExisting.html" />
     <Content Include="EmailTemplates\NewUser.html" />
     <Content Include="EmailTemplates\Invite.html" />
+    <Content Include="EmailTemplates\Reminder.html" />
+    <Content Include="EmailTemplates\ReminderExisting.html" />
     <Content Include="EmailTemplates\TemplateBase.html" />
     <Content Include="EmailTemplates\UserApproved.html" />
     <Content Include="favicon.ico" />
@@ -413,6 +416,8 @@
     <Content Include="Views\Group\SendReminder.cshtml" />
     <Content Include="Views\Group\ConfirmDelete.cshtml" />
     <Content Include="Views\Group\DeleteInvite.cshtml" />
+    <Content Include="Views\Group\ExistingInGroup.cshtml" />
+    <Content Include="Views\Group\EmailFailed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
