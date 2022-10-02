@@ -305,9 +305,12 @@
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\v4-shims.css" />
     <Content Include="Content\v4-shims.min.css" />
+    <Content Include="EmailTemplates\ConfirmNewUser.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
+    <Content Include="EmailTemplates\NewUser.html" />
     <Content Include="EmailTemplates\Invite.html" />
     <Content Include="EmailTemplates\TemplateBase.html" />
+    <Content Include="EmailTemplates\UserApproved.html" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -400,6 +403,7 @@
     <Content Include="Views\Home\UnverifiedEmail.cshtml" />
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Group\GroupIndex.cshtml" />
     <Content Include="Views\Group\Index.cshtml" />
     <Content Include="Views\Group\InviteList.cshtml" />
     <Content Include="Views\Group\InviteForm.cshtml" />

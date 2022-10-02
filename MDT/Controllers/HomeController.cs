@@ -317,6 +317,36 @@ namespace MDT.Controllers
 
             PasswordManager.SetNewHash(user.UserId, vm.Password);
 
+            //Generate notification email
+            GroupUser groupUser = db.GroupUsers.Where(u =>  u.GroupId == groupMatch.GroupId && u.IsAdmin).FirstOrDefault();
+            User groupAdmin = db.Users.Find(groupUser.UserId);
+
+            string subject = groupMatch.JoinConfirmationRequired ? "Confirm New User" : "A New User Joined Your Group";
+            string templateName = groupMatch.JoinConfirmationRequired ? "Confirm New Group User" : "New Group User";
+            int templateId = groupMatch.JoinConfirmationRequired ? 8 : 7;
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[userName]]", user.UserName },
+                    { "[[adminName]]", groupAdmin.UserName },
+                    { "[[groupName]]", groupMatch.GroupName },
+                    { "[[TemplateName]]", templateName },
+                    { "[[confirmUrl]]", "" },
+                };
+
+            EmailMessage email = new EmailMessage();
+            email.AddTo(groupAdmin.EmailAddress);
+            email.SetSubject(subject);
+            email.SetTemplateBody(templateName, variables);
+
+            List<string> recipients = new List<string>();
+            recipients.Add(groupAdmin.EmailAddress);
+            WebManager.SendTemplateEmail(
+                recipients,
+                templateId,
+                variables
+            );
+
             //Create the GroupUser entry
             var newGroupUser = new GroupUser()
             {
@@ -325,6 +355,7 @@ namespace MDT.Controllers
                 IsAdmin = false,
             };
             db.GroupUsers.Add(newGroupUser);
+            db.SaveChanges();
 
             SessionSetup(WebManager.GetUserDTO(user.UserId));
             return PartialView("UnverifiedEmail");
