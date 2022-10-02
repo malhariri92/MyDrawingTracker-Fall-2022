@@ -21,7 +21,7 @@ namespace MDT.Controllers
         public ActionResult Index()
         {
             UserVM vm = new UserVM(db.Users.Where(u => user.UserId == u.UserId).Include(u => u.GroupUsers).FirstOrDefault());
-
+            
             return View(vm);
         }
 
@@ -90,7 +90,7 @@ namespace MDT.Controllers
         public ActionResult ChangeUserDetails()
         {
             if (user != null)
-            {
+            { 
                 return View(new UserDetailsChangeVM(user));
             }
             return RedirectToAction("Index", "Home");

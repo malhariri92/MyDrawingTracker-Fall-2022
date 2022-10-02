@@ -220,6 +220,14 @@
           <Property Name="TransactionTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TypeName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="UniqueKeys">
+          <Key>
+            <PropertyRef Name="KeyLength" />
+            <PropertyRef Name="KeyValue" />
+          </Key>
+          <Property Name="KeyLength" Type="int" Nullable="false" />
+          <Property Name="KeyValue" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="UserDrawTypeOptions">
           <Key>
             <PropertyRef Name="UserId" />
@@ -247,17 +255,6 @@
           <Property Name="FailedCount" Type="int" />
           <Property Name="LockOutStart" Type="datetime" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="VerificationKeys">
-          <Key>
-            <PropertyRef Name="VerificationId" />
-          </Key>
-          <Property Name="VerificationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="EmailAddress" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="VKey" Type="nvarchar" MaxLength="10" Nullable="false" />
-          <Property Name="SentOn" Type="datetime" />
-          <Property Name="VerifiedOn" Type="datetime" />
         </EntityType>
         <Association Name="FK_Balances_Ledgers">
           <End Role="Ledgers" Type="Self.Ledgers" Multiplicity="1" />
@@ -619,6 +616,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_VerificationKeys_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="VerificationKeys" Type="Self.VerificationKeys" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="VerificationKeys">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="DbModelStoreContainer">
           <EntitySet Name="Balances" EntityType="Self.Balances" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Descriptions" EntityType="Self.Descriptions" Schema="dbo" store:Type="Tables" />
@@ -640,8 +649,10 @@
           <EntitySet Name="SentEmails" EntityType="Self.SentEmails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transactions" EntityType="Self.Transactions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TransactionTypes" EntityType="Self.TransactionTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UniqueKeys" EntityType="Self.UniqueKeys" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserDrawTypeOptions" EntityType="Self.UserDrawTypeOptions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VerificationKeys" EntityType="Self.VerificationKeys" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Balances_Ledgers" Association="Self.FK_Balances_Ledgers">
             <End Role="Ledgers" EntitySet="Ledgers" />
             <End Role="Balances" EntitySet="Balances" />
@@ -761,6 +772,10 @@
           <AssociationSet Name="FK_UserDrawTypeOptions_Users" Association="Self.FK_UserDrawTypeOptions_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="UserDrawTypeOptions" EntitySet="UserDrawTypeOptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VerificationKeys_Users" Association="Self.FK_VerificationKeys_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="VerificationKeys" EntitySet="VerificationKeys" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -904,6 +919,12 @@
           <AssociationSet Name="FK_User_Group" Association="DbModel.FK_User_Group">
             <End Role="Group" EntitySet="Groups" />
             <End Role="User" EntitySet="Users" />
+          </AssociationSet>
+          <EntitySet Name="UniqueKeys" EntityType="DbModel.UniqueKey" />
+          <EntitySet Name="VerificationKeys" EntityType="DbModel.VerificationKey" />
+          <AssociationSet Name="FK_VerificationKeys_Users" Association="DbModel.FK_VerificationKeys_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="VerificationKey" EntitySet="VerificationKeys" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Balance">
@@ -1167,6 +1188,7 @@
           <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_User" FromRole="User" ToRole="Transaction" />
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_Users" FromRole="User" ToRole="UserDrawTypeOption" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_User_Group" FromRole="User" ToRole="Group" />
+          <NavigationProperty Name="VerificationKeys" Relationship="DbModel.FK_VerificationKeys_Users" FromRole="User" ToRole="VerificationKey" />
         </EntityType>
         <Association Name="FK_Balances_Ledgers">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
@@ -1829,6 +1851,26 @@
                 <ScalarProperty Name="ParentGroupId" ColumnName="ParentGroupId" />
                 <ScalarProperty Name="GroupName" ColumnName="GroupName" />
                 <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UniqueKeys">
+            <EntityTypeMapping TypeName="DbModel.UniqueKey">
+              <MappingFragment StoreEntitySet="UniqueKeys">
+                <ScalarProperty Name="KeyValue" ColumnName="KeyValue" />
+                <ScalarProperty Name="KeyLength" ColumnName="KeyLength" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VerificationKeys">
+            <EntityTypeMapping TypeName="DbModel.VerificationKey">
+              <MappingFragment StoreEntitySet="VerificationKeys">
+                <ScalarProperty Name="VerifiedOn" ColumnName="VerifiedOn" />
+                <ScalarProperty Name="SentOn" ColumnName="SentOn" />
+                <ScalarProperty Name="VKey" ColumnName="VKey" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="VerificationId" ColumnName="VerificationId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

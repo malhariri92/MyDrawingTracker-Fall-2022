@@ -19,10 +19,20 @@ namespace MDT.Controllers
     public class HomeController : Controller
     {
         private DbEntities db = new DbEntities();
-        
+
         public ActionResult Index()
         {
+            if (TempData["VerificationSuccess"] != null)
+            {
+                ViewBag.Message = TempData["VerificationSuccess"];
+                TempData["VerificationSuccess"] = null;
+            }
 
+            if (TempData["VerificationFailure"] != null)
+            {
+                ViewBag.Error = TempData["VerificationFailure"];
+                TempData["VerificationFailure"] = null;
+            }
             return View();
         }
 
@@ -37,8 +47,8 @@ namespace MDT.Controllers
             UserDTO user = (UserDTO)Session["User"];
             if (user == null)
             {
-                 return PartialView();
-                
+                return PartialView();
+
             }
             return PartialView("GroupInfo");
 
@@ -61,7 +71,7 @@ namespace MDT.Controllers
                     return Redirect(url ?? "/Home/Index");
 
                     return PartialView("UserAccess");
-                   
+
                 }
 
                 if (cred.UserLocked)
@@ -94,7 +104,7 @@ namespace MDT.Controllers
         {
 
             UserDTO user = WebManager.GetUserDTOByEmail(vm.UserEmail);
-    
+
             vm.UserId = user?.UserId ?? 0;
 
             vm.UserName = user?.UserName ?? "";
@@ -104,31 +114,14 @@ namespace MDT.Controllers
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
-
-                    { "[[name]]", user.UserName },
-                    { "[[key]]", key },
+                    { "[[authUrl]]", key },
+                    { "[[key]]", key},
+                    { "[[UserEmail]]", vm.UserEmail},
+                    { "[[Name]]", user.UserName },
                 };
 
-                EmailMessage email = new EmailMessage();
-                email.AddTo(user.EmailAddress);
-                email.SetSubject("Password Reset Request");
-                email.SetTemplateBody("ForgotPass.html", variables);
-               
-                List<string> recipients = new List<string>();
-                recipients.Add(user.EmailAddress);
-                if (WebManager.SendTemplateEmail(
-                    recipients,
-                    1,
-                    variables
-                ))
-                {
-                    vm.Success = true;
-                }
-                else
-                {
-                    vm.Error=true;
-                }
-         
+                WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 1, variables);
+
 
             }
             vm.Success = true;
@@ -144,8 +137,8 @@ namespace MDT.Controllers
             if (user == null)
             {
                 UserPasswordResetVM vm = new UserPasswordResetVM();
-                User userViaKey = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
-                if (userViaKey == null)
+                User key = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
+                if (key == null)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -153,12 +146,12 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-                if (userViaKey.ResetKey == null)
+                if (key.ResetKey == null)
                 {
                     return RedirectToAction("ForgotPass");
                 }
 
-                if (userViaKey.ResetKeyExpires < DateTime.Now)
+                if (key.ResetKeyExpires < DateTime.Now)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -210,12 +203,6 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-
-                if (!ModelState.IsValid)
-                {
-                    Session["UserKey"] = key;
-                    return View(vm);
-                }
 
 
 
@@ -274,6 +261,7 @@ namespace MDT.Controllers
             {
                 return PartialView(vm);
             }
+
             User user = new User()
             {
                 UserName = vm.UserName,
@@ -284,6 +272,34 @@ namespace MDT.Controllers
             };
 
             db.Users.Add(user);
+
+            string key = WebManager.GetUniqueKey(10);
+            db.VerificationKeys.Add(new VerificationKey()
+            {
+                UserId = user.UserId,
+                EmailAddress = user.EmailAddress,
+                VKey = key,
+                SentOn = DateTime.Now
+            });
+            db.SaveChanges();
+
+          
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+            {
+                { "[[Name]]", user.UserName },
+                { "[[VerifyKey]]", key },
+            };
+
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
+            PasswordManager.SetNewHash(user.UserId, vm.Password);
+
+            //Generate notification email
+            GroupUser groupUser = db.GroupUsers.Where(u =>  u.GroupId == groupMatch.GroupId && u.IsAdmin).FirstOrDefault();
+            User groupAdmin = db.Users.Find(groupUser.UserId);
+
+            string subject = groupMatch.JoinConfirmationRequired ? "Confirm New User" : "A New User Joined Your Group";
+            string templateName = groupMatch.JoinConfirmationRequired ? "Confirm New Group User" : "New Group User";
+            int templateId = groupMatch.JoinConfirmationRequired ? 8 : 7;
 
             Dictionary<string, string> variables = new Dictionary<string, string>()
             {
@@ -309,7 +325,7 @@ namespace MDT.Controllers
             return PartialView("UnverifiedEmail");
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateAdmin(AdminUserVM vm)
@@ -332,6 +348,7 @@ namespace MDT.Controllers
                 GroupName = vm.GroupName,
                 IsActive = true,
                 IsPrimary = true,
+                AccessCode = WebManager.GetUniqueKey(10),
                 JoinConfirmationRequired = true,
             };
 
@@ -344,6 +361,12 @@ namespace MDT.Controllers
             List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
             WebManager.SendTemplateEmail(recipients, 3, variables);
 
+           
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+            {
+                { "[[GroupName]]", group.GroupName }
+            };
+            List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
             WebManager.SendTemplateEmail(recipients, 3, variables);
 
             // Create a new user
@@ -366,13 +389,21 @@ namespace MDT.Controllers
             });
             db.SaveChanges();
 
+            string key = WebManager.GetUniqueKey(10);
+            db.VerificationKeys.Add(new VerificationKey()
+            {
+                UserId = user.UserId,
+                EmailAddress = user.EmailAddress,
+                VKey = key,
+                SentOn = DateTime.Now
+            });
+            db.SaveChanges();
+
             variables = new Dictionary<string, string>()
             {
                 { "[[Name]]", user.UserName },
                 { "[[VerifyKey]]", key },
             };
-
-            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
 
             WebManager.SendTemplateEmail( $"{user.EmailAddress}\t{user.UserName}", 2, variables);
 
@@ -381,13 +412,13 @@ namespace MDT.Controllers
             PasswordManager.SetNewHash(user.UserId, vm.Password);
 
             //Create the admin group user.
-            var groupUser = new GroupUser()
+            db.GroupUsers.Add(new GroupUser()
             {
                 GroupId = group.GroupId,
                 UserId = user.UserId,
                 IsAdmin = true,
-            };
-            db.GroupUsers.Add(groupUser);
+            });
+
             db.SaveChanges();
 
             ViewBag.SuccessMessage = "Your account has been created successfully!";
@@ -446,7 +477,28 @@ namespace MDT.Controllers
 
             return RedirectToAction("Index", "Home", null);
         }
+        
+        public ActionResult SendVerification()
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            string key = WebManager.GetUniqueKey(10);
+            db.VerificationKeys.Add(new VerificationKey()
+            {
+                UserId = user.UserId,
+                EmailAddress = user.EmailAddress,
+                VKey = key,
+                SentOn = DateTime.Now
+            });
+            db.SaveChanges();
 
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+            {
+                { "[[Name]]", user.UserName },
+                { "[[VerifyKey]]", key },
+            };
+
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
             return PartialView("VerificationEmailSent");
         }
         public void SessionSetup(UserDTO user)
@@ -468,7 +520,7 @@ namespace MDT.Controllers
                     role = "User";
                 }
             }
-            
+
             Session["User"] = WebManager.GetUserDTO(user.UserId);
             Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
             Session["Ident"] = new GenericPrincipal(new GenericIdentity(user.EmailAddress), new string[] { role });

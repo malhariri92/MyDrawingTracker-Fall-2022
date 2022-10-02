@@ -109,13 +109,26 @@ namespace MDT.Controllers
 
 
 
+        public ActionResult Index()
+        {
+            List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
+            List<UserDTO> mld = new List<UserDTO>();
+            foreach (User u in ml)
+            {
+                if (user.UserId == u.UserId)
+                {
+                    continue;
+                }
+                GroupUser gu = db.GroupUsers.Where(g => g.UserId == u.UserId && g.GroupId == u.CurrentGroupId).FirstOrDefault();
 
+                mld.Add(new UserDTO(u));
+            }
+            return View(mld);
+        }
 
         public ActionResult RemoveFromGroup(int uId, int guId)
         {
-            using (var db = new DbEntities())
-            {
-                try
+            try
                 {
                     GroupUser gremoved = db.GroupUsers.Where(r => r.UserId == uId && r.GroupId == guId).First();
                     GroupUser gremoved2 = db.GroupUsers.Remove(gremoved);
@@ -124,10 +137,9 @@ namespace MDT.Controllers
                     db.SaveChanges();
                 }
                 catch { }
-            }
+            
             return RedirectToAction("Index", "Group");
         }
-
 
         public ActionResult InviteList()
         {
@@ -223,14 +235,7 @@ namespace MDT.Controllers
                 List<string> recipients = new List<string>();
                 recipients.Add(grpInvite.EmailAddress);
 
-                bool sent = WebManager.SendTemplateEmail(recipients, dbUser != null ? INV_EX_ID : INV_ID, variables);
-
-                Session["sent"] = sent;
-
-                if (!sent)
-                {
-                    return PartialView("EmailFailed");
-                }
+                WebManager.SendTemplateEmail(recipients, 6, variables);
 
                 return PartialView(grpInvite);
             }
@@ -358,7 +363,7 @@ namespace MDT.Controllers
                 List<string> recipients = new List<string>();
                 recipients.Add(EmailAddress);
 
-                return WebManager.SendTemplateEmail(recipients, dbUser != null ? REM_EX_ID : REM_ID, variables);
+                WebManager.SendTemplateEmail(recipients, 6, variables);
             }
             return false;
         }

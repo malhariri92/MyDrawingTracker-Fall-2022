@@ -231,10 +231,16 @@
     <Compile Include="Models\TransactionType.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UniqueKey.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserDrawTypeOption.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VerificationKey.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WebManager.cs" />
@@ -305,10 +311,11 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
-    <Content Include="Content\v4-shims.css" />
-    <Content Include="Content\v4-shims.min.css" />
-    <Content Include="EmailTemplates\ConfirmNewUser.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
+    <Content Include="EmailTemplates\VerifyEmail.html" />
+    <Content Include="EmailTemplates\GroupDenied.html" />
+    <Content Include="EmailTemplates\NewGroup.html" />
+    <Content Include="EmailTemplates\GroupApproved.html" />
     <Content Include="EmailTemplates\InviteExisting.html" />
     <Content Include="EmailTemplates\NewUser.html" />
     <Content Include="EmailTemplates\Invite.html" />
@@ -388,27 +395,13 @@
     <Content Include="Views\Shared\Nope.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\Reject.cshtml" />
-    <Content Include="webfonts\fa-brands-400.svg" />
-    <Content Include="webfonts\fa-regular-400.svg" />
-    <Content Include="webfonts\fa-solid-900.svg" />
-    <Content Include="webfonts\fa-solid-900.woff2" />
-    <Content Include="webfonts\fa-solid-900.woff" />
-    <Content Include="webfonts\fa-solid-900.ttf" />
-    <Content Include="webfonts\fa-solid-900.eot" />
-    <Content Include="webfonts\fa-regular-400.woff2" />
-    <Content Include="webfonts\fa-regular-400.woff" />
-    <Content Include="webfonts\fa-regular-400.ttf" />
-    <Content Include="webfonts\fa-regular-400.eot" />
-    <Content Include="webfonts\fa-brands-400.woff2" />
-    <Content Include="webfonts\fa-brands-400.woff" />
-    <Content Include="webfonts\fa-brands-400.ttf" />
-    <Content Include="webfonts\fa-brands-400.eot" />
     <Content Include="Views\Home\CreateAdmin.cshtml" />
     <Content Include="Views\Home\UserAccess.cshtml" />
     <Content Include="Views\Home\UnverifiedEmail.cshtml" />
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Group\Edit.cshtml" />
+    <Content Include="Views\Home\VerificationEmailSent.cshtml" />
     <Content Include="Views\Group\GroupIndex.cshtml" />
     <Content Include="Views\Group\Index.cshtml" />
     <Content Include="Views\Group\InviteList.cshtml" />

@@ -61,6 +61,17 @@ namespace MDT.Controllers
             db.Entry(g).State = EntityState.Modified;
             await db.SaveChangesAsync();
 
+            User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[Name]]", u.UserName },
+                    { "[[GroupName]]", g.GroupName },
+                    { "[[GroupId]]", $"{g.GroupId}"},
+                };
+
+            WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
+
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
             return RedirectToAction("Index");
         }
@@ -100,6 +111,17 @@ namespace MDT.Controllers
             db.Entry(g).State = EntityState.Modified;
             db.Entry(desc).State = EntityState.Added;
             await db.SaveChangesAsync();
+
+            User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[Name]]", u.UserName },
+                    { "[[GroupName]]", g.GroupName },
+                    { "[[RejectReason]]", desc.TextBody},
+                };
+
+            WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
             return RedirectToAction("Index");
