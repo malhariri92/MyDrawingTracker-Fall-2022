@@ -166,5 +166,47 @@ namespace MDT.Controllers
             return View(vm);
 
         }
+        public ActionResult SeeMembersList()
+        {
+            using (var db = new DbEntities())
+            {
+                List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
+                List<UserDTO> mld = new List<UserDTO>();
+                foreach (User u in ml)
+                {
+                    if(user.UserId == u.UserId)
+                    {
+                        continue;
+                    }
+                    GroupUser gu = db.GroupUsers.Where(g => g.UserId == u.UserId && g.GroupId == u.CurrentGroupId).FirstOrDefault();
+                    
+                    mld.Add(new UserDTO(u));
+                }
+                return View(mld);
+            }
+        }
+
+        public ActionResult RemoveFromGroup(int uId, int guId)
+        {
+            using (var db = new DbEntities())
+            {
+                try
+                {
+                    GroupUser gremoved = db.GroupUsers.Where(r => r.UserId == uId && r.GroupId == guId).First();
+                    GroupUser gremoved2 = db.GroupUsers.Remove(gremoved);
+
+                    db.Entry(gremoved2).State = EntityState.Deleted;
+                    db.SaveChanges();
+                }
+                catch 
+                {
+                    /*vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "User Retrieval Error (2)";
+                    return View(vm);*/
+                }
+            }
+            return RedirectToAction("SeeMembersList", "User");
+        }
     }
 }

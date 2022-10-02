@@ -80,6 +80,10 @@
                         {
                             <li>@Html.ActionLink("Site Admin", "Index", "Admin")</li>
                         }
+                        if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+                        {
+                            <li>@Html.ActionLink("See Members", "SeeMembersList", "User")</li>
+                        }
                         <li>@Html.ActionLink("Sign Out", "SignOut", "Home")</li>
                     }
                 </ul>
