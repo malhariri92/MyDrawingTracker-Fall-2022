@@ -3,7 +3,10 @@
 @{
     ViewBag.Title = "Group Members";
 }
-
+<div>
+    @Html.ActionLink("View Invite List", "InviteList", "Group", new { @class = "btn btn-info" })
+</div>
+<br />
 @if (Model.Any())
 {
     <h1>List of Members</h1>
@@ -40,3 +43,4 @@ else
 {
     <h1>THERE ARE NO MEMBERS OF THIS GROUP</h1>
 }
+

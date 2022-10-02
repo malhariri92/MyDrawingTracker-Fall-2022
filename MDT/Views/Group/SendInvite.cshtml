@@ -1,0 +1,16 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@model GroupInvite
+@{
+    GroupDTO group = (GroupDTO)Session["Group"];
+}
+
+<h2>Invitation Sent!</h2>
+<br />
+<div>
+    <p>An invite has been sent to @Model.EmailAddress for the group @group.GroupName. </p>
+</div>
+<br />
+<div>
+    @Html.ActionLink("Return to Invite List", "InviteList", "Group", new { @class = "btn btn-info" })
+</div>
