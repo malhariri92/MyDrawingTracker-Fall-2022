@@ -217,6 +217,7 @@
     <Compile Include="Models\ObjectType.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PartialClasses.cs" />
     <Compile Include="Models\PasswordManager.cs" />
     <Compile Include="Models\Schedule.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
@@ -244,6 +245,7 @@
     <Compile Include="ViewModels\GameSettingsVM.cs" />
     <Compile Include="ViewModels\DrawTypeVM.cs" />
     <Compile Include="ViewModels\GroupListVM.cs" />
+    <Compile Include="ViewModels\GroupOptionsVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
     <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
@@ -406,6 +408,7 @@
     <Content Include="Views\Home\UnverifiedEmail.cshtml" />
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Group\Edit.cshtml" />
     <Content Include="Views\Group\GroupIndex.cshtml" />
     <Content Include="Views\Group\Index.cshtml" />
     <Content Include="Views\Group\InviteList.cshtml" />

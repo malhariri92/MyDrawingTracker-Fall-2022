@@ -67,10 +67,8 @@
                     {
                         <li>@Html.ActionLink("Home", "Index", "Home", null, null)</li>
                         <li>@Html.ActionLink("My Profile", "Index", "User")</li>
-                        if (isGroupAdmin)
-                        {
                             <li>@Html.ActionLink("My Group", "Index", "Group") </li>
-                        }
+                        
                     }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

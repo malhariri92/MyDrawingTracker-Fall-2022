@@ -1,3 +1,75 @@
+﻿@model MDT.ViewModels.GroupOptionsVM
+@using MDT.Models
+@using MDT.Models.DTO
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = (UserDTO)Session["User"];
+    var group = (GroupDTO)Session["Group"];
+}
+
+<h2>Group Settings</h2>
+
+<div class="form-horizontal">
+    <hr />
+    <div class="form-group">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.GroupName)
+        </div>
+        <div class="col-md-8">
+            @Html.DisplayFor(model => model.GroupName)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.AccessCode)
+        </div>
+        <div class="col-md-8">
+            @Html.DisplayFor(model => model.AccessCode)
+        </div>
+    </div>
+    @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+    {
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.JoinConfirmation)
+            </div>
+            <div class="col-md-8">
+                <input type="checkbox" id="joinConfirm" data-toggle="toggle" data-on="Yes" data-offset="No" />
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).on('change', '#joinConfirm', function () {
+            console.log("test");
+            let flag = $(this).is(':checked');
+            $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
+            });
+        </script>
+    }
+    @foreach (Description d in Model.Descriptions)
+    {
+        if (!string.IsNullOrEmpty(d.Title))
+        {
+            <h3>@d.Title</h3>
+        }
+        if (!string.IsNullOrEmpty(d.TextBody))
+        {
+            <p>@d.TextBody</p>
+        }
+    }
+    @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+    {
+        <hr />
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="button" class="btn btn-sm btn-info" value="Edit" onclick="location.href='@Url.Action("Edit", "Group")'" />
+            </div>
+        </div>
+    }
+</div>
+
 ﻿@using MDT.Models.DTO
 @model List<UserDTO>
 @{
