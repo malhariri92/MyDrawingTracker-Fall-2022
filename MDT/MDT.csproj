@@ -135,8 +135,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DrawController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TransactionController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Attributes\PhoneNumberValidation.cs" />
@@ -311,6 +313,8 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="EmailTemplates\ConfirmNewUser.html" />
+    <Content Include="EmailTemplates\ResetPass.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
     <Content Include="EmailTemplates\VerifyEmail.html" />
     <Content Include="EmailTemplates\GroupDenied.html" />
@@ -417,6 +421,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Draw\" />
+    <Folder Include="Views\Transaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
