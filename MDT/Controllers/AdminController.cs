@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace MDT.Controllers
 {
-    [AdminFilter(Role ="Site Admin")]
+    [AdminFilter(Role = "Site Admin")]
     public class AdminController : BaseController
     {
         public ActionResult Index()
@@ -30,16 +30,16 @@ namespace MDT.Controllers
 
             List<GroupVM> vm = db.Groups.Where(g => g.IsApproved == null)
                                       .Include(g => g.GroupUsers)
-                                      .Include(g => g.GroupUsers.Select(gu =>gu.User))
+                                      .Include(g => g.GroupUsers.Select(gu => gu.User))
                                       .ToList()
                                       .Select(g => new GroupVM(g))
                                       .ToList();
 
-            foreach(GroupVM gvm in vm)
+            foreach (GroupVM gvm in vm)
             {
                 gvm.SetDescriptions(db.Descriptions.Where(d => new List<int>() { 1, 5, 6 }.Contains(d.ObjectTypeId) && d.ObjectId == gvm.GroupId).ToList());
             }
-            
+
 
             return View(vm);
         }
@@ -60,6 +60,17 @@ namespace MDT.Controllers
             g.IsApproved = true;
             db.Entry(g).State = EntityState.Modified;
             await db.SaveChangesAsync();
+
+            User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[Name]]", u.UserName },
+                    { "[[GroupName]]", g.GroupName },
+                    { "[[GroupId]]", $"{g.GroupId}"},
+                };
+
+            WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
             return RedirectToAction("Index");
@@ -100,6 +111,17 @@ namespace MDT.Controllers
             db.Entry(g).State = EntityState.Modified;
             db.Entry(desc).State = EntityState.Added;
             await db.SaveChangesAsync();
+
+            User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[Name]]", u.UserName },
+                    { "[[GroupName]]", g.GroupName },
+                    { "[[RejectReason]]", desc.TextBody},
+                };
+
+            WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
             return RedirectToAction("Index");

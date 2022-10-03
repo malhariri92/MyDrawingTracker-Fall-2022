@@ -5,8 +5,10 @@ namespace MDT.ViewModels
 {
     public class AdminUserVM
     {
+
         [Display(Name = "Display Name")]
         [Required(ErrorMessage = "{0} is required")]
+        [MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
         public string UserName { get; set; }
 
         [DataType(DataType.EmailAddress)]
@@ -28,6 +30,7 @@ namespace MDT.ViewModels
         [Required(ErrorMessage = "Password confirmation is required")]
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPass { get; set; }
+
 
         public AdminUserVM() { }
     }

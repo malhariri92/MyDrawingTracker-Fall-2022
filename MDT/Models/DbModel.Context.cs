@@ -46,5 +46,7 @@ namespace MDT.Models
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<SentEmail> SentEmails { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<UniqueKey> UniqueKeys { get; set; }
+        public virtual DbSet<VerificationKey> VerificationKeys { get; set; }
     }
 }

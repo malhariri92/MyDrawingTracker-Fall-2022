@@ -11,6 +11,7 @@ namespace MDT.Models.DTO
         public string GroupName { get; set; }
         public int? ParentGroupId { get; set; }
         public string ParentGroupName { get; set; }
+        public string AccessCode { get; set; }
         public bool IsActive { get; set; }
         public bool IsPrimary { get; set; }
         public bool? IsApproved { get; set; }
@@ -39,6 +40,7 @@ namespace MDT.Models.DTO
                 IsPrimary = group.IsPrimary;
                 IsApproved = group.IsApproved;
                 JoinConfirmationRequired = group.JoinConfirmationRequired;
+                AccessCode = group.AccessCode;
 
                 foreach (GroupUser gu in group.GroupUsers)
                 {

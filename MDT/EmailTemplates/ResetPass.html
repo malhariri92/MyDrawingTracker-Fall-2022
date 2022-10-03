@@ -22,18 +22,27 @@
                     <strong style="text-decoration:none; font-weight:normal; color:white;">
                         My Drawing Tracker
                         <br />
-                        [[TemplateName]]
+                        Password Reset Request
                     </strong>
                 </a>
             </td>
         </tr>
         <tr>
             <td>
-                Hello [[Name]], <br />
-                Your request to join the group [[GroupName]] has been approved by the group admin. <br />
+                Hello, [[Name]]
             </td>
         </tr>
-
+        <tr class="spacer"><td></td></tr>
+        <tr>
+            <td>
+                <p>
+                    [[AdminName]] from [[GroupName]] has triggered a password reset request for the My Drawing Tracker account associated with this e-mail address.
+                    If you do not to reset your My Drawing Tracker account password, you may safely ignore this e-mail. Otherwise, please 
+                    <a href="[[RootUrl]]/Home/ResetPass?k=[[Key]]">click here</a> within one hour of receiving 
+                    this message in order to change your password.
+                </p> 
+            </td>
+        </tr>
         <tr style="font-size:smaller; color:darkgrey; text-align:center;">
             <td>
                 <hr style="color:darkgrey; width:75%;" />

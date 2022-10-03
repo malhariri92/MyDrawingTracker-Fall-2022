@@ -22,6 +22,7 @@ namespace MDT.Models
             this.GroupUsers = new HashSet<GroupUser>();
             this.Transactions = new HashSet<Transaction>();
             this.UserDrawTypeOptions = new HashSet<UserDrawTypeOption>();
+            this.VerificationKeys = new HashSet<VerificationKey>();
         }
     
         public int UserId { get; set; }
@@ -48,5 +49,7 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
         public virtual Group Group { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VerificationKey> VerificationKeys { get; set; }
     }
 }

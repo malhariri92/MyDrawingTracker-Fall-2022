@@ -17,10 +17,11 @@ namespace MDT.Controllers
 {
     public class UserController : BaseController
     {
-        
+
         public ActionResult Index()
         {
             UserVM vm = new UserVM(db.Users.Where(u => user.UserId == u.UserId).Include(u => u.GroupUsers).FirstOrDefault());
+
             return View(vm);
         }
 
@@ -143,7 +144,7 @@ namespace MDT.Controllers
                     }
 
                     user.UserName = vm.UserName;
-                   // user.PhoneNumber = vm.PhoneNumber;
+                    // user.PhoneNumber = vm.PhoneNumber;
                     user.CurrentGroupId = vm.CurrentGroupId;
 
                     db.Entry(user).State = EntityState.Modified;

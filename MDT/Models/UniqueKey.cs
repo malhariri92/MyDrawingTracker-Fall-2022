@@ -12,14 +12,9 @@ namespace MDT.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class GroupUser
+    public partial class UniqueKey
     {
-        public int GroupId { get; set; }
-        public int UserId { get; set; }
-        public bool IsAdmin { get; set; }
-        public bool IsApproved { get; set; }
-    
-        public virtual User User { get; set; }
-        public virtual Group Group { get; set; }
+        public int KeyLength { get; set; }
+        public string KeyValue { get; set; }
     }
 }

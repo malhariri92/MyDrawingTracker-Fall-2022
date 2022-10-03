@@ -12,14 +12,15 @@ namespace MDT.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class GroupUser
+    public partial class VerificationKey
     {
-        public int GroupId { get; set; }
+        public int VerificationId { get; set; }
         public int UserId { get; set; }
-        public bool IsAdmin { get; set; }
-        public bool IsApproved { get; set; }
+        public string EmailAddress { get; set; }
+        public string VKey { get; set; }
+        public Nullable<System.DateTime> SentOn { get; set; }
+        public Nullable<System.DateTime> VerifiedOn { get; set; }
     
         public virtual User User { get; set; }
-        public virtual Group Group { get; set; }
     }
 }
