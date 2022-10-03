@@ -18,7 +18,11 @@ namespace MDT.Models
                 User user = db.Users.Find(vm.UserId);
     
                 //I had to convert the email address all to lower case so it could be sent without issue.
-                if (user != null && user.EmailAddress.ToLower().Equals(vm.UserEmail.ToLower()) && user.IsActive)
+                if (user != null 
+                    && user.EmailAddress != null 
+                    && vm.UserEmail != null 
+                    && user.EmailAddress.ToLower().Equals(vm.UserEmail.ToLower()) 
+                    && user.IsActive)
                 {
                     //25-char long string is randomly generated.
                     string key = RandomString(25);

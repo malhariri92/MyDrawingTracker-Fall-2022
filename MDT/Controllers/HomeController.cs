@@ -76,7 +76,6 @@ namespace MDT.Controllers
         public ActionResult ForgotPass()
         {
             UserDTO user = (UserDTO)Session["User"];
-            Console.WriteLine("TEst");
             if (user == null)
             {
                 return PartialView("ForgotPass", new UserPasswordResetSetupVM());
@@ -100,15 +99,9 @@ namespace MDT.Controllers
             {
                 Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
-                    { "[[authUrl]]", $"https://mydrawingtracker.com/Home/ResetPass?k={key}" },
-                    { "[[key]]", key},
-                    { "[[UserEmail]]", vm.UserEmail},
-                    { "[[greeting]]", $"Hello {user.UserName}," },
-                    { "[[body1]]", "We have received a password reset request for the My Drawing Tracker account associated with this e-mail address. " +
-                        "If you have not made a password reset request for your My Drawing Tracker account, you may safely ignore this e-mail. If you " +
-                        "have made a password request, please "},
-                    { "[[body2]]", " within one hour of receiving this message in order to change your password." },
-                    { "[[TemplateName]]", "Password Reset Request" },
+
+                    { "[[name]]", user.UserName },
+                    { "[[key]]", key },
                 };
 
                 EmailMessage email = new EmailMessage();
@@ -118,15 +111,21 @@ namespace MDT.Controllers
                
                 List<string> recipients = new List<string>();
                 recipients.Add(user.EmailAddress);
-                WebManager.SendTemplateEmail(
-                    recipients, 
+                if (WebManager.SendTemplateEmail(
+                    recipients,
                     1,
                     variables
-                );
+                ))
+                {
+                    vm.Success = true;
+                }
+                else
+                {
+                    vm.Error=true;
+                }
          
 
             }
-            vm.Success = true;
 
             return PartialView("ForgotPass", vm);
 
@@ -139,8 +138,8 @@ namespace MDT.Controllers
             if (user == null)
             {
                 UserPasswordResetVM vm = new UserPasswordResetVM();
-                User key = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
-                if (key == null)
+                User userViaKey = db.Users.Where(uk => uk.ResetKey.Equals(k)).FirstOrDefault();
+                if (userViaKey == null)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -148,20 +147,25 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-                    if (key.ResetKey == null)
-                    {
-                        return RedirectToAction("ForgotPass");
-                    }
+                if (userViaKey.ResetKey == null)
+                {
+                    return RedirectToAction("ForgotPass");
+                }
 
-                    if (key.ResetKeyExpires < DateTime.Now)
-                    {
-                        vm.Success = false;
-                        vm.Error = true;
-                        vm.Message = "Key has expired. Please request a new key.";
-                        return View(vm);
-                    }
+                if (userViaKey.ResetKeyExpires < DateTime.Now)
+                {
+                    vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "Key has expired. Please request a new key.";
+                    return View(vm);
+                }
 
-                Session["UserKey"] = key;
+                UserDTO userDTO = new UserDTO(userViaKey);
+                Session["User"] = userDTO;
+                Session["UserKey"] = userViaKey;
+                Session["Group"] = WebManager.GetGroupDTO(userViaKey.CurrentGroupId);
+
+                vm.IsChangeRequest = true;
 
                 return View("ResetPass", vm);
             }
@@ -174,7 +178,7 @@ namespace MDT.Controllers
         {
             UserDTO user = (UserDTO)Session["User"];
 
-            if (User == null)
+            if (user != null)
             {
                 User key = (User)Session["UserKey"];
 
@@ -212,12 +216,20 @@ namespace MDT.Controllers
 
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
+                    key = db.Users.Find(key.UserId);
                     vm.Success = true;
+                    vm.IsChangeRequest = true;
+                    using (var db = new DbEntities())
+                    {
+                        key = db.Users.Find(key.UserId); //grab user as it is changed by SetNewHash function
+                        vm.Success = true;
+                        vm.IsChangeRequest = true;
 
-                    key.ResetKey = null;
-                    key.ResetKeyExpires = null;
-                    db.Entry(key).State = EntityState.Modified;
-                    db.SaveChanges();
+                        key.ResetKey = null;
+                        key.ResetKeyExpires = null;
+                        db.Entry(key).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
 
                 }
                 else
@@ -226,11 +238,21 @@ namespace MDT.Controllers
                     vm.Error = true;
                     vm.Message = "Something went wrong updating your password. Please try again.";
                     Session["UserKey"] = key;
+
+                    return View(vm);
                 }
+                if(!(PasswordManager.UpdateReset(key.UserId)))
+                {
+                    vm.Success = false;
+                    vm.Error = true;
+                    vm.Message = "Something went wrong updating your password reset key status. Please try again.";
+                    Session["UserKey"] = key;
+                }
+                
                 return View(vm);
             }
 
-            return RedirectToAction("ChangePass");
+            return RedirectToAction("ChangePass", "User");
         }
 
         public ActionResult SignOut()
@@ -279,6 +301,36 @@ namespace MDT.Controllers
 
             PasswordManager.SetNewHash(user.UserId, vm.Password);
 
+            //Generate notification email
+            GroupUser groupUser = db.GroupUsers.Where(u =>  u.GroupId == groupMatch.GroupId && u.IsAdmin).FirstOrDefault();
+            User groupAdmin = db.Users.Find(groupUser.UserId);
+
+            string subject = groupMatch.JoinConfirmationRequired ? "Confirm New User" : "A New User Joined Your Group";
+            string templateName = groupMatch.JoinConfirmationRequired ? "Confirm New Group User" : "New Group User";
+            int templateId = groupMatch.JoinConfirmationRequired ? 8 : 7;
+
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[userName]]", user.UserName },
+                    { "[[adminName]]", groupAdmin.UserName },
+                    { "[[groupName]]", groupMatch.GroupName },
+                    { "[[TemplateName]]", templateName },
+                    { "[[confirmUrl]]", "" },
+                };
+
+            EmailMessage email = new EmailMessage();
+            email.AddTo(groupAdmin.EmailAddress);
+            email.SetSubject(subject);
+            email.SetTemplateBody(templateName, variables);
+
+            List<string> recipients = new List<string>();
+            recipients.Add(groupAdmin.EmailAddress);
+            WebManager.SendTemplateEmail(
+                recipients,
+                templateId,
+                variables
+            );
+
             //Create the GroupUser entry
             var newGroupUser = new GroupUser()
             {
@@ -287,6 +339,7 @@ namespace MDT.Controllers
                 IsAdmin = false,
             };
             db.GroupUsers.Add(newGroupUser);
+            db.SaveChanges();
 
             SessionSetup(WebManager.GetUserDTO(user.UserId));
             return PartialView("UnverifiedEmail");

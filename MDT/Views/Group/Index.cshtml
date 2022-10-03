@@ -70,3 +70,49 @@
     }
 </div>
 
+﻿@using MDT.Models.DTO
+@model List<UserDTO>
+@{
+    ViewBag.Title = "Group Members";
+}
+<div>
+    @Html.ActionLink("View Invite List", "InviteList", "Group", new { @class = "btn btn-info" })
+</div>
+<br />
+@if (Model.Any())
+{
+    <h1>List of Members</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email Address</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserDTO member in Model)
+            {
+                <tr>
+                    <td>@member.UserName</td>
+                    <td>@member.EmailAddress</td>
+                    <td>
+                        @using (Html.BeginForm("TriggerPasswordReset", "Group", FormMethod.Post, new { @id = "form0" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("email", member.EmailAddress)
+                            <input type="submit" value="Trigger Password Reset" class="btn btn-primary" />
+                        }
+                    </td>
+                    <td>@Html.ActionLink("Kick from Group", "RemoveFromGroup", new { uId = member.UserId, guId = member.CurrentGroupId }, new { @class = "btn btn-danger" })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>THERE ARE NO MEMBERS OF THIS GROUP</h1>
+}
+

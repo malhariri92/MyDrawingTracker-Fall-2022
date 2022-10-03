@@ -1,0 +1,58 @@
+﻿@model MDT.ViewModels.UserVM
+    @using MDT.Models 
+
+@{
+    ViewBag.Title = "GroupIndex";
+}
+
+<h2 class="text-center" style="margin-bottom:20px;">New Users Requests</h2>
+
+@if (ViewBag.users.Count > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Email Address</th>
+                <th>Approve?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (User u in (List<User>)ViewBag.users)
+            {
+                <tr>
+                    <td>@u.UserName</td>
+                    <td>@u.EmailAddress</td>
+                    
+                    <td>
+                        <div style="float:left; margin-right: 15px;">
+                            @using (Ajax.BeginForm("Approve", "Group", new AjaxOptions { HttpMethod = "Post",
+                                OnSuccess = "location.reload();" }))
+                            {
+                                <input hidden name="UserId" value="@u.UserId" />
+                                <button type="submit" class="btn btn-xs btn-success btnApprove" title="Approve this user">
+                                    <span class="fa fa-check-circle"></span>
+                                </button>
+                            }
+                        </div>
+
+                        @using (Ajax.BeginForm("Reject", "Group", u.UserId, new AjaxOptions { HttpMethod = "Post",
+                            OnSuccess = "location.reload();" }))
+                        {
+                            <input hidden name="UserId" value="@u.UserId" />
+                            <button type="submit" class="btn btn-xs btn-danger btnReject" title="Reject this user">
+                                <span class="fa fa-times-circle"></span>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h3 class="text-center">No Users need approval.</h3>
+}
+
+

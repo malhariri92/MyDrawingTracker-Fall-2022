@@ -1,0 +1,17 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@model GroupInvite
+@{
+    GroupDTO group = (GroupDTO)Session["Group"];
+    ViewBag.Title = "Invitation Deleted";
+}
+
+<h2>Invitation Deleted!</h2>
+<br />
+<div>
+    <p>The invitation sent to @Model.EmailAddress is no longer valid for the group @group.GroupName.</p>
+</div>
+<br />
+<div>
+    @Html.ActionLink("Return to Invite List", "InviteList", "Group", new { @class = "btn btn-info" })
+</div>
