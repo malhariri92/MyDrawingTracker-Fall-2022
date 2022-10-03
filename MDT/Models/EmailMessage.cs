@@ -18,6 +18,8 @@ namespace MDT.Models
     public class EmailMessage
     {
         private MailMessage email;
+        private string server = "142.11.247.164";
+        private int port = 60447;
 
 
         /// <summary>
@@ -235,7 +237,7 @@ namespace MDT.Models
                 {
                     ServicePointManager.ServerCertificateValidationCallback += ValidateCertificate;
 
-                    using (SmtpClient smtpClient = new SmtpClient("142.11.247.164", 60447))
+                    using (SmtpClient smtpClient = new SmtpClient(server, port))
                     {
                         smtpClient.UseDefaultCredentials = false;
                         smtpClient.EnableSsl = true;

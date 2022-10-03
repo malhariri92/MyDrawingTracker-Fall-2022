@@ -101,24 +101,6 @@ namespace MDT.Controllers
         }
 
 
-
-        public ActionResult Index()
-        {
-            List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
-            List<UserDTO> mld = new List<UserDTO>();
-            foreach (User u in ml)
-            {
-                if (user.UserId == u.UserId)
-                {
-                    continue;
-                }
-                GroupUser gu = db.GroupUsers.Where(g => g.UserId == u.UserId && g.GroupId == u.CurrentGroupId).FirstOrDefault();
-
-                mld.Add(new UserDTO(u));
-            }
-            return View(mld);
-        }
-
         public ActionResult RemoveFromGroup(int uId, int guId)
         {
             try
