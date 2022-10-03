@@ -19,7 +19,11 @@ namespace MDT.Controllers
         {
             GroupOptionsVM vm = new GroupOptionsVM(db.Groups.Where(g => group.GroupId == g.GroupId).FirstOrDefault());
             vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectId == group.GroupId && d.ObjectTypeId == 1).ToList());
-        
+            return View(vm);
+        }
+
+        public ActionResult Members()
+        { 
                 List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
                 List<UserDTO> mld = new List<UserDTO>();
                 foreach (User u in ml)
@@ -32,7 +36,7 @@ namespace MDT.Controllers
 
                     mld.Add(new UserDTO(u));
                 }
-                return View(mld);
+                return PartialView(mld);
         }
 
         [AdminFilter(Role = "Admin")]

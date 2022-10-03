@@ -235,7 +235,7 @@ namespace MDT.Models
                 {
                     ServicePointManager.ServerCertificateValidationCallback += ValidateCertificate;
 
-                    using (SmtpClient smtpClient = new SmtpClient("127.0.0.1", 60447))
+                    using (SmtpClient smtpClient = new SmtpClient("142.11.247.164", 60447))
                     {
                         smtpClient.UseDefaultCredentials = false;
                         smtpClient.EnableSsl = true;

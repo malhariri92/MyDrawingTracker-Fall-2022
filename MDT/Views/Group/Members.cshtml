@@ -1,0 +1,39 @@
+﻿﻿@using MDT.Models.DTO
+@model List<UserDTO>
+@{
+    ViewBag.Title = "Group Members";
+}
+<div>
+    @Html.ActionLink("View Invite List", "InviteList", "Group", new { @class = "btn btn-info" })
+</div>
+<br />
+@if (Model.Any())
+{
+    <h1>List of Members</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email Address</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserDTO member in Model)
+            {
+                <tr>
+                    <td>@member.UserName</td>
+                    <td>@member.EmailAddress</td>
+                    <td>
+                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-primary" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>THERE ARE NO MEMBERS OF THIS GROUP</h1>
+}
