@@ -1,0 +1,38 @@
+@model MDT.ViewModels.TransactionVM
+@using MDT.Models
+@using MDT.Models.DTO
+
+@{
+    ViewBag.title = "Transactions"
+}
+
+<h2>Transaction History</h2>
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Transaction Type</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Source Ledger Name</th>
+                <th>Destination Ledger Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (TransactionDTO transaction in Model)
+                {
+                <tr>
+                    <td>@transaction.UserName</td>
+                    <td>@transaction.TransactionTypeName</td>
+                    <td>$@transaction.Amount</td>
+                    <td>@transaction.TransactionDateTime</td>
+                    <td>@transaction.SourceLedgerName</td>
+                    <td>@transaction.DestinationLedgerName</td>
+                </tr>
+                }
+        </tbody>
+    </table>
+}

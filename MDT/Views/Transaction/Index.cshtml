@@ -1,0 +1,52 @@
+﻿@using MDT.Models.DTO
+@model List<TransactionDTO>
+
+@{
+    ViewBag.title = "Transactions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@if (Model.Any())
+{
+    <h2 class="text-center">Transaction History</h2>
+    <div>
+        <table id="transactions_table" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Transaction Type</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Source Ledger</th>
+                    <th scope="col">Destination Ledger</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (TransactionDTO transaction in Model)
+                {
+                    <tr>
+                        <td>@transaction.UserName</td>
+                        <td>@transaction.TransactionTypeName</td>
+                        <td>$@transaction.Amount</td>
+                        <td>@transaction.TransactionDateTime</td>
+                        <td>@transaction.SourceLedgerName</td>
+                        <td>@transaction.DestinationLedgerName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{ 
+    <h1 class="text-center">No Transactions</h1>
+}
+
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#transactions_table').DataTable();
+    })
+</script>
