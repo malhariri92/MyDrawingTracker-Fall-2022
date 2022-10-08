@@ -14,12 +14,12 @@
         <table id="transactions_table" class="table table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Username</th>
-                    <th scope="col">Transaction Type</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Source Ledger</th>
-                    <th scope="col">Destination Ledger</th>
+                    <th>Username</th>
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Source Ledger</th>
+                    <th>Destination Ledger</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,18 +35,67 @@
                     </tr>
                 }
             </tbody>
+            <tfoot>
+                <tr>
+                    <th>Username</th>
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Source Ledger</th>
+                    <th>Destination Ledger</th>
+                </tr>
+            </tfoot>
         </table>
     </div>
 }
 else
-{ 
+{
     <h1 class="text-center">No Transactions</h1>
 }
 
 <script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/dataTables.searchPanes.min.js"></script>
+<script src="~/Scripts/dataTables.select.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/select.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/searchPanes.dataTables.min.css" />
 
 <script type="text/javascript">
     $(document).ready(function () {
+        $('#transactions_table tfoot th').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        });
+
         $('#transactions_table').DataTable();
-    })
+        var transactionTable = $('#transaction_table').DataTable();
+
+        transactionTable.columns().every(function () {
+            var that = this;
+
+            $('input', this.footer()).on('keyup change', function() {
+                if (that.search() !== this.value) {
+                    that.search(this.value).draw();
+                }
+            });
+        });
+
+        /*var transactionTable = $('#transactions_table').DataTable(
+            {
+                searchPanes:
+                {
+                    viewTotal: true
+                },
+                dom: 'Plfrtip',
+                columnDefs: [
+                    {
+                        searchPanes: {
+                            threshold: 1
+                        },
+                        targets: [0, 1, 2, 3, 4, 5]
+                    }
+                ]
+            }
+        );*/
+    });
 </script>
