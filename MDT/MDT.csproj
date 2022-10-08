@@ -426,6 +426,7 @@
     <Content Include="Views\Group\EmailFailed.cshtml" />
     <Content Include="Views\Group\Members.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
+    <Content Include="Views\Transaction\AddNewTransaction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
