@@ -2,6 +2,7 @@
 @model List<UserDTO>
 @{
     ViewBag.Title = "Group Members";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div>
     @Html.ActionLink("View Invite List", "InviteList", "Group", new { @class = "btn btn-info" })
