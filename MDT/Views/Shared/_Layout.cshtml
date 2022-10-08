@@ -81,6 +81,7 @@
                         if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
                         {
                             <li>@Html.ActionLink("See Members", "Index", "Group")</li>
+                            <li>@Html.ActionLink("Add New Transaction", "AddNewTransaction", "Transaction")</li>
                         }
                         <li>@Html.ActionLink("Sign Out", "SignOut", "Home")</li>
                     }

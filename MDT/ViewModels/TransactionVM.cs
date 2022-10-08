@@ -1,15 +1,29 @@
 ﻿using MDT.Models;
+using System.Collections.Generic;
+using System.Web.Mvc;
 using System;
+using System.ComponentModel.DataAnnotations;
+using MDT;
 
 namespace MDT.ViewModels
 {
     public class TransactionVM
     {
         public int TransactionId { get; set; }
+
+        [Display(Name = "User")]
+        [Required(ErrorMessage = "{0} is required")]
         public int UserId { get; set; }
         public string UserName { get; set; }
+
+        [Display(Name = "Amount")]
+        [Required(ErrorMessage = "{0} is required")]
+        [Range(0.01, 79228162514264337593543950335.0, ErrorMessage = "{0} must be greater than $0.00")]
         public decimal Amount { get; set; }
         public DateTime TransactionDateTime { get; set; }
+
+        [Display(Name = "Transaction Type")]
+        [Required(ErrorMessage = "{0} is required")]
         public int TransactionTypeId { get; set; }
         public string TypeName { get; set; }
         public int? DrawId { get; set; }
@@ -18,6 +32,7 @@ namespace MDT.ViewModels
 
         public TransactionVM()
         {
+
         }
 
         public TransactionVM(Transaction t)
