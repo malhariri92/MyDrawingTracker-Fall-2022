@@ -419,10 +419,14 @@
     <Content Include="Views\Group\ExistingInGroup.cshtml" />
     <Content Include="Views\Group\EmailFailed.cshtml" />
     <Content Include="Views\Group\Members.cshtml" />
+    <Content Include="Views\Draw\CreateDraw.cshtml" />
+    <Content Include="Views\Draw\CreateEditDrawForm.cshtml" />
+    <Content Include="Views\Draw\DrawCreated.cshtml" />
+    <Content Include="Views\Draw\EditList.cshtml" />
+    <Content Include="Views\Draw\DrawEdited.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Draw\" />
     <Folder Include="Views\Transaction\" />
   </ItemGroup>
   <ItemGroup>
