@@ -427,10 +427,12 @@
     <Content Include="Views\Group\Members.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
     <Content Include="Views\Transaction\AddNewTransaction.cshtml" />
+    <Content Include="Views\Draw\CreateDraw.cshtml" />
+    <Content Include="Views\Draw\CreateEditDrawForm.cshtml" />
+    <Content Include="Views\Draw\DrawCreated.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Draw\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
