@@ -7,7 +7,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MDT.Filters;
-using MDT.Models;
 using MDT.ViewModels;
 
 namespace MDT.Controllers
