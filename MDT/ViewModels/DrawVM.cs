@@ -24,10 +24,13 @@ namespace MDT.ViewModels
         [Required]
         public int DrawTypeId { get; set; }
         public string DrawTypeName { get; set; }
+        List<Description> Descriptions { get; set; }
+        public DrawOptionsVM Options { get; set; }
 
         public DrawVM()
         {
             Entries = new List<EntryVM>();
+            Descriptions = new List<Description>();
         }
 
         public DrawVM(Draw d) :this()
@@ -40,9 +43,14 @@ namespace MDT.ViewModels
                 Results = d.Results;
                 DrawTypeId = d.DrawTypeId;
                 DrawTypeName = d.DrawType.DrawTypeName;
-
+                Options = new DrawOptionsVM(d.DrawOption);
                 Entries = d.DrawEntries.Select(e => new EntryVM(e)).ToList();
             }
+        }
+
+        public void SetDescriptions(List<Description> desc)
+        {
+            Descriptions = desc.OrderBy(ds => ds.SortOrder).ToList();
         }
 
     }
