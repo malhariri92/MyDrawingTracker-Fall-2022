@@ -16,7 +16,8 @@ namespace MDT
                 "~/Scripts/jquery.validate*"));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery-ui").Include(
-                "~/Scripts/jquery-ui-{version}.js"));
+                "~/Scripts/jquery-ui-{version}.js",
+                "~/Scripts/jquery-ui-timepicker-addon.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
@@ -27,7 +28,8 @@ namespace MDT
                 "~/Content/bootstrap.css",
                 "~/Content/font-awesome.css",
                 "~/Content/Site.css",
-                "~/Content/bootstrap-toggle.less"));
+                "~/Content/bootstrap-toggle.less",
+                "~/Content/jquery-ui-timepicker-addon.css"));
         }
     }
 }
