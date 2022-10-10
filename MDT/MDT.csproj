@@ -483,9 +483,6 @@
     <Content Include="Views\Draw\DrawEdited.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
     <Content Include="Views\Transaction\AddNewTransaction.cshtml" />
-    <Content Include="Views\Draw\CreateDraw.cshtml" />
-    <Content Include="Views\Draw\CreateEditDrawForm.cshtml" />
-    <Content Include="Views\Draw\DrawCreated.cshtml" />
     <Content Include="Views\Draw\ViewDraw.cshtml" />
     <Content Include="Views\Draw\DrawDescription.cshtml" />
     <Content Include="Views\Draw\DrawRules.cshtml" />
