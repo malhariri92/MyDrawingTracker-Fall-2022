@@ -83,20 +83,22 @@ namespace MDT.Controllers
         [AdminFilter(Role = "Admin")]
         public ActionResult Approve(UserVM vm)
         {
-            User targetUser = db.Users.Find(vm.UserId);
+            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, vm.UserId);
 
-            targetUser.IsActive = true;
-            db.Entry(targetUser).State = EntityState.Modified;
-            db.SaveChanges();
+            if (targetUser != null)
+            {
+                targetUser.IsApproved = true;
+                db.Entry(targetUser).State = EntityState.Modified;
+                db.SaveChanges();
 
-            Dictionary<string, string> variables = new Dictionary<string, string>()
+                Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
-                    { "[[UserName]]", targetUser.UserName },
+                    { "[[UserName]]", targetUser.User.UserName },
                     { "[[GroupName]]", group.GroupName },
                 };
 
-            WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 9, variables);
-
+                WebManager.SendTemplateEmail($"{targetUser.User.EmailAddress}\t{targetUser.User.UserName}", 9, variables);
+            }
             return View();
         }
 

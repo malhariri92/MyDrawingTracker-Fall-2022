@@ -122,5 +122,15 @@ namespace MDT.Controllers
             }
             base.Dispose(disposing);
         }
+
+        protected List<DdlItem> GetDdl(DbSet<TransactionType> table)
+        {
+            return table.ToList().Select(i => new DdlItem(i.TransactionTypeId, i.TypeName)).ToList();
+        }
+
+        protected List<DdlItem> GetDdl(DbSet<GroupUser> table)
+        {
+            return table.ToList().Where(i => i.GroupId == group.GroupId).Select(i => new DdlItem(i.UserId, i.User.UserName)).ToList();
+        }
     }
 }

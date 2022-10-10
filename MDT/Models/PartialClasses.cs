@@ -10,6 +10,7 @@ namespace MDT.Models
     public partial class Description
     {
         public bool IsNew { get; set; }
+        public bool IsActive { get; set; }
     }
 
     public class DescriptionMetaData

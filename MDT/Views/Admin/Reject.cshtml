@@ -7,14 +7,18 @@
 </div>
 @using (Html.BeginForm($"Rejected", "Admin", FormMethod.Post))
 {
+    @if (Model.GroupId > 0)
+    {
+        @Html.HiddenFor(model => model.GroupId);
+    }
     <div class="modal-body">
         <div class="row">
             <div class="form-horizontal">
                 @Html.AntiForgeryToken()
                 <div class="row col-xs-10 col-xs-offset-1">
                     @Html.HiddenFor(model => model.GroupId)
-    
-                    @Html.TextAreaFor(model => model.TextArea, htmlAttributes: new { @class = "form-control", @rows = 5, placeholder="Reason for rejection"})
+
+                    @Html.TextAreaFor(model => model.TextArea, htmlAttributes: new { @class = "form-control", @rows = 5, placeholder = "Reason for rejection" })
                 </div>
             </div>
         </div>

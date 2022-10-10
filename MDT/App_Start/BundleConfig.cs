@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 using System.Web.Optimization;
 
 namespace MDT
@@ -19,12 +19,14 @@ namespace MDT
                 "~/Scripts/jquery-ui-{version}.js",
                 "~/Scripts/jquery-ui-timepicker-addon.js"));
 
+
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
                 "~/Scripts/bootstrap-toggle.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                 "~/Content/themes/base/jquery-ui.css",
+                "~/Content/jquery-ui-timepicker-addon.css",
                 "~/Content/bootstrap.css",
                 "~/Content/font-awesome.css",
                 "~/Content/Site.css",
