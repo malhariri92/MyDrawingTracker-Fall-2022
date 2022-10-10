@@ -1,0 +1,41 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model DrawVM
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+}
+<br />
+<br />
+<div class="row">
+    <h3>
+        Description
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+        {
+            <button type="button" class="btn btn-xs btn-success" title="Edit Description" id="btnDescEdit"><span class="fa fa-pencil-square-o"></span></button>
+        }
+    </h3>
+</div>
+
+@if (Model.Descriptions.Any())
+{
+    <div class="row">
+        @foreach (Description d in Model.Descriptions)
+        {
+            if (!string.IsNullOrEmpty(d.Title))
+            {
+                <h3>@d.Title</h3>
+            }
+            if (!string.IsNullOrEmpty(d.TextBody))
+            {
+                <p>@d.TextBody</p>
+            }
+        }
+    </div>
+}
+else
+{
+    <h3 class="text-danger">No description has been entered for this drawing.</h3>
+    <br />
+}
