@@ -109,6 +109,78 @@ namespace MDT.Controllers
             GroupDTO group = (GroupDTO)Session["group"];
             return View(GetDraws(group.GroupId));
         }
+
+        public ActionResult ViewDraw(int id)
+        {
+            Draw draw = db.Draws.Where(d => d.DrawId == id && d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId)).Include(d => d.DrawType).Include(d => d.DrawOption).FirstOrDefault();
+
+            if (draw != null)
+            {
+                DrawVM vm = new DrawVM(draw);
+                vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
+                return View(vm);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AdminFilter(Role ="Admin")]
+        public ActionResult DescriptionEdit(DrawVM vm)
+        {
+            foreach(Description desc in db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == vm.DrawId))
+            {
+                db.Entry(desc).State = EntityState.Deleted;
+            }
+            db.SaveChanges();
+
+            vm.Descriptions = vm.Descriptions.Where(d => d.IsActive).ToList();
+
+            int sort = 1;
+            foreach (Description d in vm.Descriptions)
+            {
+                d.ObjectTypeId = 3;
+                d.ObjectId = vm.DrawId;
+                d.SortOrder = sort;
+                db.Entry(d).State = EntityState.Added;
+                sort++;
+            }
+
+            db.SaveChanges();
+
+            return RedirectToAction("ViewDraw", new { id = vm.DrawId });
+        }
+
+        public ActionResult DrawDescription(int id)
+        {
+            Draw draw = db.Draws.Where(d => d.DrawId == id && d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId)).Include(d => d.DrawType).Include(d => d.DrawOption).FirstOrDefault();
+
+            if (draw != null)
+            {
+                DrawVM vm = new DrawVM(draw);
+                vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
+                return PartialView(vm);
+            }
+            return PartialView("Nope");
+        }
+
+        [AdminFilter(Role = "Admin")]
+        public ActionResult DrawDescriptionEdit(int id)
+        {
+            Draw draw = db.Draws.Where(d => d.DrawId == id && d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId)).Include(d => d.DrawType).Include(d => d.DrawOption).FirstOrDefault();
+
+            if (draw != null)
+            {
+                DrawVM vm = new DrawVM(draw);
+                vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
+                return PartialView("DrawDescriptionEdit", vm);
+            }
+            return PartialView("Nope");
+        }
+
         private List<DrawTypeDTO> GetDrawTypes(int GroupId)
         {
             List<int> ids = GetIds(GroupId);
