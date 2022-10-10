@@ -1,0 +1,80 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model DrawVM
+@{
+    ViewBag.Title = "View Draw";
+    UserDTO user = (UserDTO)Session["User"];
+}
+
+<div class="row text-center ">
+    <h1>Drawing for @Model.DrawTypeName</h1>
+</div>
+<div class="row">
+    <div class="col-md-7 col-xs-12" id="divDesc">
+        @{
+            if (Model.Descriptions.Any())
+            {
+                Html.RenderPartial("DrawDescription", Model);
+            }
+            else
+            {
+                Html.RenderPartial("DrawDescriptionEdit", Model);
+            }
+
+        }
+    </div>
+    <div class="col-md-5 col-xs-12">
+        @{
+            Html.RenderPartial("DrawRules", Model);
+        }
+    </div>
+</div>
+
+@if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+{
+    <script type="text/javascript">
+        let ct = @Model.Descriptions.Count;
+
+        $(document).on('click', '#btnAddDesc', function () {
+            $('#descedit').append(
+                `<div id="desc-${ct}">
+                     <div class="row">
+                     <input id="Descriptions_${ct}__SortOrder" name="Descriptions[${ct}].SortOrder" type="hidden" value="${ct}">
+                     <input id="Descriptions_${ct}__IsActive" name="Descriptions[${ct}].IsActive" type="hidden" value="True">
+                     <div class="col-xs-9">
+                     <input class="form-control big-input text-box single-line" data-val="true" data-val-maxlength="Title cannot exceed 50 characters" data-val-maxlength-max="50" id="Descriptions_${ct}__Title" name="Descriptions[${ct}].Title" placeholder="Paragraph Heading" type="text" value="">
+                     </div>
+                     <div class="col-xs-1 text-right">
+                     <button type="button" data-desc-id="${ct}" class="btn btn-xs btn-danger DescDelete" title="Delete"><span class="fa fa-trash-o"></span></button>
+                     </div>
+                     </div>
+                     <div class="row">
+                     <div class="col-xs-10">
+                     <textarea class="form-control" cols="20" id="Descriptions_${ct}__TextBody" name="Descriptions[${ct}].TextBody" placeholder="Paragraph Text" rows="4"></textarea>
+                     </div>
+                     </div>
+                     <br /><br />
+                     </div>`);
+            ct++;
+        });
+
+        $(document).on('click', '.DescDelete', function () {
+            let id = $(this).attr('data-desc-id');
+            $(`#Descriptions_${id}__IsActive`).val('False');
+            $(`#desc-${id}`).hide();
+        });
+
+        $(document).on('click', '#btnCancelDescEdit', function () {
+            $('#divDesc').empty();
+            $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.DrawId })');
+        });
+
+    $(document).on('click', '#btnDescEdit', function () {
+            $('#divDesc').empty();
+            $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.DrawId })');
+        });
+
+
+    </script>
+}

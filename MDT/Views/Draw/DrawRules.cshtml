@@ -1,0 +1,79 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model DrawVM
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+}
+<br />
+<br />
+<div class="row">
+    <h3>
+        Rules
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) && !Model.IsActive)
+        {
+            <button type="button" class="btn btn-xs btn-success" title="Edit Rules" id="btnRuleEdit"><span class="fa fa-pencil-square-o"></span></button>
+        }
+    </h3>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        @if (Model.IsActive)
+        {
+            <b>Started: </b> @Model.StartDate.Value.ToString("yyyy-MM-dd HH:mm") <br />
+        }
+        <b>Ends: </b> @Model.EndDate.ToString("yyyy-MM-dd HH:mm")<br />
+        <b>Entry Cost: </b> @Model.EntryCost <br />
+        <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "∞" : $"{Model.MaxEntriesPerUser}" ) <br />
+        <b>Entries Selected: </b> @Model.EntriesToDraw <br />
+        @if (Model.EntriesToDraw > 1)
+        {
+            <b>Single Prize Per Entry:  @(Model.RemoveDrawnEntries ? "Yes" : $"No" )</b> <br />
+            <b>Single Prize Per User:  @(Model.RemoveDrawnUsers ? "Yes" : $"No" )</b> <br />
+        }
+        @if (Model.NextDrawId != null)
+        {
+            @Html.ActionLink("Next Drawing", "ViewDraw", "Draw", new { id = Model.NextDrawId.Value }, null) <br />
+            string s = "";
+            if (Model.PassDrawnToNext || Model.PassUndrawnToNext)
+            {
+                s = Model.PassDrawnToNext ? "Drawn Entries" : "Undrawn Entries";
+            }
+            else
+            {
+                s = "All Entries";
+            }
+            <b>Using: </b> @s <br />
+
+        }
+
+        @if (Model.IsActive)
+        {
+            if (Model.JoinConfirmationRequired)
+            {
+                <button class="btn btn-sm btn-warning" type="button" id="btnRequest">Request to Join</button>
+            }
+            else
+            {
+                <button class="btn btn-sm btn-success" type="button" id="btnEnter">Get Entries</button>
+            }
+            if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+            {
+                if (!Model.AutoDraw)
+                {
+                    <button class="btn btn-sm btn-success" type="button" id="btnResult" @(Model.EndDate > DateTime.Now ? "" : "disabled title=\"Result can be drawn after drawing ends.\"")>Draw Results</button>
+
+                }
+            }
+        }
+        else
+        {
+            if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+            {
+                <button class="btn btn-sm btn-success" type="button" id="btnStart">Start Drawing</button>
+
+            }
+        }
+    </div>
+</div>

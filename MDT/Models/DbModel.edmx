@@ -220,6 +220,9 @@
           </Key>
           <Property Name="TransactionTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TypeName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="IsDebit" Type="bit" Nullable="false" />
+          <Property Name="SortOrder" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="UniqueKeys">
           <Key>
@@ -1165,6 +1168,9 @@
           <Property Name="TransactionTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TypeName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_TransactionType" FromRole="TransactionType" ToRole="Transaction" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="IsDebit" Type="Boolean" Nullable="false" />
+          <Property Name="SortOrder" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="UserDrawTypeOption">
           <Key>
@@ -1801,6 +1807,9 @@
           <EntitySetMapping Name="TransactionTypes">
             <EntityTypeMapping TypeName="DbModel.TransactionType">
               <MappingFragment StoreEntitySet="TransactionTypes">
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="IsDebit" ColumnName="IsDebit" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="TypeName" ColumnName="TypeName" />
                 <ScalarProperty Name="TransactionTypeId" ColumnName="TransactionTypeId" />
               </MappingFragment>

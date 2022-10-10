@@ -11,7 +11,7 @@ namespace MDT.Filters
         {
 
             GenericPrincipal principal = (GenericPrincipal)httpContext.Session["Ident"];
-            return principal.IsInRole(Role);
+            return principal.IsInRole(Role) || principal.IsInRole("Site Admin");
 
         }
 
