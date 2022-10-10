@@ -1,8 +1,10 @@
-﻿using MDT.Models;
+using MDT.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Web.Mvc;
 
 namespace MDT.ViewModels
 {
@@ -14,15 +16,16 @@ namespace MDT.ViewModels
         public DateTime? StartDate { get; set; }
 
         [Display(Name = "End Date")]
-        [Required]
+        [Required(ErrorMessage = "{0} is required.")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime EndDate { get; set; }
         public bool IsActive { get; set; }
 
         [Display(Name = "Results")]
         public string Results { get; set; }
 
-        [Display(Name = "Game")]
-        [Required]
+        [Display(Name ="Game")]
+        [Required(ErrorMessage = "{0} is required.")]
         public int DrawTypeId { get; set; }
         public string DrawTypeName { get; set; }
         public List<Description> Descriptions { get; set; }
@@ -55,6 +58,7 @@ namespace MDT.ViewModels
                 IsActive = d.StartDateTime != null && d.EndDateTime < DateTime.Now && Results == null;
                 DrawTypeId = d.DrawTypeId;
                 DrawTypeName = d.DrawType.DrawTypeName;
+
                 EntryCost = d.DrawType.EntryCost;
 
                 Entries = d.DrawEntries.Select(e => new EntryVM(e)).ToList();
