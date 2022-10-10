@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MDT</RootNamespace>
     <AssemblyName>MDT</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
@@ -248,6 +248,7 @@
     <Compile Include="Models\WebManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AdminUserVM.cs" />
+    <Compile Include="ViewModels\DrawOptionsVM.cs" />
     <Compile Include="ViewModels\DrawVM.cs" />
     <Compile Include="ViewModels\EntryVM.cs" />
     <Compile Include="ViewModels\GameSettingsVM.cs" />

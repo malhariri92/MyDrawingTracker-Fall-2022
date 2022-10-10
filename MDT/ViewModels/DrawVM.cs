@@ -28,7 +28,8 @@ namespace MDT.ViewModels
         [Required(ErrorMessage = "{0} is required.")]
         public int DrawTypeId { get; set; }
         public string DrawTypeName { get; set; }
-        public List<Description> Descriptions { get; set; }
+        List<Description> Descriptions { get; set; }
+        public DrawOptionsVM Options { get; set; }
 
         public int MaxEntriesPerUser { get; set; }
         public int EntriesToDraw { get; set; }
@@ -45,6 +46,7 @@ namespace MDT.ViewModels
         public DrawVM()
         {
             Entries = new List<EntryVM>();
+            Descriptions = new List<Description>();
         }
 
         public DrawVM(Draw d) : this()
