@@ -250,6 +250,7 @@ namespace MDT.Controllers
                 vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
                 return RedirectToAction("Index");
             }
+            return View();
         }
 
         [HttpPost]
