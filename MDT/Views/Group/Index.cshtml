@@ -59,9 +59,37 @@
             <p>@d.TextBody</p>
         }
     }
+
+    <hr />
+    <div class="form-group">
+        <div class="col-md-10">
+            <input id="subGroup" type="button" class="btn btn-sm btn-info" value="New Group" data-toggle="modal" data-target="#SubGroupModal"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <input id="changeGroup" type="button" class="btn btn-sm btn-info" value="New Group" />
+        </div>
+    </div>
+
+    <div class="modal fade" id="SubGroupModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Request For A New Group</h4>
+                </div>
+                <div class="modal-body">
+                    @{Html.RenderAction("SubGroup", "Group");}
+                </div>
+                </div>              
+            </div>
+        </div>
+    </div>
+
     @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
     {
-        <hr />
+
         <div class="form-group">
             <div class="col-md-10">
                 <input type="button" class="btn btn-sm btn-info" value="Edit" onclick="location.href='@Url.Action("Edit", "Group")'" />
