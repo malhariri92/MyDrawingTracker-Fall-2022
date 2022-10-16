@@ -67,7 +67,9 @@ namespace MDT.ViewModels
 
         public ScheduleVM Schedule { get; set; }
 
-        public DrawTypeVM() { }
+        public DrawTypeVM() {
+            Schedule = new ScheduleVM();
+        }
         public DrawTypeVM(DrawType g) 
         {
             if (g != null)

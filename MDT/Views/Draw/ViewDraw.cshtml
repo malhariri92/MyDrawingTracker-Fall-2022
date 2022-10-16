@@ -29,6 +29,16 @@
             Html.RenderPartial("DrawRules", Model);
         }
     </div>
+    <div>
+        @using (Html.BeginForm("Index", "Entry", FormMethod.Post, new { @id = "form0" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("drawId", Model.DrawId)
+            @Html.Hidden("drawTypeId", Model.DrawTypeId)
+            @Html.Hidden("userId", user.UserId)
+            <input type="submit" value="Add Entries" class="btn btn-primary" />
+        }
+    </div>
 </div>
 
 @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))

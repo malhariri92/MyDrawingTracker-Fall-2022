@@ -2,7 +2,6 @@ using MDT.ViewModels;
 using MDT.Filters;
 using MDT.Models;
 using MDT.Models.DTO;
-using MDT.ViewModels;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
@@ -32,7 +31,7 @@ namespace MDT.Controllers
             if (id == 0)
             {               
                 vm.HasSchedule = false;
-            
+                
                 return View(vm);
             }
             else
@@ -243,12 +242,18 @@ namespace MDT.Controllers
         public ActionResult ViewDraw(int id)
         {
             Draw draw = db.Draws.Where(d => d.DrawId == id && d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId)).Include(d => d.DrawType).Include(d => d.DrawOption).FirstOrDefault();
+            
+            /*if (draw == null)
+            {
+                draw = db.Draws.Find(id);
+            }*/
 
             if (draw != null)
             {
                 DrawVM vm = new DrawVM(draw);
                 vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
-                return RedirectToAction("Index");
+                return View(vm);
+                //return RedirectToAction("Index");
             }
             return View();
         }
