@@ -1,5 +1,7 @@
 ﻿using MDT.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace MDT.ViewModels
 {
@@ -9,8 +11,14 @@ namespace MDT.ViewModels
         public DateTime DrawDate { get; set; }
         public int DrawTypeId { get; set; }
         public string GameName { get; set; }
+
+        [Display(Name = "User")]
         public int UserId { get; set; }
+
         public string UserName { get; set; }
+
+        [Display(Name = "Number of Entries")]
+        [Required(ErrorMessage = "{0} is required.")]
         public int EntryCount { get; set; }
 
         public EntryVM()
