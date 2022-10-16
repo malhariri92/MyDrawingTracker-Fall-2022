@@ -1,7 +1,7 @@
-﻿using MDT.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
+using MDT.Models;
 
 namespace MDT.ViewModels
 {
@@ -16,10 +16,16 @@ namespace MDT.ViewModels
         public int UserId { get; set; }
 
         public string UserName { get; set; }
+        public int EntryId { get; set; }
 
         [Display(Name = "Number of Entries")]
-        [Required(ErrorMessage = "{0} is required.")]
+        [Required(ErrorMessage = "{0} is required")]
+        [Range(1,100, ErrorMessage ="{0} must be between {1} and {2}")]
         public int EntryCount { get; set; }
+        
+        public string Message { get; set; }
+        public bool Success { get; set; }
+        public bool Error { get; set; }
 
         public EntryVM()
         { }
@@ -32,6 +38,7 @@ namespace MDT.ViewModels
             GameName = e.Draw.DrawType.DrawTypeName;
             UserId = e.UserId;
             UserName = e.User.UserName;
+            EntryId = e.EntryId;
             EntryCount = 1;
         }
     }

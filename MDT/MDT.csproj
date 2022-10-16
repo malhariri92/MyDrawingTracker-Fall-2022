@@ -133,9 +133,11 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Attributes\EntryCountValidation.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DrawController.cs" />
+    <Compile Include="Controllers\EntryController.cs" />
     <Compile Include="Controllers\GroupController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TransactionController.cs" />
@@ -478,6 +480,7 @@
     <Content Include="Views\Group\EmailFailed.cshtml" />
     <Content Include="Views\Group\Members.cshtml" />
     <Content Include="Views\Draw\CreateDraw.cshtml" />
+    <Content Include="Views\Draw\CreateDrawType.cshtml" />
     <Content Include="Views\Draw\CreateEditDrawForm.cshtml" />
     <Content Include="Views\Draw\DrawCreated.cshtml" />
     <Content Include="Views\Draw\EditList.cshtml" />
@@ -488,6 +491,8 @@
     <Content Include="Views\Draw\DrawDescription.cshtml" />
     <Content Include="Views\Draw\DrawRules.cshtml" />
     <Content Include="Views\Draw\DrawDescriptionEdit.cshtml" />
+    <Content Include="Views\Entry\Index.cshtml" />
+    <Content Include="Views\Entry\AddEntries.cshtml" />
     <Content Include="Views\Group\SubGroup.cshtml" />
   </ItemGroup>
   <ItemGroup>
