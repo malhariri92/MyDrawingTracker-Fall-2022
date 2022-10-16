@@ -23,7 +23,7 @@ namespace MDT.ViewModels
 		//[PhoneNumberValidation]
 		//public string PhoneNumber { get; set; }
 
-        [Display(Name = "Current Group ID")]
+        [Display(Name = "Current Group")]
         [Required(ErrorMessage = "{0} is required")]
         [DataType(DataType.Text)]
         public int CurrentGroupId { get; set; }

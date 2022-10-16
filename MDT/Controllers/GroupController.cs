@@ -279,6 +279,56 @@ namespace MDT.Controllers
             return PartialView(grpInvite);
         }
 
+        [HttpGet]
+        public ActionResult SubGroup()
+        {
+            return PartialView("SubGroup");
+        }
+
+        [HttpPost]
+        public ActionResult SubGroup(SubGroupVM vm)
+        {
+            GroupDTO parentGroup = (GroupDTO)Session["Group"];
+            Group group = new Group()
+            {
+                GroupName = vm.GroupName,
+                IsActive = false,
+                IsApproved = false,
+                ParentGroupId = parentGroup.GroupId,
+                IsPrimary = false
+            };
+
+            db.Groups.Add(group);
+            db.SaveChanges();
+
+            UserDTO user = (UserDTO)Session["User"];
+
+            GroupUser groupUser = new GroupUser()
+            {
+                GroupId = group.GroupId,
+                UserId = user.UserId,
+                IsAdmin = true,
+                IsApproved = false,
+                //IsOwner = true
+            };
+            db.GroupUsers.Add(groupUser);
+            db.SaveChanges();
+
+            Description desc = new Description()
+            {
+                ObjectTypeId = 7,
+                ObjectId = group.GroupId,
+                SortOrder = 1,
+                TextBody = vm.Reason,
+                IsHTML = false
+            };
+
+            db.Descriptions.Add(desc);
+            db.SaveChanges();
+
+            return PartialView(vm);
+        }
+
 
         private bool SendReminder(string EmailAddress, int GroupId)
         {

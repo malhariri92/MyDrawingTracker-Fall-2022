@@ -91,6 +91,12 @@ namespace MDT.Controllers
         {
             if (user != null)
             {
+                user = (UserDTO) Session["User"];
+                List<int> ids = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.GroupId).ToList();
+                List<DdlItem> groups = db.Groups.ToList().Where(g => ids.Contains(g.GroupId))
+                    .Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
+                ViewBag.Groups = groups;
+
                 return View(new UserDetailsChangeVM(user));
             }
             return RedirectToAction("Index", "Home");
@@ -166,6 +172,6 @@ namespace MDT.Controllers
             vm.Error = false;
             return View(vm);
 
-        }
+        }    
     }
 }

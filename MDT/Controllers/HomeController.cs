@@ -295,6 +295,7 @@ namespace MDT.Controllers
                 IsApproved = !groupMatch.JoinConfirmationRequired,
             };
             db.GroupUsers.Add(newGroupUser);
+            db.SaveChanges();
 
             //Generate notification email
             User groupAdmin = db.GroupUsers.Where(u => u.GroupId == groupMatch.GroupId && u.IsAdmin).Select(gu => gu.User).FirstOrDefault();
