@@ -259,6 +259,7 @@
     <Compile Include="ViewModels\GroupOptionsVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
     <Compile Include="ViewModels\GroupUserVM.cs" />
+    <Compile Include="ViewModels\SubGroupVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
@@ -492,6 +493,7 @@
     <Content Include="Views\Draw\DrawDescriptionEdit.cshtml" />
     <Content Include="Views\Entry\Index.cshtml" />
     <Content Include="Views\Entry\AddEntries.cshtml" />
+    <Content Include="Views\Group\SubGroup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

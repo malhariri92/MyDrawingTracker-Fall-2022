@@ -46,7 +46,8 @@ else
                     <div class="form-group">
                         @Html.LabelFor(model => model.CurrentGroupId, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
-                            @Html.DropDownListFor(model => model.CurrentGroupId, new SelectList(ViewBag.Groups,"val", "txt"))
+                            @Html.DropDownListFor(model => model.CurrentGroupId, new SelectList(ViewBag.Groups,"val", "txt")
+                           , new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.CurrentGroupId, "", new { @class = "text-danger" })
                         </div>
                     </div>
