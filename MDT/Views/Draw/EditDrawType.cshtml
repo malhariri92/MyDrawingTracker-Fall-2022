@@ -1,0 +1,229 @@
+﻿@model MDT.ViewModels.DrawTypeVM
+
+@{
+
+    ViewBag.Title = Model.DrawTypeId == 0 ? "Create New Draw Type" : $"Edit {Model.TypeName}";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @if (Model.DrawTypeId > 0)
+        {
+            @Html.HiddenFor(model => model.DrawTypeId)
+        }
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TypeName, htmlAttributes: new { @class = "col-sm-3" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.TypeName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TypeName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.IsInternal)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.IsInternal, new { @class = "switch" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EntryCost, htmlAttributes: new { @class = "col-sm-3" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.EntryCost, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EntryCost, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.InitialUserBalance, htmlAttributes: new { @class = "col-sm-3" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.InitialUserBalance, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.InitialUserBalance, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MaxEntriesPeruser, htmlAttributes: new { @class = "col-sm-3" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.MaxEntriesPeruser, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.MaxEntriesPeruser, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EntriesToDraw, htmlAttributes: new { @class = "col-sm-3" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.EntriesToDraw, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EntriesToDraw, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NumberOfDraws, htmlAttributes: new { @class = "col-sm-3" })
+            <div class="col-md-4">
+                @Html.EditorFor(model => model.NumberOfDraws, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NumberOfDraws, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div id="series" style="@(Model.NumberOfDraws == 1 ? "display:none" : "")">
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.RemoveDrawnEntries)
+                </div>
+                <div class="col-md-1">
+                    @Html.EditorFor(model => model.RemoveDrawnEntries, new { @class = "switch other", data_other_toggle = "RemoveDrawnUsers" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.RemoveDrawnUsers)
+                </div>
+                <div class="col-md-1">
+                    @Html.EditorFor(model => model.RemoveDrawnUsers, new { @class = "switch other", data_other_toggle = "RemoveDrawnEntries" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.PassDrawnToNext)
+                </div>
+                <div class="col-md-1">
+                    @Html.EditorFor(model => model.PassDrawnToNext, new { @class = "switch other", data_other_toggle = "PassUndrawnToNext" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.PassUndrawnToNext)
+                </div>
+                <div class="col-md-1">
+                    @Html.EditorFor(model => model.PassUndrawnToNext, new { @class = "switch other", data_other_toggle = "PassDrawnToNext" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.AutoDraw)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.AutoDraw, new { @class = "switch" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.JoinConfirmationRequired)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.JoinConfirmationRequired, new { @class = "switch" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.RefundConfirmationRequired)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.RefundConfirmationRequired, new { @class = "switch" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.HasSchedule)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.HasSchedule, new { @class = "switch" })
+            </div>
+        </div>
+        <div class="form-group row text-center" id="schedule" hidden>
+            <table class="table table-bordered table-responsive" style="width:60%">
+                <caption>Set Schedule</caption>
+                <thead>
+                    <tr>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <th>@Model.Schedule.Days[i].Abbr</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            <td>@Html.EditorFor(modelItem => Model.Schedule.Days[i].DrawTime)</td>
+                        }
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-4">
+                <button type="button" class="btn btn-sm btn-danger" id="btnCancelEdit">Cancel</button>
+                <button type="submit" class="btn btn-sm btn-success">@(Model.DrawTypeId > 0 ? "Save Changes" : "Create")</button>
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('.switch').each(function () {
+            $(this).attr('data-toggle', 'toggle')
+                .attr('data-on', 'Yes')
+                .attr('data-off', 'No')
+                .attr('data-onstyle', 'success');
+
+            $(this).bootstrapToggle();
+        });
+
+        for (let i = 0; i < 7; i++) {
+            $(`#Schedule_Days_${i}__DrawTime`).timepicker();
+            $(`#Schedule_Days_${i}__DrawTime`).css("max-width", "75px");
+            if ($(`#Schedule_Days_${i}__DrawTime`).val() === "00:00:00") {
+                $(`#Schedule_Days_${i}__DrawTime`).val('');
+            }
+        }
+    });
+
+    $(document).on('change', '.switch', function () {
+        let val = +$(this).val();
+        if (val > 1) {
+            $('#series').show();
+        } else {
+            $('#series').hide();
+        }
+
+    });
+
+    $(document).on('change', '#HasSchedule', function () {
+        let val = $(this).is(':checked');
+        if (val) {
+            $('#schedule').show();
+        } else {
+            $('#schedule').hide();
+        }
+
+    });
+    $(document).on('change', '.other', function () {
+        let otherid = $(this).attr('data-other-toggle');
+        if ($(this).is(':checked')) {
+            $(`#${otherid}`).bootstrapToggle('off');
+        }
+
+    });
+
+</script>
+
