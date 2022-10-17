@@ -9,13 +9,10 @@ namespace MDT.Filters
         public string Role;
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-
             GenericPrincipal principal = (GenericPrincipal)httpContext.Session["Ident"];
             return principal.IsInRole(Role) || principal.IsInRole("Site Admin");
-
         }
 
-        
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             filterContext.Result = new RedirectResult("~/Home/Index");

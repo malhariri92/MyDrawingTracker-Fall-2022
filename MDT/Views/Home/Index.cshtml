@@ -58,6 +58,15 @@
         $('#userAccess').load('@Url.Action("SendVerification", "Home", null, null)');
     });
 
+    $(document).on('click', '#btnSignIn', function () {
+        $('#SignIn').validate();
+        if ($('#SignIn').valid()) {
+            $('#SignIn').submit();
+            $('#userAccess').empty();
+            $('#userAccess').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        }
+    });
+
     $(document).on('change', '#createToggle', function () {
         if ($(this).is(':checked')) {
             $('#groupAdmin').show();

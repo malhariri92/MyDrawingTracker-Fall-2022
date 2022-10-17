@@ -237,6 +237,7 @@ namespace MDT.Controllers
                     { "[[Name]]", targetUser.UserName },
                 };
 
+
                 if (WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 13, variables))
                 {
                     vm.Success = true;

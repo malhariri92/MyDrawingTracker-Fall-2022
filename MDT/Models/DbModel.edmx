@@ -101,6 +101,7 @@
           <Property Name="JoinConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="RefundConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="InitialUserBalance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IsolateBalance" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="EmailTemplates">
           <Key>
@@ -154,6 +155,7 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="IsApproved" Type="bit" Nullable="false" />
           <Property Name="IsAdmin" Type="bit" Nullable="false" />
+          <Property Name="IsOwner" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledgers">
           <Key>
@@ -1051,6 +1053,7 @@
           <NavigationProperty Name="Schedules" Relationship="DbModel.FK_Schedule_DrawType" FromRole="DrawType" ToRole="Schedule" />
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_DrawType" FromRole="DrawType" ToRole="UserDrawTypeOption" />
           <NavigationProperty Name="NumberSets" Relationship="DbModel.DrawNumberSets" FromRole="DrawType" ToRole="NumberSet" />
+          <Property Name="IsolateBalance" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="EmailTemplate">
           <Key>
@@ -1098,6 +1101,7 @@
           <NavigationProperty Name="User" Relationship="DbModel.FK_GroupUser_User" FromRole="GroupUser" ToRole="User" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
           <Property Name="IsApproved" Type="Boolean" Nullable="false" />
+          <Property Name="IsOwner" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledger">
           <Key>
@@ -1691,6 +1695,7 @@
           <EntitySetMapping Name="DrawTypes">
             <EntityTypeMapping TypeName="DbModel.DrawType">
               <MappingFragment StoreEntitySet="DrawTypes">
+                <ScalarProperty Name="IsolateBalance" ColumnName="IsolateBalance" />
                 <ScalarProperty Name="InitialUserBalance" ColumnName="InitialUserBalance" />
                 <ScalarProperty Name="RefundConfirmationRequired" ColumnName="RefundConfirmationRequired" />
                 <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
@@ -1743,6 +1748,7 @@
           <EntitySetMapping Name="GroupUsers">
             <EntityTypeMapping TypeName="DbModel.GroupUser">
               <MappingFragment StoreEntitySet="GroupUsers">
+                <ScalarProperty Name="IsOwner" ColumnName="IsOwner" />
                 <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />

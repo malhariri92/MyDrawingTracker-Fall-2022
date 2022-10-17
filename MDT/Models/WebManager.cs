@@ -16,24 +16,13 @@ namespace MDT.Models
             using (var db = new DbEntities())
             {
                 User user = db.Users.Find(vm.UserId);
-
-                //I had to convert the email address all to lower case so it could be sent without issue.
-                if (user != null && user.EmailAddress.ToLower().Equals(vm.UserEmail.ToLower()) && user.IsActive)
+                if (user != null && user.EmailAddress.Equals(vm.UserEmail, StringComparison.CurrentCultureIgnoreCase) && user.IsActive)
                 {
-                    //25-char long string is randomly generated.
                     string key = GetUniqueKey(25);
-
-                    //Reset key is added to the user object.
                     user.ResetKey = key;
-
-                    //The user has an hour to user the reset.
                     user.ResetKeyExpires = DateTime.Now.AddMinutes(60);
-
-                    // The state of the user is set to modified and then saved.
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();
-
-                    //Return the key.
                     return key;
                 }
             }
@@ -42,26 +31,12 @@ namespace MDT.Models
 
         internal static UserDTO GetUserDTOByEmail(string email)
         {
+            email = email?.ToLower();
             using (var db = new DbEntities())
             {
                 User user = db.Users.Where(u => u.EmailAddress.Equals(email)).FirstOrDefault();
                 return user == null ? null : new UserDTO(user);
             }
-        }
-
-        internal static bool CheckCurrentHash(int userId, string str)
-        {
-            using (var db = new DbEntities())
-            {
-                string hash = db.Users.Find(userId)?.Hash;
-                if (hash == null)
-                {
-                    return false;
-                }
-
-                return PasswordManager.TestHashMatch(str, hash);
-            }
-
         }
 
         internal static UserDTO GetUserDTO(int userId)
@@ -73,6 +48,7 @@ namespace MDT.Models
             }
 
         }
+
         internal static GroupDTO GetGroupDTO(int groupId)
         {
             using (var db = new DbEntities())
@@ -91,14 +67,6 @@ namespace MDT.Models
             using (var db = new DbEntities())
             {
                 return db.GroupUsers.Find(groupId, userId)?.IsAdmin ?? false;
-            }
-        }
-
-        internal static bool IsGroupMember(int groupId, int userId)
-        {
-            using (var db = new DbEntities())
-            {
-                return db.GroupUsers.Find(groupId, userId) != null;
             }
         }
 
@@ -149,25 +117,6 @@ namespace MDT.Models
             }
         }
 
-
-        internal static string RandomString(int l)
-        {
-            Random r = new Random();
-            string rand = "";
-            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-            for (int i = 0; i < l; i++)
-            {
-                int index = r.Next(chars.Length);
-
-                char c = chars[index];
-
-                rand += $"{c}";
-            }
-
-            return rand;
-        }
-
         internal static string GetUniqueKey(int l)
         {
             using (var db = new DbEntities())
@@ -194,6 +143,22 @@ namespace MDT.Models
             }
         }
 
+        internal static string RandomString(int l)
+        {
+            Random r = new Random();
+            string rand = "";
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+            for (int i = 0; i < l; i++)
+            {
+                int index = r.Next(chars.Length);
+
+                char c = chars[index];
+
+                rand += $"{c}";
+            }
+
+            return rand;
+        }
     }
 }

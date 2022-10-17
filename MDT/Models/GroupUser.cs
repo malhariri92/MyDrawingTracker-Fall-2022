@@ -18,6 +18,7 @@ namespace MDT.Models
         public int UserId { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsApproved { get; set; }
+        public bool IsOwner { get; set; }
     
         public virtual User User { get; set; }
         public virtual Group Group { get; set; }

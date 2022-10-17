@@ -49,6 +49,10 @@ namespace MDT.ViewModels
             Descriptions = new List<Description>();
         }
 
+        /// <summary>
+        /// Create DrawVM from Draw.
+        /// </summary>
+        /// <param name="d">Draw entity. Must include DrawType and DrawOption</param>
         public DrawVM(Draw d) : this()
         {
             if (d != null)
@@ -65,8 +69,21 @@ namespace MDT.ViewModels
 
                 Entries = d.DrawEntries.Select(e => new EntryVM(e)).ToList();
 
-                if (d.DrawOption != null)
+                if (d.DrawOption == null)
                 {
+                    MaxEntriesPerUser = d.DrawType.MaxEntriesPerUser;
+                    EntriesToDraw = d.DrawType.EntriesToDraw;
+                    RemoveDrawnEntries = d.DrawType.RemoveDrawnEntries;
+                    RemoveDrawnUsers = d.DrawType.RemoveDrawnUsers;
+                    PassDrawnToNext = d.DrawType.PassDrawnToNext;
+                    PassUndrawnToNext = d.DrawType.PassUndrawnToNext;
+                    AutoDraw = d.DrawType.AutoDraw;
+                    JoinConfirmationRequired = d.DrawType.JoinConfirmationRequired;
+                    RefundConfirmationRequired = d.DrawType.RefundConfirmationRequired;
+                    EntryCost = d.DrawType.EntryCost;
+                }
+                else
+                { 
                     MaxEntriesPerUser = d.DrawOption.MaxEntriesPerUser;
                     EntriesToDraw = d.DrawOption.EntriesToDraw;
                     RemoveDrawnEntries = d.DrawOption.RemoveDrawnEntries;
@@ -89,20 +106,6 @@ namespace MDT.ViewModels
             {
                 d.IsActive = true;
             }
-        }
-
-        public void SetDefaultOptions(DrawType dt)
-        {
-            MaxEntriesPerUser = dt.MaxEntriesPerUser;
-            EntriesToDraw = dt.EntriesToDraw;
-            RemoveDrawnEntries = dt.RemoveDrawnEntries;
-            RemoveDrawnUsers = dt.RemoveDrawnUsers;
-            PassDrawnToNext = dt.PassDrawnToNext;
-            PassUndrawnToNext = dt.PassUndrawnToNext;
-            AutoDraw = dt.AutoDraw;
-            JoinConfirmationRequired = dt.JoinConfirmationRequired;
-            RefundConfirmationRequired = dt.RefundConfirmationRequired;
-            EntryCost = dt.EntryCost;
         }
     }
 }

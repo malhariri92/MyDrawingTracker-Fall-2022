@@ -27,7 +27,7 @@ namespace MDT.Controllers
 
         public bool ChangeGroup(int groupId)
         {
-            if (WebManager.IsGroupMember(groupId, user.UserId))
+            if (db.GroupUsers.Find(groupId, user.UserId) != null)
             {
                 User u = db.Users.Find(user.UserId);
                 u.CurrentGroupId = groupId;
@@ -67,7 +67,7 @@ namespace MDT.Controllers
                 return View(vm);
             }
 
-            if (!WebManager.CheckCurrentHash(user.UserId, vm.CurrentPassword))
+            if (!CheckCurrentHash(user.UserId, vm.CurrentPassword))
             {
                 vm.Success = false;
                 ModelState.AddModelError("CurrentPassword", "Current password incorrect.");
@@ -172,6 +172,21 @@ namespace MDT.Controllers
             vm.Error = false;
             return View(vm);
 
-        }    
+        }
+
+        private bool CheckCurrentHash(int userId, string str)
+        {
+            using (var db = new DbEntities())
+            {
+                string hash = db.Users.Find(userId)?.Hash;
+                if (hash == null)
+                {
+                    return false;
+                }
+
+                return PasswordManager.TestHashMatch(str, hash);
+            }
+
+        }
     }
 }

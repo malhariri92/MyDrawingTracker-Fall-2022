@@ -22,23 +22,23 @@ namespace MDT.Controllers
 
         public ActionResult Index()
         {
-            if (TempData["VerificationSuccess"] != null)
+            if (TempData["Message"] != null)
             {
-                ViewBag.Message = TempData["VerificationSuccess"];
-                TempData["VerificationSuccess"] = null;
+                ViewBag.Message = TempData["Message"];
+                TempData["Message"] = null;
             }
 
-            if (TempData["VerificationFailure"] != null)
+            if (TempData["Error"] != null)
             {
-                ViewBag.Error = TempData["VerificationFailure"];
-                TempData["VerificationFailure"] = null;
+                ViewBag.Error = TempData["Error"];
+                TempData["Error"] = null;
             }
             return View();
         }
 
+
         public ActionResult NewUser()
         {
-
             return PartialView();
         }
 
@@ -80,9 +80,6 @@ namespace MDT.Controllers
 
             return PartialView(cred);
         }
-
-
-
 
         public ActionResult ForgotPass()
         {
@@ -192,9 +189,6 @@ namespace MDT.Controllers
                     vm.Message = "Key has expired. Please request a new key.";
                     return View(vm);
                 }
-
-
-
 
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
@@ -434,14 +428,14 @@ namespace MDT.Controllers
                 db.Entry(vk).State = EntityState.Modified;
                 db.Entry(u).State = EntityState.Modified;
                 db.SaveChanges();
-                TempData["VerificationSuccess"] = $"Email address {user.EmailAddress} has been verified.";
+                TempData["Message"] = $"Email address {user.EmailAddress} has been verified.";
                 Session["User"] = new UserDTO(u);
             }
             else
             {
                 if (u.VerificationKeys.Any(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) || k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)))
                 {
-                    TempData["VerificationFailure"] = $"The email address you are attempting to verify does not match your current email address.";
+                    TempData["Error"] = $"The email address you are attempting to verify does not match your current email address.";
                 }
             }
 

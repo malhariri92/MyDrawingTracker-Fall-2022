@@ -29,11 +29,11 @@ namespace MDT.Controllers
             }
 
             List<GroupVM> vm = db.Groups.Where(g => g.IsApproved == null)
-                                      .Include(g => g.GroupUsers)
-                                      .Include(g => g.GroupUsers.Select(gu => gu.User))
-                                      .ToList()
-                                      .Select(g => new GroupVM(g))
-                                      .ToList();
+                                        .Include(g => g.GroupUsers)
+                                        .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                        .ToList()
+                                        .Select(g => new GroupVM(g))
+                                        .ToList();
 
             foreach (GroupVM gvm in vm)
             {
@@ -44,9 +44,9 @@ namespace MDT.Controllers
             return View(vm);
         }
 
-        public async Task<ActionResult> Approved(int id)
+        public ActionResult Approved(int id)
         {
-            Group g = await GetGroup(id);
+            Group g = GetGroup(id);
             if (g == null)
             {
                 TempData["Error"] = $"Group id {id} not found";
@@ -59,7 +59,15 @@ namespace MDT.Controllers
 
             g.IsApproved = true;
             db.Entry(g).State = EntityState.Modified;
-            await db.SaveChangesAsync();
+            Ledger gl = new Ledger()
+            {
+                GroupId = g.GroupId,
+                LedgerName = g.GroupName,
+                Balance = 0.0m
+            };
+
+            db.Entry(gl).State = EntityState.Added;
+            db.SaveChanges();
 
             User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();
 
@@ -76,17 +84,17 @@ namespace MDT.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<ActionResult> Reject(int id)
+        public ActionResult Reject(int id)
         {
-            GroupVM vm = new GroupVM(await GetGroup(id));
+            GroupVM vm = new GroupVM(GetGroup(id));
             return PartialView(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Rejected(GroupVM vm)
+        public ActionResult Rejected(GroupVM vm)
         {
-            Group g = await GetGroup(vm.GroupId);
+            Group g = GetGroup(vm.GroupId);
             if (g == null)
             {
                 TempData["Error"] = $"Group id {vm.GroupId} not found";
@@ -110,7 +118,7 @@ namespace MDT.Controllers
 
             db.Entry(g).State = EntityState.Modified;
             db.Entry(desc).State = EntityState.Added;
-            await db.SaveChangesAsync();
+            db.SaveChanges();
 
             User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();
 

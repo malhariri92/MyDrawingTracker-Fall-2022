@@ -2,16 +2,12 @@ using MDT.ViewModels;
 using MDT.Filters;
 using MDT.Models;
 using MDT.Models.DTO;
-using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MDT.Controllers
 {
@@ -23,48 +19,22 @@ namespace MDT.Controllers
         }
 
 
-        [HttpGet]
-        public ActionResult CreateDrawType(int id = 0)
+        public ActionResult EditDrawType(int id = 0)
         {
-            DrawTypeVM vm = new DrawTypeVM();
+            DrawTypeVM vm = GetDrawTypeVM(id);
+            return View(vm);
 
-            if (id == 0)
-            {               
-                vm.HasSchedule = false;
-                
-                return View(vm);
-            }
-            else
-            {
-                DrawType dt = db.DrawTypes.Find(id);
-                vm = new DrawTypeVM(dt);
-                List<Schedule> schedules = db.Schedules.Where(sc => sc.DrawTypeId == vm.DrawTypeId).ToList<Schedule>();
-
-                if (schedules.Count > 0)
-                {
-                    vm.Schedule = new ScheduleVM(schedules);
-                    vm.HasSchedule = true;
-                }
-                else
-                {
-                    vm.HasSchedule = false;
-                    vm.Schedule = new ScheduleVM();
-                }
-                return View(vm);
-                
-            }
-            
         }
 
         [HttpPost]
-        public ActionResult CreateDrawType(DrawTypeVM vm)
+        public ActionResult EditDrawType(DrawTypeVM vm)
         {
             if (ModelState.IsValid)
             {
                 DrawType drawType = new DrawType()
                 {
                     DrawTypeId = vm.DrawTypeId,
-                    DrawTypeName = vm.GameName,
+                    DrawTypeName = vm.TypeName,
                     EntryCost = vm.EntryCost,
                     IsActive = vm.IsActive,
                     IsInternal = vm.IsInternal,
@@ -85,8 +55,27 @@ namespace MDT.Controllers
                 if (drawType.DrawTypeId == 0)
                 {
                     db.Entry(drawType).State = EntityState.Added;
+                    Ledger gl = new Ledger()
+                    {
+                        GroupId = group.GroupId,
+                        LedgerName = drawType.DrawTypeName,
+                        Balance = 0.0m
+                    };
+
+                    db.Entry(gl).State = EntityState.Added;
                     db.SaveChanges();
-                    return View(new DrawTypeVM());
+
+                    GroupDrawType gdt = new GroupDrawType()
+                    {
+                        DrawTypeId = drawType.DrawTypeId,
+                        IsActive = true,
+                        GroupId = group.GroupId,
+                        LedgerId = gl.LedgerId
+                    };
+
+                    db.Entry(gdt).State = EntityState.Added;
+                    db.SaveChanges();
+                    return View(new DrawTypeVM(drawType));
                 }
                 else
                 {
@@ -96,7 +85,7 @@ namespace MDT.Controllers
 
                 if (vm.HasSchedule)
                 {
-                    for(int i = 0; i < vm.Schedule.Days.Count; i ++)
+                    for (int i = 0; i < vm.Schedule.Days.Count; i++)
                     {
                         ScheduleDayVM schedule = vm.Schedule.Days[i];
 
@@ -117,127 +106,79 @@ namespace MDT.Controllers
                             }
                             else
                             {
-                               db.Schedules.Add(sch);
+                                db.Schedules.Add(sch);
                             }
-                            
+
                         }
 
                     }
                     db.SaveChanges();
-                    
+
                 }
-                 else
+                else
                 {
                     db.Schedules.RemoveRange(db.Schedules.Where(s => s.DrawTypeId == vm.DrawTypeId));
                     db.SaveChanges();
                 }
 
-                
+
             }
-            return View(vm);  
+            return View(vm);
         }
-        
-        [AdminFilter(Role = "Admin")]
-        public ActionResult CreateDraw()
+ 
+        public ActionResult EditDraw(int id = 0)
         {
-            GroupDTO group = (GroupDTO)Session["group"];
-
-            Session["past"] = false;
-
-            DrawVM vm = new DrawVM
+            DrawVM vm = GetDrawVM(id);
+            if(id != vm.DrawId)
             {
-                EndDate = DateTime.Now.Date.AddDays(1)
-            };
-
-            Tuple<DrawVM, List<DrawTypeDTO>, bool> tuple = Tuple.Create(vm, GetDrawTypes(group.GroupId), true);
-
-            return View("CreateDraw", tuple);
-        }
-
-        [AdminFilter(Role = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult CreateNewDraw([Bind(Prefix = "Item1")] DrawVM vm)
-        {
-            GroupDTO group = (GroupDTO)Session["group"];
-
-            Session["past"] = false;
-
-            if (vm.EndDate < DateTime.Now.Date)
-            {
-                Session["past"] = true;
-                Tuple<DrawVM, List<DrawTypeDTO>, bool> tup = Tuple.Create(vm, GetDrawTypes(group.GroupId), true);
-                return PartialView("AddDraw", tup);
+                TempData["Error"] = "Draw not found";
+                return RedirectToAction("Index", "Home");
             }
 
-            DrawType drawType = db.DrawTypes.Where(dT => dT.DrawTypeId == vm.DrawTypeId).FirstOrDefault();
-
-            vm.DrawTypeName = drawType.DrawTypeName;
-
-            Draw draw = new Draw()
-            {
-                DrawType = drawType,
-                DrawTypeId = vm.DrawTypeId,
-                EndDateTime = vm.EndDate,
-            };
-
-            db.Entry(draw).State = EntityState.Added;
-            db.SaveChanges();
-
-            return PartialView("DrawCreated");
-        }
-        
-
-
-        public ActionResult EditList()
-        {
-            GroupDTO group = (GroupDTO)Session["group"];
-            return View(GetDraws(group.GroupId));
+            ViewBag.DrawTypes = GetDdl(db.DrawTypes);
+            return View(vm);
         }
 
         [HttpPost]
-        public ActionResult EditDraw(int DrawId)
+        [AdminFilter(Role ="Admin")]
+        public ActionResult EditDraw(DrawVM vm)
         {
-            Session["past"] = false;
-            GroupDTO group = (GroupDTO)Session["group"];
-            System.Diagnostics.Debug.WriteLine(DrawId);
-            Draw draw = db.Draws.Where(d => d.DrawId == DrawId).FirstOrDefault();
-            DrawVM vm = new DrawVM()
+            Draw draw = db.Draws.Where(d => d.DrawId == vm.DrawId)
+                              .Include(d => d.DrawType)
+                              .Include(d => d.DrawType.GroupDrawTypes)
+                              .Include(d => d.DrawOption)
+                              .FirstOrDefault();
+
+            if (vm.DrawId != 0 || draw == null || !GetDdl(db.Draws).Any(d => d.val == draw.DrawId))
             {
-                DrawId = draw.DrawId,
-                DrawTypeId = draw.DrawTypeId,
-                DrawTypeName = draw.DrawType.DrawTypeName,
-                EndDate = draw.EndDateTime,
-            };
-
-            Tuple<DrawVM, List<DrawTypeDTO>, bool> tuple = Tuple.Create(vm, GetDrawTypes(group.GroupId), false);
-            return View("CreateDraw", tuple);
-        }
-
-        [AdminFilter(Role = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditExistingDraw([Bind(Prefix = "Item1")] DrawVM vm)
-        {
-            GroupDTO group = (GroupDTO)Session["group"];
-
-            if (vm.EndDate < DateTime.Now.Date)
-            {
-                Session["past"] = true;
-                Tuple<DrawVM, List<DrawTypeDTO>, bool> tuple = Tuple.Create(vm, GetDrawTypes(group.GroupId), false);
-                return View("CreateDraw", tuple);
+                TempData["Error"] = "Draw not found";
+                return RedirectToAction("Index", "Home");
             }
-            Session["past"] = false;
-            Draw draw = db.Draws.Where(d => d.DrawId == vm.DrawId).FirstOrDefault();
-            draw.DrawTypeId = vm.DrawTypeId;
-            draw.DrawType = db.DrawTypes.Where(dT => dT.DrawTypeId == vm.DrawTypeId).FirstOrDefault();
+            else
+            {
+                if(!ModelState.IsValid)
+                {
+                    ViewBag.DrawTypes = GetDdl(db.DrawTypes);
+                    return View(vm);
+                }
+
+                draw = new Draw() 
+                {
+                    DrawTypeId = vm.DrawTypeId
+                };
+            }
+
             draw.EndDateTime = vm.EndDate;
-
-            db.Entry(draw).State = EntityState.Modified;
+            
+            db.Entry(draw).State = draw.DrawId == 0 ? EntityState.Added : EntityState.Modified;
             db.SaveChanges();
 
-            return PartialView("DrawEdited");
+            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == draw.DrawId).ToList());
+
+            return View("ViewDraw", vm);
         }
+
+        
 
         public ActionResult ViewDraw(int id)
         {
@@ -253,17 +194,17 @@ namespace MDT.Controllers
                 DrawVM vm = new DrawVM(draw);
                 vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
                 return View(vm);
-                //return RedirectToAction("Index");
             }
-            return View();
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AdminFilter(Role ="Admin")]
+        [AdminFilter(Role = "Admin")]
         public ActionResult DescriptionEdit(DrawVM vm)
         {
-            foreach(Description desc in db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == vm.DrawId))
+            foreach (Description desc in db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == vm.DrawId))
             {
                 db.Entry(desc).State = EntityState.Deleted;
             }
@@ -311,40 +252,6 @@ namespace MDT.Controllers
                 return PartialView("DrawDescriptionEdit", vm);
             }
             return PartialView("Nope");
-        }
-
-        private List<DrawTypeDTO> GetDrawTypes(int GroupId)
-        {
-            List<int> ids = GetIds(GroupId);
-            return db.DrawTypes
-                .Where(dT => ids.Contains(dT.DrawTypeId))
-                .ToList()
-                .Select(dT =>
-                    new DrawTypeDTO(dT)
-                 ).ToList();
-        }
-
-        private List<DrawDTO> GetDraws(int GroupId)
-        {
-            List<int> ids = GetIds(GroupId);
-            return db.Draws.Where(draw => ids.Contains(draw.DrawTypeId))
-                .ToList()
-                .Select(draw =>
-                    new DrawDTO()
-                    {
-                        DrawId = draw.DrawId,
-                        DrawTypeId = draw.DrawTypeId,
-                        DrawTypeName = draw.DrawType.DrawTypeName,
-                        StartDateTime = draw.StartDateTime,
-                        EndDateTime = draw.EndDateTime,
-                    }
-                ).ToList();
-        }
-
-        private List<int> GetIds (int GroupId)
-        {
-            return db.GroupDrawTypes.Where(gDT => gDT.GroupId == GroupId).Select(gDT => gDT.DrawTypeId).ToList();
-
         }
     }
 }
