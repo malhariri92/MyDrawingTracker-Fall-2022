@@ -21,6 +21,7 @@ namespace MDT.Models
             this.DrawOptions = new HashSet<DrawOption>();
             this.DrawResults = new HashSet<DrawResult>();
             this.Transactions = new HashSet<Transaction>();
+            this.PendingTransactions = new HashSet<PendingTransaction>();
         }
     
         public int DrawId { get; set; }
@@ -40,5 +41,7 @@ namespace MDT.Models
         public virtual DrawType DrawType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PendingTransaction> PendingTransactions { get; set; }
     }
 }

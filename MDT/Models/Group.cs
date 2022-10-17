@@ -33,6 +33,7 @@ namespace MDT.Models
         public bool IsPrimary { get; set; }
         public string AccessCode { get; set; }
         public bool JoinConfirmationRequired { get; set; }
+        public bool AllowUserReportedTransactions { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }

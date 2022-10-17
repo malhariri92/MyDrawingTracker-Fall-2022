@@ -101,6 +101,7 @@
           <Property Name="JoinConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="RefundConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="InitialUserBalance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IsolateBalance" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="EmailTemplates">
           <Key>
@@ -144,6 +145,7 @@
           <Property Name="IsPrimary" Type="bit" Nullable="false" />
           <Property Name="AccessCode" Type="nvarchar" MaxLength="10" />
           <Property Name="JoinConfirmationRequired" Type="bit" Nullable="false" />
+          <Property Name="AllowUserReportedTransactions" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="GroupUsers">
           <Key>
@@ -154,6 +156,7 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="IsApproved" Type="bit" Nullable="false" />
           <Property Name="IsAdmin" Type="bit" Nullable="false" />
+          <Property Name="IsOwner" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledgers">
           <Key>
@@ -181,6 +184,19 @@
           </Key>
           <Property Name="ObjectTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ObjectTypeName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PendingTransactions">
+          <Key>
+            <PropertyRef Name="PendingTransactionId" />
+          </Key>
+          <Property Name="PendingTransactionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TransactionTypeId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TransactionDateTime" Type="datetime" Nullable="false" />
+          <Property Name="DrawId" Type="int" />
+          <Property Name="SourceLedger" Type="int" Nullable="false" />
+          <Property Name="DestinationLedger" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Schedules">
           <Key>
@@ -535,6 +551,66 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PendingTransactions_DestinationLedger">
+          <End Role="Ledgers" Type="Self.Ledgers" Multiplicity="1" />
+          <End Role="PendingTransactions" Type="Self.PendingTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledgers">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="PendingTransactions">
+              <PropertyRef Name="DestinationLedger" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_Draws">
+          <End Role="Draws" Type="Self.Draws" Multiplicity="0..1" />
+          <End Role="PendingTransactions" Type="Self.PendingTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draws">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="PendingTransactions">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_SourceLedger">
+          <End Role="Ledgers" Type="Self.Ledgers" Multiplicity="1" />
+          <End Role="PendingTransactions" Type="Self.PendingTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledgers">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="PendingTransactions">
+              <PropertyRef Name="SourceLedger" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_TransactionType">
+          <End Role="TransactionTypes" Type="Self.TransactionTypes" Multiplicity="1" />
+          <End Role="PendingTransactions" Type="Self.PendingTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionTypes">
+              <PropertyRef Name="TransactionTypeId" />
+            </Principal>
+            <Dependent Role="PendingTransactions">
+              <PropertyRef Name="TransactionTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_User">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="PendingTransactions" Type="Self.PendingTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="PendingTransactions">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Schedule_DrawType">
           <End Role="DrawTypes" Type="Self.DrawTypes" Multiplicity="1" />
           <End Role="Schedules" Type="Self.Schedules" Multiplicity="*" />
@@ -660,6 +736,7 @@
           <EntitySet Name="Ledgers" EntityType="Self.Ledgers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="NumberSets" EntityType="Self.NumberSets" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ObjectTypes" EntityType="Self.ObjectTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PendingTransactions" EntityType="Self.PendingTransactions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Schedules" EntityType="Self.Schedules" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SentEmails" EntityType="Self.SentEmails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transactions" EntityType="Self.Transactions" Schema="dbo" store:Type="Tables" />
@@ -755,6 +832,26 @@
           <AssociationSet Name="FK_NextDraw" Association="Self.FK_NextDraw">
             <End Role="Draws" EntitySet="Draws" />
             <End Role="DrawOptions" EntitySet="DrawOptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_DestinationLedger" Association="Self.FK_PendingTransactions_DestinationLedger">
+            <End Role="Ledgers" EntitySet="Ledgers" />
+            <End Role="PendingTransactions" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_Draws" Association="Self.FK_PendingTransactions_Draws">
+            <End Role="Draws" EntitySet="Draws" />
+            <End Role="PendingTransactions" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_SourceLedger" Association="Self.FK_PendingTransactions_SourceLedger">
+            <End Role="Ledgers" EntitySet="Ledgers" />
+            <End Role="PendingTransactions" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_TransactionType" Association="Self.FK_PendingTransactions_TransactionType">
+            <End Role="TransactionTypes" EntitySet="TransactionTypes" />
+            <End Role="PendingTransactions" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_User" Association="Self.FK_PendingTransactions_User">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="PendingTransactions" EntitySet="PendingTransactions" />
           </AssociationSet>
           <AssociationSet Name="FK_Schedule_DrawType" Association="Self.FK_Schedule_DrawType">
             <End Role="DrawTypes" EntitySet="DrawTypes" />
@@ -941,6 +1038,27 @@
             <End Role="User" EntitySet="Users" />
             <End Role="VerificationKey" EntitySet="VerificationKeys" />
           </AssociationSet>
+          <EntitySet Name="PendingTransactions" EntityType="DbModel.PendingTransaction" />
+          <AssociationSet Name="FK_PendingTransactions_Draws" Association="DbModel.FK_PendingTransactions_Draws">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_DestinationLedger" Association="DbModel.FK_PendingTransactions_DestinationLedger">
+            <End Role="Ledger" EntitySet="Ledgers" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_SourceLedger" Association="DbModel.FK_PendingTransactions_SourceLedger">
+            <End Role="Ledger" EntitySet="Ledgers" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_TransactionType" Association="DbModel.FK_PendingTransactions_TransactionType">
+            <End Role="TransactionType" EntitySet="TransactionTypes" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_User" Association="DbModel.FK_PendingTransactions_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Balance">
           <Key>
@@ -1025,6 +1143,7 @@
           <NavigationProperty Name="DrawResults" Relationship="DbModel.FK_DrawResults_Draws" FromRole="Draw" ToRole="DrawResult" />
           <NavigationProperty Name="DrawType" Relationship="DbModel.FK_Draws_DrawType" FromRole="Draw" ToRole="DrawType" />
           <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_Draws" FromRole="Draw" ToRole="Transaction" />
+          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_Draws" FromRole="Draw" ToRole="PendingTransaction" />
         </EntityType>
         <EntityType Name="DrawType">
           <Key>
@@ -1051,6 +1170,7 @@
           <NavigationProperty Name="Schedules" Relationship="DbModel.FK_Schedule_DrawType" FromRole="DrawType" ToRole="Schedule" />
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_DrawType" FromRole="DrawType" ToRole="UserDrawTypeOption" />
           <NavigationProperty Name="NumberSets" Relationship="DbModel.DrawNumberSets" FromRole="DrawType" ToRole="NumberSet" />
+          <Property Name="IsolateBalance" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="EmailTemplate">
           <Key>
@@ -1098,6 +1218,7 @@
           <NavigationProperty Name="User" Relationship="DbModel.FK_GroupUser_User" FromRole="GroupUser" ToRole="User" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
           <Property Name="IsApproved" Type="Boolean" Nullable="false" />
+          <Property Name="IsOwner" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledger">
           <Key>
@@ -1112,6 +1233,8 @@
           <NavigationProperty Name="TransactionsTo" Relationship="DbModel.FK_DestinationLedger" FromRole="Ledger" ToRole="Transaction" />
           <NavigationProperty Name="TransactionsFrom" Relationship="DbModel.FK_SourceLedger" FromRole="Ledger" ToRole="Transaction" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_Ledgers_Group" FromRole="Ledger" ToRole="Group" />
+          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_DestinationLedger" FromRole="Ledger" ToRole="PendingTransaction" />
+          <NavigationProperty Name="PendingTransactions1" Relationship="DbModel.FK_PendingTransactions_SourceLedger" FromRole="Ledger" ToRole="PendingTransaction" />
         </EntityType>
         <EntityType Name="NumberSet">
           <Key>
@@ -1171,6 +1294,7 @@
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="IsDebit" Type="Boolean" Nullable="false" />
           <Property Name="SortOrder" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_TransactionType" FromRole="TransactionType" ToRole="PendingTransaction" />
         </EntityType>
         <EntityType Name="UserDrawTypeOption">
           <Key>
@@ -1208,6 +1332,7 @@
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_Users" FromRole="User" ToRole="UserDrawTypeOption" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_User_Group" FromRole="User" ToRole="Group" />
           <NavigationProperty Name="VerificationKeys" Relationship="DbModel.FK_VerificationKeys_Users" FromRole="User" ToRole="VerificationKey" />
+          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_User" FromRole="User" ToRole="PendingTransaction" />
         </EntityType>
         <Association Name="FK_Balances_Ledgers">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
@@ -1507,6 +1632,7 @@
           <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_Group" FromRole="Group" ToRole="GroupUser" />
           <NavigationProperty Name="Ledgers" Relationship="DbModel.FK_Ledgers_Group" FromRole="Group" ToRole="Ledger" />
           <NavigationProperty Name="Users" Relationship="DbModel.FK_User_Group" FromRole="Group" ToRole="User" />
+          <Property Name="AllowUserReportedTransactions" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_GroupDrawType_Group">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
@@ -1612,6 +1738,84 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="PendingTransaction">
+          <Key>
+            <PropertyRef Name="PendingTransactionId" />
+          </Key>
+          <Property Name="PendingTransactionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TransactionTypeId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="TransactionDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DrawId" Type="Int32" />
+          <Property Name="SourceLedger" Type="Int32" Nullable="false" />
+          <Property Name="DestinationLedger" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Draw" Relationship="DbModel.FK_PendingTransactions_Draws" FromRole="PendingTransaction" ToRole="Draw" />
+          <NavigationProperty Name="ToLedger" Relationship="DbModel.FK_PendingTransactions_DestinationLedger" FromRole="PendingTransaction" ToRole="Ledger" />
+          <NavigationProperty Name="FromLedger" Relationship="DbModel.FK_PendingTransactions_SourceLedger" FromRole="PendingTransaction" ToRole="Ledger" />
+          <NavigationProperty Name="TransactionType" Relationship="DbModel.FK_PendingTransactions_TransactionType" FromRole="PendingTransaction" ToRole="TransactionType" />
+          <NavigationProperty Name="User" Relationship="DbModel.FK_PendingTransactions_User" FromRole="PendingTransaction" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_PendingTransactions_Draws">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
+          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="PendingTransaction">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_DestinationLedger">
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
+          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="PendingTransaction">
+              <PropertyRef Name="DestinationLedger" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_SourceLedger">
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
+          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="PendingTransaction">
+              <PropertyRef Name="SourceLedger" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_TransactionType">
+          <End Type="DbModel.TransactionType" Role="TransactionType" Multiplicity="1" />
+          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransactionType">
+              <PropertyRef Name="TransactionTypeId" />
+            </Principal>
+            <Dependent Role="PendingTransaction">
+              <PropertyRef Name="TransactionTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_User">
+          <End Type="DbModel.User" Role="User" Multiplicity="1" />
+          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="PendingTransaction">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1691,6 +1895,7 @@
           <EntitySetMapping Name="DrawTypes">
             <EntityTypeMapping TypeName="DbModel.DrawType">
               <MappingFragment StoreEntitySet="DrawTypes">
+                <ScalarProperty Name="IsolateBalance" ColumnName="IsolateBalance" />
                 <ScalarProperty Name="InitialUserBalance" ColumnName="InitialUserBalance" />
                 <ScalarProperty Name="RefundConfirmationRequired" ColumnName="RefundConfirmationRequired" />
                 <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
@@ -1743,6 +1948,7 @@
           <EntitySetMapping Name="GroupUsers">
             <EntityTypeMapping TypeName="DbModel.GroupUser">
               <MappingFragment StoreEntitySet="GroupUsers">
+                <ScalarProperty Name="IsOwner" ColumnName="IsOwner" />
                 <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
@@ -1866,6 +2072,7 @@
           <EntitySetMapping Name="Groups">
             <EntityTypeMapping TypeName="DbModel.Group">
               <MappingFragment StoreEntitySet="Groups">
+                <ScalarProperty Name="AllowUserReportedTransactions" ColumnName="AllowUserReportedTransactions" />
                 <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
                 <ScalarProperty Name="AccessCode" ColumnName="AccessCode" />
                 <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
@@ -1894,6 +2101,20 @@
                 <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="VerificationId" ColumnName="VerificationId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PendingTransactions">
+            <EntityTypeMapping TypeName="DbModel.PendingTransaction">
+              <MappingFragment StoreEntitySet="PendingTransactions">
+                <ScalarProperty Name="DestinationLedger" ColumnName="DestinationLedger" />
+                <ScalarProperty Name="SourceLedger" ColumnName="SourceLedger" />
+                <ScalarProperty Name="DrawId" ColumnName="DrawId" />
+                <ScalarProperty Name="TransactionDateTime" ColumnName="TransactionDateTime" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="TransactionTypeId" ColumnName="TransactionTypeId" />
+                <ScalarProperty Name="PendingTransactionId" ColumnName="PendingTransactionId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

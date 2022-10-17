@@ -58,6 +58,12 @@
         <EntityTypeShape EntityType="DbModel.UniqueKey" Width="1.5" PointX="0.75" PointY="4.75" />
         <EntityTypeShape EntityType="DbModel.VerificationKey" Width="1.5" PointX="5.25" PointY="35.5" />
         <AssociationConnector Association="DbModel.FK_VerificationKeys_Users" />
+        <EntityTypeShape EntityType="DbModel.PendingTransaction" Width="1.5" PointX="11.25" PointY="14.375" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_Draws" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_DestinationLedger" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_SourceLedger" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_TransactionType" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
