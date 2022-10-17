@@ -18,6 +18,7 @@ namespace MDT.Models
         public TransactionType()
         {
             this.Transactions = new HashSet<Transaction>();
+            this.PendingTransactions = new HashSet<PendingTransaction>();
         }
     
         public int TransactionTypeId { get; set; }
@@ -28,5 +29,7 @@ namespace MDT.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PendingTransaction> PendingTransactions { get; set; }
     }
 }

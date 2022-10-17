@@ -103,5 +103,43 @@ namespace MDT.Controllers
                 return PartialView(tld);
             }
         }
+
+        [LoginFilter]
+        public ActionResult ReportNewTransaction()
+        {
+            TransactionVM vm = new TransactionVM();
+            vm.UserId = user.UserId;
+            ViewBag.TransactionTypes = GetDdl(db.TransactionTypes);
+            return View(vm);
+        }
+
+        [LoginFilter]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ReportNewTransaction(TransactionVM vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            else
+            {
+                PendingTransaction entry = new PendingTransaction()
+                {
+                    TransactionTypeId = vm.TransactionTypeId,
+                    Amount = vm.Amount,
+                    UserId = user.UserId,
+                    TransactionDateTime = DateTime.Now,
+                    SourceLedger = 1,
+                    DestinationLedger = 2
+                };
+
+                db.PendingTransactions.Add(entry);
+                db.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+        }
     }
 }

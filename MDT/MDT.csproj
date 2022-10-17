@@ -133,7 +133,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Attributes\EntryCountValidation.cs" />
     <Compile Include="Attributes\PasswordValidation.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DrawController.cs" />
@@ -223,6 +222,9 @@
     </Compile>
     <Compile Include="Models\PartialClasses.cs" />
     <Compile Include="Models\PasswordManager.cs" />
+    <Compile Include="Models\PendingTransaction.cs">
+      <DependentUpon>DbModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Schedule.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -494,6 +496,7 @@
     <Content Include="Views\Entry\Index.cshtml" />
     <Content Include="Views\Entry\AddEntries.cshtml" />
     <Content Include="Views\Group\SubGroup.cshtml" />
+    <Content Include="Views\Transaction\ReportNewTransaction.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

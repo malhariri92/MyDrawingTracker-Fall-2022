@@ -48,5 +48,6 @@ namespace MDT.Models
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<UniqueKey> UniqueKeys { get; set; }
         public virtual DbSet<VerificationKey> VerificationKeys { get; set; }
+        public virtual DbSet<PendingTransaction> PendingTransactions { get; set; }
     }
 }
