@@ -497,6 +497,7 @@
     <Content Include="Views\Entry\AddEntries.cshtml" />
     <Content Include="Views\Group\SubGroup.cshtml" />
     <Content Include="Views\Transaction\ReportNewTransaction.cshtml" />
+    <Content Include="Views\User\Info.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
