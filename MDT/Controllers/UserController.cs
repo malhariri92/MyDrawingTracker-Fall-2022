@@ -20,11 +20,29 @@ namespace MDT.Controllers
 
         public ActionResult Index()
         {
-            UserVM vm = new UserVM(db.Users.Where(u => user.UserId == u.UserId).Include(u => u.GroupUsers).FirstOrDefault());
-
+            UserVM vm = GetUserVM();
+            ViewBag.Draws = GetDraws();
             return View(vm);
         }
 
+        public ActionResult IndexPartial()
+        {
+            UserVM vm = GetUserVM();
+            ViewBag.Draws = GetDraws();
+            return PartialView("Index", vm);
+        }
+
+        private UserVM GetUserVM()
+        {
+            return new UserVM(db.Users.Where(u => u.UserId == user.UserId).Include(u => u.GroupUsers).FirstOrDefault());
+        }
+
+        private List<Draw> GetDraws()
+        {
+            return db.Draws
+                .Where(d => d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId) && d.EndDateTime > DateTime.Now)
+                .ToList();
+        }
         public bool ChangeGroup(int groupId)
         {
             if (WebManager.IsGroupMember(groupId, user.UserId))
@@ -46,7 +64,7 @@ namespace MDT.Controllers
         {
             if (user != null)
             {
-                return View(new UserPasswordChangeVM());
+                return PartialView(new UserPasswordChangeVM());
             }
             return RedirectToAction("Index", "Home");
         }
@@ -58,20 +76,20 @@ namespace MDT.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(vm);
+                return PartialView(vm);
             }
             if (vm.CurrentPassword.Equals(vm.NewPassword))
             {
                 vm.Success = false;
                 ModelState.AddModelError("NewPassword", "New password must be different from current password.");
-                return View(vm);
+                return PartialView(vm);
             }
 
             if (!WebManager.CheckCurrentHash(user.UserId, vm.CurrentPassword))
             {
                 vm.Success = false;
                 ModelState.AddModelError("CurrentPassword", "Current password incorrect.");
-                return View(vm);
+                return PartialView(vm);
             }
 
             if (PasswordManager.SetNewHash(user.UserId, vm.NewPassword))
@@ -84,7 +102,7 @@ namespace MDT.Controllers
                 vm.Error = true;
                 vm.Message = "Something went wrong updating your password. Please try again.";
             }
-            return View(vm);
+            return PartialView(vm);
         }
 
         public ActionResult ChangeUserDetails()
