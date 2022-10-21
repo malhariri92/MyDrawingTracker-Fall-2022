@@ -252,7 +252,45 @@ namespace MDT.Controllers
             {
                 DrawVM vm = new DrawVM(draw);
                 vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
-                return View(vm);
+
+                int dtId = draw.DrawTypeId;
+                DrawTypeVM dtVM = new DrawTypeVM();
+                if (dtId == 0)
+                {
+                    dtVM.HasSchedule = false;
+                }
+                else
+                {
+                    DrawType dt = db.DrawTypes.Find(dtId);
+                    dtVM = new DrawTypeVM(dt);
+                    List<Schedule> schedules = db.Schedules.Where(sc => sc.DrawTypeId == vm.DrawTypeId).ToList<Schedule>();
+
+                    if (schedules.Count > 0)
+                    {
+                        dtVM.Schedule = new ScheduleVM(schedules);
+                        dtVM.HasSchedule = true;
+                    }
+                    else
+                    {
+                        dtVM.HasSchedule = false;
+                        dtVM.Schedule = new ScheduleVM();
+                    }
+                }
+
+                GroupDTO group = (GroupDTO)Session["group"];
+                List<DrawDTO> drawsList = GetDraws(group.GroupId);
+
+                List<DrawTypeDTO> dtDTO = GetDrawTypes(group.GroupId);
+
+                Tuple<DrawVM, List<DrawTypeDTO>, bool> cedTuple = Tuple.Create(vm, dtDTO, true);
+
+                /*Tuple<DrawVM, DrawTypeVM, List<DrawDTO>, Tuple<DrawVM, List<DrawTypeDTO>, bool>, string> tuple 
+                    = Tuple.Create(vm, dtVM, drawsList, cedTuple, "viewDraw");
+                return View(tuple);*/
+
+                Tuple<DrawVM, DrawTypeVM, List<DrawDTO>, string> tuple
+                    = Tuple.Create(vm, dtVM, drawsList, "viewDraw");
+                return View(tuple);
                 //return RedirectToAction("Index");
             }
             return View();

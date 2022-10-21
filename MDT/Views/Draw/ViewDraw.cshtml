@@ -1,50 +1,63 @@
 ﻿@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
-@model DrawVM
+@model Tuple<DrawVM, DrawTypeVM, List<DrawDTO>, string>
 @{
     ViewBag.Title = "View Draw";
     UserDTO user = (UserDTO)Session["User"];
 }
 
-<div class="row text-center ">
-    <h1>Drawing for @Model.DrawTypeName</h1>
-</div>
-<div class="row">
-    <div class="col-md-7 col-xs-12" id="divDesc">
-        @{
-            if (Model.Descriptions.Any())
-            {
-                Html.RenderPartial("DrawDescription", Model);
-            }
-            else
-            {
-                Html.RenderPartial("DrawDescriptionEdit", Model);
-            }
-
-        }
-    </div>
-    <div class="col-md-5 col-xs-12">
-        @{
-            Html.RenderPartial("DrawRules", Model);
-        }
-    </div>
-    <div>
-        @using (Html.BeginForm("Index", "Entry", FormMethod.Post, new { @id = "form0" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.Hidden("drawId", Model.DrawId)
-            @Html.Hidden("drawTypeId", Model.DrawTypeId)
-            @Html.Hidden("userId", user.UserId)
-            <input type="submit" value="Add Entries" class="btn btn-primary" />
-        }
-    </div>
-</div>
-
-@if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+@if (Model.Item4 == "viewDraw")
 {
-    <script type="text/javascript">
-        let ct = @Model.Descriptions.Count;
+    <div class="row text-center ">
+        <h1>Drawing for @Model.Item1.DrawTypeName</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-7 col-xs-12" id="divDesc">
+            @{
+                if (Model.Item1.Descriptions.Any())
+                {
+                    Html.RenderPartial("DrawDescription", Model.Item1);
+                }
+                else
+                {
+                    Html.RenderPartial("DrawDescriptionEdit", Model.Item1);
+                }
+
+            }
+        </div>
+        <div class="col-md-5 col-xs-12">
+            @{
+                Html.RenderPartial("DrawRules", Model.Item1);
+            }
+        </div>
+        <div>
+            @Html.ActionLink("Add Entry", "GoToEntryForm", "Entry",
+                new { drawId = Model.Item1.DrawId, drawTypeId = Model.Item1.DrawTypeId, userId = user.UserId }, new { @class = "btn btn-primary" })
+        </div>
+    </div>
+    <div class="row">
+        <button class="btn btn-primary" id="toggleDrawTypeBtn">Show DrawType</button>
+        @{
+            Html.RenderPartial("CreateDrawType", Model.Item2);
+        }
+    </div>
+    <div class="row">
+        <button class="btn btn-primary" id="toggleDrawListBtn">Show EditList</button>
+        @{
+            Html.RenderPartial("EditList", Model.Item3);
+        }
+    </div>
+    <div class="row">
+        @{ 
+            //Html.RenderPartial("CreateDraw", Model.Item4);
+        }
+    </div>
+
+    if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+    {
+        <script type="text/javascript">
+        let ct = @Model.Item1.Descriptions.Count;
 
         $(document).on('click', '#btnAddDesc', function () {
             $('#descedit').append(
@@ -77,14 +90,24 @@
 
         $(document).on('click', '#btnCancelDescEdit', function () {
             $('#divDesc').empty();
-            $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.DrawId })');
+            $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.Item1.DrawId })');
         });
 
-    $(document).on('click', '#btnDescEdit', function () {
+        $(document).on('click', '#btnDescEdit', function () {
             $('#divDesc').empty();
-            $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.DrawId })');
+            $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.Item1.DrawId })');
         });
 
+        $(document).on('click', '#toggleDrawTypeBtn', function () {
+            $(this).text($(this).text() == "Show DrawType" ? "Hide DrawType" : "Show DrawType");
+            $('#createEditDrawTypeForm').toggle();
+        });
 
-    </script>
+            $(document).on('click', '#toggleDrawListBtn', function () {
+            $(this).text($(this).text() == "Show EditList" ? "Hide EditList" : "Show EditList");
+            $('#editList').toggle();
+        });
+
+        </script>
+    }
 }

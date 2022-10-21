@@ -18,25 +18,23 @@ namespace MDT.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Index(int drawId, int drawTypeId, int userId)
+        public ActionResult GoToEntryForm(int drawId, int drawTypeId, int userId)
         {
             try
             {
-                    DrawEntry drawEntry = new DrawEntry();
-                    drawEntry.DrawId = drawId;
-                    drawEntry.UserId = userId;
-                    drawEntry.EntryCode = WebManager.GetUniqueKey(6);
-                    db.Entry(drawEntry).State = EntityState.Added;
-                    db.SaveChanges();
-                    drawEntry = db.DrawEntries.Where(de => de.EntryId == drawEntry.EntryId)
-                        .Include(de => de.Draw)
-                        .Include(de => de.User)
-                        .FirstOrDefault();
-                    EntryVM vm = new EntryVM(drawEntry);
-                    return View(vm);
-               
+                DrawEntry drawEntry = new DrawEntry();
+                drawEntry.DrawId = drawId;
+                drawEntry.UserId = userId;
+                drawEntry.EntryCode = WebManager.GetUniqueKey(6);
+                db.Entry(drawEntry).State = EntityState.Added;
+                db.SaveChanges();
+                drawEntry = db.DrawEntries.Where(de => de.EntryId == drawEntry.EntryId)
+                    .Include(de => de.Draw)
+                    .Include(de => de.User)
+                    .FirstOrDefault();
+                EntryVM vm = new EntryVM(drawEntry);
+                return View(vm);
+
             }
             catch (Exception e)
             {
