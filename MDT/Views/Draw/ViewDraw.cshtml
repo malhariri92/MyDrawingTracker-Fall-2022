@@ -31,8 +31,9 @@
                 Html.RenderPartial("DrawRules", Model.drawVm);
             }
         </div>
-        <div>
-            @Html.ActionLink("Add Entry", "GoToEntryForm", "Entry",
+        <div id="addEntries" class="col-md-5 col-xs-12">
+            <button class="btn btn-primary" id="goToEntryFormBtn">Add Entry</button>
+            @Html.ActionLink("MEMEMEME", "GoToEntryForm", "Entry",
                 new { drawId = Model.drawVm.DrawId, drawTypeId = Model.drawVm.DrawTypeId, userId = user.UserId }, new { @class = "btn btn-primary" })
         </div>
     </div>
@@ -57,63 +58,73 @@
 
     if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
     {
-        <script type="text/javascript">
-        let ct = @Model.drawVm.Descriptions.Count;
+<script type="text/javascript">
+            let ct = @Model.drawVm.Descriptions.Count;
 
-        $(document).on('click', '#btnAddDesc', function () {
-            $('#descedit').append(
-                `<div id="desc-${ct}">
-                     <div class="row">
-                     <input id="Descriptions_${ct}__SortOrder" name="Descriptions[${ct}].SortOrder" type="hidden" value="${ct}">
-                     <input id="Descriptions_${ct}__IsActive" name="Descriptions[${ct}].IsActive" type="hidden" value="True">
-                     <div class="col-xs-9">
-                     <input class="form-control big-input text-box single-line" data-val="true" data-val-maxlength="Title cannot exceed 50 characters" data-val-maxlength-max="50" id="Descriptions_${ct}__Title" name="Descriptions[${ct}].Title" placeholder="Paragraph Heading" type="text" value="">
-                     </div>
-                     <div class="col-xs-1 text-right">
-                     <button type="button" data-desc-id="${ct}" class="btn btn-xs btn-danger DescDelete" title="Delete"><span class="fa fa-trash-o"></span></button>
-                     </div>
-                     </div>
-                     <div class="row">
-                     <div class="col-xs-10">
-                     <textarea class="form-control" cols="20" id="Descriptions_${ct}__TextBody" name="Descriptions[${ct}].TextBody" placeholder="Paragraph Text" rows="4"></textarea>
-                     </div>
-                     </div>
-                     <br /><br />
-                     </div>`);
-            ct++;
-        });
+            $(document).on('click', '#btnAddDesc', function () {
+                $('#descedit').append(
+                    `<div id="desc-${ct}">
+                        <div class="row">
+                        <input id="Descriptions_${ct}__SortOrder" name="Descriptions[${ct}].SortOrder" type="hidden" value="${ct}">
+                        <input id="Descriptions_${ct}__IsActive" name="Descriptions[${ct}].IsActive" type="hidden" value="True">
+                        <div class="col-xs-9">
+                        <input class="form-control big-input text-box single-line" data-val="true" data-val-maxlength="Title cannot exceed 50 characters" data-val-maxlength-max="50" id="Descriptions_${ct}__Title" name="Descriptions[${ct}].Title" placeholder="Paragraph Heading" type="text" value="">
+                        </div>
+                        <div class="col-xs-1 text-right">
+                        <button type="button" data-desc-id="${ct}" class="btn btn-xs btn-danger DescDelete" title="Delete"><span class="fa fa-trash-o"></span></button>
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-xs-10">
+                        <textarea class="form-control" cols="20" id="Descriptions_${ct}__TextBody" name="Descriptions[${ct}].TextBody" placeholder="Paragraph Text" rows="4"></textarea>
+                        </div>
+                        </div>
+                        <br /><br />
+                        </div>`);
+                ct++;
+            });
 
-        $(document).on('click', '.DescDelete', function () {
-            let id = $(this).attr('data-desc-id');
-            $(`#Descriptions_${id}__IsActive`).val('False');
-            $(`#desc-${id}`).hide();
-        });
+            $(document).on('click', '.DescDelete', function () {
+                let id = $(this).attr('data-desc-id');
+                $(`#Descriptions_${id}__IsActive`).val('False');
+                $(`#desc-${id}`).hide();
+            });
 
-        $(document).on('click', '#btnCancelDescEdit', function () {
-            $('#divDesc').empty();
-            $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.drawVm.DrawId })');
-        });
+            $(document).on('click', '#btnCancelDescEdit', function () {
+                $('#divDesc').empty();
+                $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.drawVm.DrawId })');
+            });
 
-        $(document).on('click', '#btnDescEdit', function () {
-            $('#divDesc').empty();
-            $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.drawVm.DrawId })');
-        });
+            $(document).on('click', '#btnDescEdit', function () {
+                $('#divDesc').empty();
+                $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.drawVm.DrawId })');
+            });
 
-        $(document).on('click', '#toggleDrawTypeBtn', function () {
-            $(this).text($(this).text() == "Show DrawType" ? "Hide DrawType" : "Show DrawType");
-            $('#createEditDrawTypeForm').toggle();
-        });
+            $(document).on('click', '#toggleDrawTypeBtn', function () {
+                $(this).text($(this).text() == "Show DrawType" ? "Hide DrawType" : "Show DrawType");
+                $('#createEditDrawTypeForm').toggle();
+            });
 
-        $(document).on('click', '#toggleDrawListBtn', function () {
-            $(this).text($(this).text() == "Show EditList" ? "Hide EditList" : "Show EditList");
-            $('#editList').toggle();
-        });
+            $(document).on('click', '#toggleDrawListBtn', function () {
+                $(this).text($(this).text() == "Show EditList" ? "Hide EditList" : "Show EditList");
+                $('#editList').toggle();
+            });
 
-        $(document).on('click', '#toggleCreateDrawBtn', function () {
-            $(this).text($(this).text() == "Show CreateDraw" ? "Hide CreateDraw" : "Show CreateDraw");
-            $('#createEditForm').toggle();
-        });
+            $(document).on('click', '#toggleCreateDrawBtn', function () {
+                $(this).text($(this).text() == "Show CreateDraw" ? "Hide CreateDraw" : "Show CreateDraw");
+                $('#createEditForm').toggle();
+            });
 
-        </script>
+            $(document).on('click', '#goToEntryFormBtn', function () {
+                $('#addEntries').empty();
+                $('#addEntries').load('@Html.Raw(Url.Action("GoToEntryForm", "Entry", new { drawId = Model.drawVm.DrawId, drawTypeId = Model.drawVm.DrawTypeId, userId = user.UserId }))');
+            });
+
+            $(document).on('click', '#cancelAddEntries', function () {
+                $('#addEntries').empty();
+                $('#addEntries').append('<button class="btn btn-primary" id="goToEntryFormBtn">Add Entry</button>')
+            });
+
+</script>
     }
 }

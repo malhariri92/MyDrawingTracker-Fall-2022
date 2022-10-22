@@ -1,8 +1,4 @@
 ﻿@model MDT.ViewModels.EntryVM
-@{
-    ViewBag.Title = "Add Entries Result";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
 @if (Model.Success)
 {
@@ -39,6 +35,7 @@ else
 
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
+                        <button id="cancelAddEntries" class="btn btn-danger">Cancel</button>
                         <input type="submit" value="Add Entries" class="btn btn-success" />
                     </div>
                     <br />

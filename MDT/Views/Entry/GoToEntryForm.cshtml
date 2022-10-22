@@ -1,8 +1,4 @@
 ﻿@model MDT.ViewModels.EntryVM
-@{
-    ViewBag.Title = "Add Entries";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
 @{
     using (Html.BeginForm("AddEntries", "Entry", FormMethod.Post, new { @id = "form0" }))
@@ -26,14 +22,9 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Add Entries" class="btn btn-success" />
-                    </div>
-                    <br />
-                </div>
-
             </div>
+            <button type="button" id="cancelAddEntries" class="btn btn-danger">Cancel</button>
+            <button type="submit" class="btn btn-success">Add Entries</button>
         </div>
     }
 }

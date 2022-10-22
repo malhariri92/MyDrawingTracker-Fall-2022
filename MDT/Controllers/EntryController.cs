@@ -33,7 +33,7 @@ namespace MDT.Controllers
                     .Include(de => de.User)
                     .FirstOrDefault();
                 EntryVM vm = new EntryVM(drawEntry);
-                return View(vm);
+                return PartialView(vm);
 
             }
             catch (Exception e)
