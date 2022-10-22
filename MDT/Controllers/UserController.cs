@@ -43,7 +43,7 @@ namespace MDT.Controllers
                 .Where(d => d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId) && d.EndDateTime > DateTime.Now)
                 .ToList();
         }
-        public bool ChangeGroup(int groupId)
+        public void ChangeGroup(int groupId)
         {
             if (WebManager.IsGroupMember(groupId, user.UserId))
             {
@@ -53,11 +53,7 @@ namespace MDT.Controllers
                 db.SaveChanges();
                 Session["User"] = new UserDTO(u);
                 Session["Group"] = WebManager.GetGroupDTO(groupId);
-
-                return true;
             }
-
-            return false;
         }
 
         public ActionResult ChangePass()
