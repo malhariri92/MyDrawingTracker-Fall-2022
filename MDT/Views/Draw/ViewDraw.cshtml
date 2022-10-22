@@ -1,63 +1,64 @@
 ﻿@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
-@model Tuple<DrawVM, DrawTypeVM, List<DrawDTO>, string>
+@model UIDrawDTO
 @{
     ViewBag.Title = "View Draw";
     UserDTO user = (UserDTO)Session["User"];
 }
 
-@if (Model.Item4 == "viewDraw")
+@if (Model.actionName == "viewDraw")
 {
     <div class="row text-center ">
-        <h1>Drawing for @Model.Item1.DrawTypeName</h1>
+        <h1>Drawing for @Model.drawVm.DrawTypeName</h1>
     </div>
     <div class="row">
         <div class="col-md-7 col-xs-12" id="divDesc">
             @{
-                if (Model.Item1.Descriptions.Any())
+                if (Model.drawVm.Descriptions.Any())
                 {
-                    Html.RenderPartial("DrawDescription", Model.Item1);
+                    Html.RenderPartial("DrawDescription", Model.drawVm);
                 }
                 else
                 {
-                    Html.RenderPartial("DrawDescriptionEdit", Model.Item1);
+                    Html.RenderPartial("DrawDescriptionEdit", Model.drawVm);
                 }
 
             }
         </div>
         <div class="col-md-5 col-xs-12">
             @{
-                Html.RenderPartial("DrawRules", Model.Item1);
+                Html.RenderPartial("DrawRules", Model.drawVm);
             }
         </div>
         <div>
             @Html.ActionLink("Add Entry", "GoToEntryForm", "Entry",
-                new { drawId = Model.Item1.DrawId, drawTypeId = Model.Item1.DrawTypeId, userId = user.UserId }, new { @class = "btn btn-primary" })
+                new { drawId = Model.drawVm.DrawId, drawTypeId = Model.drawVm.DrawTypeId, userId = user.UserId }, new { @class = "btn btn-primary" })
         </div>
     </div>
     <div class="row">
         <button class="btn btn-primary" id="toggleDrawTypeBtn">Show DrawType</button>
         @{
-            Html.RenderPartial("CreateDrawType", Model.Item2);
+            Html.RenderPartial("CreateDrawType", Model.drawTypeVM);
         }
     </div>
     <div class="row">
         <button class="btn btn-primary" id="toggleDrawListBtn">Show EditList</button>
         @{
-            Html.RenderPartial("EditList", Model.Item3);
+            Html.RenderPartial("EditList", Model.drawDTOs);
         }
     </div>
     <div class="row">
-        @{ 
-            //Html.RenderPartial("CreateDraw", Model.Item4);
+        <button class="btn btn-primary" id="toggleCreateDrawBtn">Show CreateDraw</button>
+        @{
+            Html.RenderPartial("CreateDraw", Model.drawInnerDTO);
         }
     </div>
 
     if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
     {
         <script type="text/javascript">
-        let ct = @Model.Item1.Descriptions.Count;
+        let ct = @Model.drawVm.Descriptions.Count;
 
         $(document).on('click', '#btnAddDesc', function () {
             $('#descedit').append(
@@ -90,12 +91,12 @@
 
         $(document).on('click', '#btnCancelDescEdit', function () {
             $('#divDesc').empty();
-            $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.Item1.DrawId })');
+            $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.drawVm.DrawId })');
         });
 
         $(document).on('click', '#btnDescEdit', function () {
             $('#divDesc').empty();
-            $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.Item1.DrawId })');
+            $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.drawVm.DrawId })');
         });
 
         $(document).on('click', '#toggleDrawTypeBtn', function () {
@@ -103,9 +104,14 @@
             $('#createEditDrawTypeForm').toggle();
         });
 
-            $(document).on('click', '#toggleDrawListBtn', function () {
+        $(document).on('click', '#toggleDrawListBtn', function () {
             $(this).text($(this).text() == "Show EditList" ? "Hide EditList" : "Show EditList");
             $('#editList').toggle();
+        });
+
+        $(document).on('click', '#toggleCreateDrawBtn', function () {
+            $(this).text($(this).text() == "Show CreateDraw" ? "Hide CreateDraw" : "Show CreateDraw");
+            $('#createEditForm').toggle();
         });
 
         </script>

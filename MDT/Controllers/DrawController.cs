@@ -278,19 +278,16 @@ namespace MDT.Controllers
                 }
 
                 GroupDTO group = (GroupDTO)Session["group"];
+                Session["past"] = false;
+                vm.EndDate = DateTime.Now.Date.AddDays(1);
                 List<DrawDTO> drawsList = GetDraws(group.GroupId);
 
-                List<DrawTypeDTO> dtDTO = GetDrawTypes(group.GroupId);
+                List<DrawTypeDTO> dtDTOList = GetDrawTypes(group.GroupId);
 
-                Tuple<DrawVM, List<DrawTypeDTO>, bool> cedTuple = Tuple.Create(vm, dtDTO, true);
+                UIDrawInnerDTO uIDrawInnerDTO = new UIDrawInnerDTO(vm, dtDTOList, false);
 
-                /*Tuple<DrawVM, DrawTypeVM, List<DrawDTO>, Tuple<DrawVM, List<DrawTypeDTO>, bool>, string> tuple 
-                    = Tuple.Create(vm, dtVM, drawsList, cedTuple, "viewDraw");
-                return View(tuple);*/
-
-                Tuple<DrawVM, DrawTypeVM, List<DrawDTO>, string> tuple
-                    = Tuple.Create(vm, dtVM, drawsList, "viewDraw");
-                return View(tuple);
+                UIDrawDTO uidraw = new UIDrawDTO(vm, drawsList, dtVM, "viewDraw", uIDrawInnerDTO);
+                return View(uidraw);
                 //return RedirectToAction("Index");
             }
             return View();

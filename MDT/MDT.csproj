@@ -188,6 +188,8 @@
     <Compile Include="Models\DrawType.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DTO\UIDrawInnerDTO.cs" />
+    <Compile Include="Models\DTO\UIDrawDTO.cs" />
     <Compile Include="Models\DTO\GroupDTO.cs" />
     <Compile Include="Models\DTO\DrawDTO.cs" />
     <Compile Include="Models\DTO\TransactionDTO.cs" />

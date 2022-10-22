@@ -1,9 +1,9 @@
 ﻿@using MDT.Models.DTO
 @using MDT.ViewModels
-@model Tuple<DrawVM, List<DrawTypeDTO>, bool>
+@model UIDrawInnerDTO
 @{
     bool isPast = (bool)Session["past"];
-    ViewBag.Title = Model.Item3 ? "Add a Drawing" : "Edit an Existing Drawing";
+    //ViewBag.Title = Model.Item3 ? "Add a Drawing" : "Edit an Existing Drawing";
 }
 <div id="createEditForm">
     @Html.Partial("CreateEditDrawForm", Model)
