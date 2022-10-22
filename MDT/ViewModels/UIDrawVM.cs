@@ -1,12 +1,10 @@
-﻿using MDT.ViewModels;
-using System;
+﻿using MDT.Models.ViewModels;
+using MDT.Models.DTO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace MDT.Models.DTO
+namespace MDT.ViewModels
 {
-    public class UIDrawDTO
+    public class UIDrawVM
     {
         public DrawVM drawVm { get; set; }
 
@@ -16,17 +14,17 @@ namespace MDT.Models.DTO
 
         public string actionName { get; set; }
 
-        public UIDrawInnerDTO drawInnerDTO { get; set; }
+        public UIDrawInnerVM drawInnerVM { get; set; }
 
-        public UIDrawDTO() { }
+        public UIDrawVM() { }
 
-        public UIDrawDTO(DrawVM drawVm, List<DrawDTO> drawDTOs, DrawTypeVM drawTypeVM, string actionName, UIDrawInnerDTO drawInnerDTO)
+        public UIDrawVM(DrawVM drawVm, List<DrawDTO> drawDTOs, DrawTypeVM drawTypeVM, string actionName, UIDrawInnerVM drawInnerVM)
         {
             this.drawVm = drawVm;
             this.drawDTOs = drawDTOs;
             this.drawTypeVM = drawTypeVM;
             this.actionName = actionName;
-            this.drawInnerDTO = drawInnerDTO;
+            this.drawInnerVM = drawInnerVM;
         }
     }
 }

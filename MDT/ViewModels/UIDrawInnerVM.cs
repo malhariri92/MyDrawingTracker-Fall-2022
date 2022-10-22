@@ -1,12 +1,10 @@
 ﻿using MDT.ViewModels;
-using System;
+using MDT.Models.DTO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace MDT.Models.DTO
+namespace MDT.Models.ViewModels
 {
-    public class UIDrawInnerDTO
+    public class UIDrawInnerVM
     {
         public DrawVM drawVm { get; set; }
 
@@ -14,9 +12,9 @@ namespace MDT.Models.DTO
 
         public bool toCreate { get; set; }
 
-        public UIDrawInnerDTO() { }
+        public UIDrawInnerVM() { }
 
-        public UIDrawInnerDTO(DrawVM drawVm, List<DrawTypeDTO> drawTypeDTOs, bool toCreate)
+        public UIDrawInnerVM(DrawVM drawVm, List<DrawTypeDTO> drawTypeDTOs, bool toCreate)
         {
             this.drawVm = drawVm;
             this.drawTypeDTOs = drawTypeDTOs;

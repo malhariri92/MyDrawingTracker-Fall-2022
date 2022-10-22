@@ -1,4 +1,4 @@
-﻿@using MDT.ViewModels
+﻿@using MDT.Models.ViewModels
 @using MDT.Models.DTO
 @using System.Web.Mvc
 
@@ -10,7 +10,7 @@
         display: none;
     }
 </style>
-@model UIDrawInnerDTO
+@model UIDrawInnerVM
 @{
     bool isPast = (bool)Session["past"];
     List<SelectListItem> select = new List<SelectListItem>();

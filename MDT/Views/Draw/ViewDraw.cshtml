@@ -1,7 +1,7 @@
 ﻿@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
-@model UIDrawDTO
+@model UIDrawVM
 @{
     ViewBag.Title = "View Draw";
     UserDTO user = (UserDTO)Session["User"];
@@ -52,7 +52,7 @@
     <div class="row">
         <button class="btn btn-primary" id="toggleCreateDrawBtn">Show CreateDraw</button>
         @{
-            Html.RenderPartial("CreateDraw", Model.drawInnerDTO);
+            Html.RenderPartial("CreateDraw", Model.drawInnerVM);
         }
     </div>
 

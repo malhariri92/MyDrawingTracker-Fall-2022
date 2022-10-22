@@ -2,6 +2,7 @@ using MDT.ViewModels;
 using MDT.Filters;
 using MDT.Models;
 using MDT.Models.DTO;
+using MDT.Models.ViewModels;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
@@ -284,9 +285,9 @@ namespace MDT.Controllers
 
                 List<DrawTypeDTO> dtDTOList = GetDrawTypes(group.GroupId);
 
-                UIDrawInnerDTO uIDrawInnerDTO = new UIDrawInnerDTO(vm, dtDTOList, false);
+                UIDrawInnerVM uIDrawInnerVM = new UIDrawInnerVM(vm, dtDTOList, false);
 
-                UIDrawDTO uidraw = new UIDrawDTO(vm, drawsList, dtVM, "viewDraw", uIDrawInnerDTO);
+                UIDrawVM uidraw = new UIDrawVM(vm, drawsList, dtVM, "viewDraw", uIDrawInnerVM);
                 return View(uidraw);
                 //return RedirectToAction("Index");
             }
