@@ -42,7 +42,6 @@
 
         <script type="text/javascript">
             $(document).on('change', '#joinConfirm', function () {
-            console.log("test");
             let flag = $(this).is(':checked');
             $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
             });
@@ -96,5 +95,4 @@
             </div>
         </div>
     }
-</div>
 

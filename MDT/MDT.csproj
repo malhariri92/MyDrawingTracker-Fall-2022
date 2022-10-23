@@ -261,6 +261,7 @@
     <Compile Include="ViewModels\GroupOptionsVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
     <Compile Include="ViewModels\GroupUserVM.cs" />
+    <Compile Include="ViewModels\PendingTransactionVM.cs" />
     <Compile Include="ViewModels\SubGroupVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
@@ -499,9 +500,12 @@
     <Content Include="Views\Transaction\ReportNewTransaction.cshtml" />
     <Content Include="Views\User\Info.cshtml" />
     <Content Include="Views\Shared\Nav.cshtml" />
+    <Content Include="Views\Transaction\ViewPendingTransactions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\PendingTransactionVM\" />
+    <Folder Include="Views\PendingTransaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

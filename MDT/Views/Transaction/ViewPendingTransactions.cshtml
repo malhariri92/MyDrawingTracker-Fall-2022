@@ -1,0 +1,95 @@
+﻿@using MDT.Models.DTO
+@using MDT.ViewModels
+@using MDT.Models
+@model List<PendingTransactionVM>
+
+@{
+    ViewBag.title = "Transactions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+}
+
+
+@if (Model.Any())
+{
+    <h2 class="text-center">Transaction History</h2>
+    <div>
+        <table id="transactions_table" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Source Ledger</th>
+                    <th>Destination Ledger</th>
+                    <th>Accept</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (PendingTransactionVM transaction in Model)
+                {
+                    <tr>
+                        <td>@transaction.UserName</td>
+                        <td>@transaction.TransactionTypeName</td>
+                        <td>$@transaction.Amount</td>
+                        <td>@transaction.TransactionDateTime</td>
+                        <td>@transaction.SourceLedgerName</td>
+                        <td>@transaction.DestinationLedgerName</td>
+                        <td>
+                            <input type="submit" class="btn btn-sm" value="Approve" onclick="location.href='@Url.Action("AcceptTransaction", "Transaction",
+                                                                                                           new {pendTransactionId = transaction.PendingTransactionId})'" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Username</th>
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Source Ledger</th>
+                    <th>Destination Ledger</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+else
+{
+    <h1 class="text-center">No Transactions</h1>
+}
+<div class="col-md-10">
+    <input type="button" class="btn btn-lg btn-danger" value="Return" onclick="location.href='@Url.Action("Index", "Transaction")'" />
+</div>
+
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/dataTables.searchPanes.min.js"></script>
+<script src="~/Scripts/dataTables.select.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/select.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/searchPanes.dataTables.min.css" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#transactions_table tfoot th').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        });
+
+        $('#transactions_table').DataTable();
+        var transactionTable = $('#transaction_table').DataTable();
+
+        transactionTable.columns().every(function () {
+            var that = this;
+
+            $('input', this.footer()).on('keyup change', function () {
+                if (that.search() !== this.value) {
+                    that.search(this.value).draw();
+                }
+            });
+        });
+    });
+</script>
