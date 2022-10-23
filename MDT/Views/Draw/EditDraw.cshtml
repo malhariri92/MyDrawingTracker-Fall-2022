@@ -1,61 +1,166 @@
 ﻿@model MDT.ViewModels.DrawVM
-
 @{
-    ViewBag.Title = "EditDraw";
+
+    ViewBag.Title = Model.DrawId == 0 ? "Create New Draw" : $"Edit Draw";
 }
-
-
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.DrawId)
+
+<div class="form-horizontal">
+    @if (Model.DrawId > 0)
+    {
+        @Html.HiddenFor(model => model.DrawTypeId)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.DrawTypeId, "DrawTypeId", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.DrawTypeId, "Draw Type", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownListFor(model => model.DrawTypeId, new SelectList(ViewBag.DrawTypes, "val", "txt"), "Select Draw Type", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.DrawTypeId, "", new { @class = "text-danger" })
             </div>
         </div>
-        
+    }
 
+
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MaxEntriesPerUser, htmlAttributes: new { @class = "col-sm-3" })
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.MaxEntriesPerUser, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MaxEntriesPerUser, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.EntriesToDraw, htmlAttributes: new { @class = "col-sm-3" })
+        <div class="col-md-4">
+            @Html.EditorFor(model => model.EntriesToDraw, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.EntriesToDraw, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row" id="multidraw" style="@(Model.EntriesToDraw <= 1 ? "display:none" : "")">
         <div class="form-group">
-            @Html.LabelFor(model => model.PassDrawnToNext, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PassDrawnToNext, new { htmlAttributes = new { @class = "form-control", data_toggle = "toggle", data_on= "Yes", data_off="No" } })
-                @Html.ValidationMessageFor(model => model.PassDrawnToNext, "", new { @class = "text-danger" })
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.RemoveDrawnEntries)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.RemoveDrawnEntries, new { @class = "switch other", data_other_toggle = "RemoveDrawnUsers" })
             </div>
         </div>
-       
+
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.RemoveDrawnUsers)
             </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.RemoveDrawnUsers, new { @class = "switch other", data_other_toggle = "RemoveDrawnEntries" })
+            </div>
+        </div>
+    </div>
+
+    @if (Model.NextDrawId != null)
+    {
+
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.PassDrawnToNext)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.PassDrawnToNext, new { htmlAttributes = new { @class = "switch other", data_other_toggle = "PassUndrawnToNext" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-4">
+                @Html.LabelFor(model => model.PassUndrawnToNext)
+            </div>
+            <div class="col-md-1">
+                @Html.EditorFor(model => model.PassUndrawnToNext, new { htmlAttributes = new { @class = "switch other", data_other_toggle = "PassDrawnToNext" } })
+            </div>
+        </div>
+    }
+</div>
+    <div class="form-group">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.AutoDraw)
+        </div>
+        <div class="col-md-1">
+            @Html.EditorFor(model => model.AutoDraw, new { htmlAttributes = new { @class = "switch" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.JoinConfirmationRequired)
+        </div>
+        <div class="col-md-1">
+            @Html.EditorFor(model => model.JoinConfirmationRequired, new { htmlAttributes = new { @class = "switch" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-4">
+            @Html.LabelFor(model => model.RefundConfirmationRequired)
+        </div>
+        <div class="col-md-1">
+            @Html.EditorFor(model => model.RefundConfirmationRequired, new { htmlAttributes = new { @class = "switch" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+<script type="text/javascript">
+    $(function () {
+        $('.switch').each(function () {
+            $(this).attr('data-toggle', 'toggle')
+                .attr('data-on', 'Yes')
+                .attr('data-off', 'No')
+                .attr('data-onstyle', 'success');
+
+            $(this).bootstrapToggle();
+        });
+    });
+
+    $(document).on('change', '#NumberOfDraws', function () {
+        let val = +$(this).val();
+        if (val > 1) {
+            $('#series').show();
+        } else {
+            $('#series').hide();
+        }
+    });
+
+    $(document).on('change', '#EntriesToDraw', function () {
+        let val = +$(this).val();
+        if (val > 1) {
+            $('#multidraw').show();
+        } else {
+            $('#multidraw').hide();
+        }
+    });
+
+
+    $(document).on('change', '.other', function () {
+        let otherid = $(this).attr('data-other-toggle');
+        if ($(this).is(':checked')) {
+            $(`#${otherid}`).bootstrapToggle('off');
+        }
+
+    });
+
+</script>

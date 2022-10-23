@@ -12,8 +12,8 @@ namespace MDT.ViewModels
         public int DrawTypeId { get; set; }
 
         [Display(Name = "Type Name")]
-        [Required (ErrorMessage = "{0} is required")]
-        [MaxLength (50, ErrorMessage = "{0} cannot exceed {1} characters")]
+        [Required(ErrorMessage = "{0} is required")]
+        [MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
         public string TypeName { get; set; }
 
         [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greataer than $0.0")]
@@ -73,7 +73,7 @@ namespace MDT.ViewModels
 
         public ScheduleVM Schedule { get; set; }
 
-        public DrawTypeVM() 
+        public DrawTypeVM()
         {
             Schedule = new ScheduleVM();
             NumberOfDraws = 1;
@@ -83,7 +83,7 @@ namespace MDT.ViewModels
         /// Create DrawTypeVM from DrawType.
         /// </summary>
         /// <param name="dt">DrawType entity. Must include UserDrawTypeOptions, UserDrawTypeOptions Users, and Schedules</param>
-        public DrawTypeVM(DrawType dt) 
+        public DrawTypeVM(DrawType dt) : this()
         {
             if (dt != null)
             {

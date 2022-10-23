@@ -166,8 +166,14 @@ namespace MDT.Controllers
                                 .Include(d => d.DrawType)
                                 .Include(d => d.DrawOption)
                                 .FirstOrDefault();
+            
+            DrawVM vm = new DrawVM(draw);
+            if (draw != null)
+            {
+                vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == draw.DrawId).ToList());
+            }
 
-            return new DrawVM(draw);
+            return vm;
         }
 
         protected override void Dispose(bool disposing)

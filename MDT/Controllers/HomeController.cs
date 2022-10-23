@@ -22,6 +22,7 @@ namespace MDT.Controllers
 
         public ActionResult Index()
         {
+           
             if (TempData["Message"] != null)
             {
                 ViewBag.Message = TempData["Message"];

@@ -127,11 +127,11 @@ namespace MDT.Controllers
             }
             return View(vm);
         }
- 
+
         public ActionResult EditDraw(int id = 0)
         {
             DrawVM vm = GetDrawVM(id);
-            if(id != vm.DrawId)
+            if (id != vm.DrawId)
             {
                 TempData["Error"] = "Draw not found";
                 return RedirectToAction("Index", "Home");
@@ -142,7 +142,7 @@ namespace MDT.Controllers
         }
 
         [HttpPost]
-        [AdminFilter(Role ="Admin")]
+        [AdminFilter(Role = "Admin")]
         public ActionResult EditDraw(DrawVM vm)
         {
             Draw draw = db.Draws.Where(d => d.DrawId == vm.DrawId)
@@ -158,38 +158,63 @@ namespace MDT.Controllers
             }
             else
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     ViewBag.DrawTypes = GetDdl(db.DrawTypes);
                     return View(vm);
                 }
 
-                draw = new Draw() 
+                draw = new Draw()
                 {
                     DrawTypeId = vm.DrawTypeId
                 };
+
+                draw.DrawOption = new DrawOption();
             }
 
             draw.EndDateTime = vm.EndDate;
-            
+            draw.DrawOption.AutoDraw = vm.AutoDraw;
+            draw.DrawOption.EntriesToDraw = vm.EntriesToDraw;
+            draw.DrawOption.MaxEntriesPerUser = vm.MaxEntriesPerUser;
+            draw.DrawOption.RefundConfirmationRequired = vm.RefundConfirmationRequired;
+            draw.DrawOption.JoinConfirmationRequired = vm.JoinConfirmationRequired;
+            draw.DrawOption.PassDrawnToNext = vm.PassDrawnToNext;
+            draw.DrawOption.PassUndrawnToNext = vm.PassUndrawnToNext;
+            draw.DrawOption.RemoveDrawnEntries = vm.RemoveDrawnEntries;
+            draw.DrawOption.RemoveDrawnUsers = vm.RemoveDrawnUsers;
+
+
             db.Entry(draw).State = draw.DrawId == 0 ? EntityState.Added : EntityState.Modified;
             db.SaveChanges();
 
-            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == draw.DrawId).ToList());
+
 
             return View("ViewDraw", vm);
         }
 
-        
+        [AdminFilter(Role = "Admin")]
+        public ActionResult StartDraw(int id)
+        {
+            Draw draw = GetDraw(id);
+            if (draw != null)
+            {
+                draw.StartDateTime = DateTime.Now;
+                db.Entry(draw).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return PartialView("DrawRules", GetDrawVM(draw?.DrawId ?? 0));
+        }
 
         public ActionResult ViewDraw(int id)
         {
-            Draw draw = db.Draws.Where(d => d.DrawId == id && d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId)).Include(d => d.DrawType).Include(d => d.DrawOption).FirstOrDefault();
-            
-            /*if (draw == null)
+            DrawVM vm = GetDrawVM(id);
+            if (id != vm.DrawId)
             {
-                draw = db.Draws.Find(id);
-            }*/
+                TempData["Error"] = "Draw not found";
+                return RedirectToAction("Index", "Home");
+            }
+
 
             if (draw != null)
             {
@@ -233,9 +258,6 @@ namespace MDT.Controllers
                 return View(uidraw);
                 //return RedirectToAction("Index");
             }
-
-            return RedirectToAction("Index");
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

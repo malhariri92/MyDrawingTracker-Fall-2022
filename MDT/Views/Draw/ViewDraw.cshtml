@@ -7,38 +7,35 @@
     UserDTO user = (UserDTO)Session["User"];
 }
 
-@if (Model.actionName == "viewDraw")
-{
-    <div class="row text-center ">
-        <h1>Drawing for @Model.drawVm.DrawTypeName</h1>
-    </div>
-    <div class="row">
-        <div class="col-md-7 col-xs-12" id="divDesc">
-            @{
-                if (Model.drawVm.Descriptions.Any())
-                {
-                    Html.RenderPartial("DrawDescription", Model.drawVm);
-                }
-                else
-                {
-                    Html.RenderPartial("DrawDescriptionEdit", Model.drawVm);
-                }
-
-            }
-        </div>
-        <div class="col-md-5 col-xs-12">
-            @{
-                Html.RenderPartial("DrawRules", Model.drawVm);
-            }
-        </div>
-        <div class="col-md-5 col-xs-12" id="addEntries">
-            <button class="btn btn-primary" id="goToEntryFormBtn">Add Entry</button>
-        </div>
-    </div>
-    <div class="row">
-        <button class="btn btn-primary" id="toggleDrawTypeBtn">Show DrawType</button>
+<div class="row text-center ">
+    <h1>Drawing for @Model.DrawTypeName</h1>
+</div>
+<div class="row">
+    <div class="col-md-7 col-xs-12" id="divDesc">
         @{
-            Html.RenderPartial("CreateDrawType", Model.drawTypeVM);
+            if (Model.Descriptions.Any())
+            {
+                Html.RenderPartial("DrawDescription", Model);
+            }
+            else
+            {
+                Html.RenderPartial("DrawDescriptionEdit", Model);
+            }
+        }
+    </div>
+    <div class="col-md-5 col-xs-12">
+        @{
+            Html.RenderPartial("DrawRules", Model);
+        }
+    </div>
+    <div>
+        @using (Html.BeginForm("Index", "Entry", FormMethod.Post, new { @id = "form0" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("drawId", Model.DrawId)
+            @Html.Hidden("drawTypeId", Model.DrawTypeId)
+            @Html.Hidden("userId", user.UserId)
+            <input type="submit" value="Add Entries" class="btn btn-primary" />
         }
     </div>
     <div class="row">
