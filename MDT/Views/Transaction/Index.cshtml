@@ -59,11 +59,12 @@ else
 @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
 {
     <input type="button" class="btn btn-lg btn-info" value="Add a Transaction" onclick="location.href='@Url.Action("AddNewTransaction", "Transaction")'" />
+    <input type="button" class="btn btn-lg btn-info" value="View Pending Transactions" onclick="location.href='@Url.Action("ViewPendingTransactions", "Transaction")'" />
 }
 
 else
 {
-    <input type="button" class="btn btn-lg btn-info" value="Report a Transaction" onclick="location.href='@Url.Action("ReportNewTransaction", "Transaction")'"/>
+    <input type="button" class="btn btn-lg btn-info" value="Report a Transaction" onclick="location.href='@Url.Action("ReportNewTransaction", "Transaction")'" />
 }
 
 <script src="~/Scripts/jquery.dataTables.min.js"></script>
