@@ -1,0 +1,104 @@
+﻿@using MDT.ViewModels
+@using MDT.Models
+@using MDT.Models.DTO
+@model UserVM
+@{
+    GroupDTO group = (GroupDTO)Session["group"];
+    UserDTO user = (UserDTO)Session["user"];
+}
+<div class="col-md-3">
+    <h1>About Me</h1>
+    <p>
+        <b>Name: </b> @Model.UserName <br />
+        <b>Email: </b> @Model.EmailAddress <br />
+        <b>Phone Number: </b> @Model.PhoneNumber <br />
+        <b>Balance: </b> @Model.Balance<br />
+        <b>CurrentGroupID: </b> @Model.CurrentGroupId<br />
+        <b>Verification Status: </b>
+        @{
+            if (@Model.IsVerified)
+            {
+                <b>Verified</b>
+            }
+            else
+            {
+                <b>Not Verified</b>
+            }
+        }
+        <br />
+        <b>Activity Status: </b>
+        @{
+            if (@Model.IsActive)
+            {
+                <b>Active</b>
+            }
+            else
+            {
+                <b>InActive</b>
+            }
+        }
+        <br />
+        <b>Admin Groups: </b>
+        @{
+            if (@Model.AdminGroups.Count == 0)
+            {
+                <b>None</b>
+            }
+            else
+            {
+                foreach (var admin in @Model.AdminGroups)
+                {
+                    <br /><b>@admin</b>
+                }
+            }
+        }
+        <br />
+        <b>Member Groups: </b>
+        @{
+            if (@Model.MemberGroups.Count == 0)
+            {
+                <b>None</b>
+            }
+            else
+            {
+                foreach (var member in @Model.MemberGroups)
+                {
+                    <br /><b>@member</b>
+                }
+            }
+        }
+        <br />
+        @Ajax.ActionLink("Change Password", "ChangePass", null, new AjaxOptions() { UpdateTargetId = "screen" }, new { @class = "btn btn-info" })
+    </p>
+    <br />
+    <vr />
+</div>
+<div class="col-sm-8">
+    <h1>Upcoming Draws</h1>
+    <hr />
+     @if (ViewBag.Draws != null && ViewBag.Draws.Count != 0)
+     {
+         foreach (Draw d in ViewBag.Draws)
+         {
+            <div class="row">
+                <div class="col-sm-3">
+                    <h3>@d.DrawType.DrawTypeName</h3>
+                </div>
+                <div class="col-sm-3">
+                    @(d.StartDateTime != null ? "Began on " + d.StartDateTime.ToString() : "Not Yet Started")
+
+                </div>
+                <div class="col-sm-3">
+                    Ends on @d.EndDateTime
+                </div>
+            </div>
+            <hr /> 
+         }
+     }
+     else
+     {
+         <div class="row">
+             <h3>You are not currently set to participate in any draws.</h3>
+         </div>
+     }
+</div>

@@ -1,9 +1,12 @@
 ﻿@using MDT.Models.DTO
+@using MDT.Models
 @model List<TransactionDTO>
 
 @{
     ViewBag.title = "Transactions";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
 }
 
 
@@ -53,6 +56,16 @@ else
     <h1 class="text-center">No Transactions</h1>
 }
 
+@if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+{
+    <input type="button" class="btn btn-lg btn-info" value="Add a Transaction" onclick="location.href='@Url.Action("AddNewTransaction", "Transaction")'" />
+}
+
+else
+{
+    <input type="button" class="btn btn-lg btn-info" value="Report a Transaction" onclick="location.href='@Url.Action("ReportNewTransaction", "Transaction")'"/>
+}
+
 <script src="~/Scripts/jquery.dataTables.min.js"></script>
 <script src="~/Scripts/dataTables.searchPanes.min.js"></script>
 <script src="~/Scripts/dataTables.select.min.js"></script>
@@ -73,7 +86,7 @@ else
         transactionTable.columns().every(function () {
             var that = this;
 
-            $('input', this.footer()).on('keyup change', function() {
+            $('input', this.footer()).on('keyup change', function () {
                 if (that.search() !== this.value) {
                     that.search(this.value).draw();
                 }
