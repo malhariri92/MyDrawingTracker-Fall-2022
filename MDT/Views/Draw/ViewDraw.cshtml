@@ -33,8 +33,6 @@
         </div>
         <div id="addEntries" class="col-md-5 col-xs-12">
             <button class="btn btn-primary" id="goToEntryFormBtn">Add Entry</button>
-            @Html.ActionLink("MEMEMEME", "GoToEntryForm", "Entry",
-                new { drawId = Model.drawVm.DrawId, drawTypeId = Model.drawVm.DrawTypeId, userId = user.UserId }, new { @class = "btn btn-primary" })
         </div>
     </div>
     <div class="row">
@@ -125,6 +123,22 @@
                 $('#addEntries').append('<button class="btn btn-primary" id="goToEntryFormBtn">Add Entry</button>')
             });
 
+            $(document).on('click', '#submitEntriesBtn', function () {
+                let entryID = $('#EntryId').val();
+                let numEntries = parseInt($('#EntryCount').val());
+                let baseURL = '@Url.Action("AddEntries", "Entry")';
+                let parameters = {
+                    drawId: @Model.drawVm.DrawId,
+                    drawTypeId: @Model.drawVm.DrawTypeId,
+                    userId: @user.UserId,
+                    entryCount: numEntries,
+                    entryId: entryID
+                }
+                let paramURL = $.param(parameters, true);
+                let fullURL = baseURL + '?' + paramURL;
+                $('#addEntries').empty();
+                $('#addEntries').load(fullURL);
+            });
 </script>
     }
 }

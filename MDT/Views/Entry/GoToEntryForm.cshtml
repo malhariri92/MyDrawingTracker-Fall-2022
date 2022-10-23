@@ -1,16 +1,16 @@
 ﻿@model MDT.ViewModels.EntryVM
 
 @{
-    using (Html.BeginForm("AddEntries", "Entry", FormMethod.Post, new { @id = "form0" }))
-    {
+    //using (Html.BeginForm("AddEntries", "Entry", FormMethod.Post, new { @id = "form0" }))
+    <div>
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(model => model.DrawId);
-        @Html.HiddenFor(model => model.DrawDate);
-        @Html.HiddenFor(model => model.DrawTypeId);
-        @Html.HiddenFor(model => model.GameName);
-        @Html.HiddenFor(model => model.UserId);
-        @Html.HiddenFor(model => model.UserName);
-        @Html.HiddenFor(model => model.EntryId);
+        @Html.HiddenFor(model => model.DrawId)
+        @Html.HiddenFor(model => model.DrawDate)
+        @Html.HiddenFor(model => model.DrawTypeId)
+        @Html.HiddenFor(model => model.GameName)
+        @Html.HiddenFor(model => model.UserId)
+        @Html.HiddenFor(model => model.UserName)
+        @Html.HiddenFor(model => model.EntryId)
         <div class="row">
             <div class="form-horizontal">
 
@@ -24,7 +24,7 @@
 
             </div>
             <button type="button" id="cancelAddEntries" class="btn btn-danger">Cancel</button>
-            <button type="submit" class="btn btn-success">Add Entries</button>
+            <button type="submit" class="btn btn-success" id="submitEntriesBtn">Add Entries</button>
         </div>
-    }
+    </div>
 }
