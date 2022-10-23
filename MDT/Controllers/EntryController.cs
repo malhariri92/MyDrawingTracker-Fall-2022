@@ -79,7 +79,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Could not find proper drawing. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -93,7 +93,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "You are attempting to purchase more entries than allowed (" + drawType.MaxEntriesPerUser + ")";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -108,7 +108,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Failed to find current user. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -123,7 +123,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Could not find your group draw type. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -136,7 +136,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Inactive group draw type. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -150,7 +150,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Could not find your balance. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -164,7 +164,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Not enough funds";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
@@ -179,7 +179,7 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "You are attempting to purchase more entries than allowed (" + drawType.MaxEntriesPerUser + ")";
-                    DrawEntry remove = db.DrawEntries.Find(entryId);
+                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
                         db.Entry(remove).State = EntityState.Deleted;
