@@ -448,6 +448,18 @@ namespace MDT.Controllers
             return RedirectToAction("Index", "Home", null);
         }
 
+        public ActionResult Nav()
+        {         
+            UserDTO user = (UserDTO)Session["User"];
+            if (user != null)
+            {
+                List<int> ids = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.GroupId).ToList();
+                List<DdlItem> groups = db.Groups.ToList().Where(g => ids.Contains(g.GroupId))
+                    .Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
+                ViewBag.Groups = groups;
+            }
+            return PartialView();
+        }
 
         public void SessionSetup(UserDTO user)
         {
