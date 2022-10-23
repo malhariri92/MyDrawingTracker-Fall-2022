@@ -2,6 +2,7 @@ using MDT.ViewModels;
 using MDT.Filters;
 using MDT.Models;
 using MDT.Models.DTO;
+using MDT.Models.ViewModels;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
@@ -252,7 +253,42 @@ namespace MDT.Controllers
             {
                 DrawVM vm = new DrawVM(draw);
                 vm.SetDescriptions(db.Descriptions.Where(dsc => dsc.ObjectTypeId == 3 && dsc.ObjectId == vm.DrawId).ToList());
-                return View(vm);
+
+                int dtId = draw.DrawTypeId;
+                DrawTypeVM dtVM = new DrawTypeVM();
+                if (dtId == 0)
+                {
+                    dtVM.HasSchedule = false;
+                }
+                else
+                {
+                    DrawType dt = db.DrawTypes.Find(dtId);
+                    dtVM = new DrawTypeVM(dt);
+                    List<Schedule> schedules = db.Schedules.Where(sc => sc.DrawTypeId == vm.DrawTypeId).ToList<Schedule>();
+
+                    if (schedules.Count > 0)
+                    {
+                        dtVM.Schedule = new ScheduleVM(schedules);
+                        dtVM.HasSchedule = true;
+                    }
+                    else
+                    {
+                        dtVM.HasSchedule = false;
+                        dtVM.Schedule = new ScheduleVM();
+                    }
+                }
+
+                GroupDTO group = (GroupDTO)Session["group"];
+                Session["past"] = false;
+                vm.EndDate = DateTime.Now.Date.AddDays(1);
+                List<DrawDTO> drawsList = GetDraws(group.GroupId);
+
+                List<DrawTypeDTO> dtDTOList = GetDrawTypes(group.GroupId);
+
+                UIDrawInnerVM uIDrawInnerVM = new UIDrawInnerVM(vm, dtDTOList, false);
+
+                UIDrawVM uidraw = new UIDrawVM(vm, drawsList, dtVM, "viewDraw", uIDrawInnerVM);
+                return View(uidraw);
                 //return RedirectToAction("Index");
             }
             return View();

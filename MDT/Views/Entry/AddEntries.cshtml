@@ -1,8 +1,4 @@
 ﻿@model MDT.ViewModels.EntryVM
-@{
-    ViewBag.Title = "Add Entries Result";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
 @if (Model.Success)
 {
@@ -15,9 +11,7 @@ else
     {
         <h2 class="text-danger">Problem purchasing entries</h2>
         <h3 class="text-danger">@Model.Message</h3>
-    }
-    using (Html.BeginForm("AddEntries", "Entry", FormMethod.Post, new { @id = "form0" }))
-    {
+
         @Html.AntiForgeryToken()
         @Html.HiddenFor(model => model.DrawId);
         @Html.HiddenFor(model => model.DrawDate);
@@ -28,7 +22,6 @@ else
         @Html.HiddenFor(model => model.EntryId);
         <div class="row">
             <div class="form-horizontal">
-
                 <div class="form-group">
                     @Html.LabelFor(model => model.EntryCount, htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
@@ -36,14 +29,8 @@ else
                         @Html.ValidationMessageFor(model => model.EntryCount, "", new { @class = "text-danger" })
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Add Entries" class="btn btn-success" />
-                    </div>
-                    <br />
-                </div>
-
+                <button type="button" id="cancelAddEntries" class="btn btn-danger">Cancel</button>
+                <button type="submit" class="btn btn-success" id="submitEntriesBtn">Add Entries</button>
             </div>
         </div>
     }

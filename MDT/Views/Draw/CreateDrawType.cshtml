@@ -1,202 +1,210 @@
 ﻿@model MDT.ViewModels.DrawTypeVM
 
-@{
-    ViewBag.Title = "DrawType";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+<style>
+    #createEditDrawTypeForm {
+        display: none;
+    }
+</style>
 
-<h2> @(Model.DrawTypeId == 0 ? "Create" : "Edit") Draw Type <br /> </h2>
+<div id="createEditDrawTypeForm">
+    <h2> @(Model.DrawTypeId == 0 ? "Create" : "Edit") Draw Type <br /> </h2>
 
-@using (Html.BeginForm() )
-{
-    @Html.AntiForgeryToken()
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
+        <div class="form-horizontal">
 
-    <hr />
-    @Html.HiddenFor(model => model.DrawTypeId)
+            <hr />
+            @Html.HiddenFor(model => model.DrawTypeId)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.GameName, htmlAttributes: new { @class = "col-sm-3" })
-        <div class="col-md-4">
-            @Html.EditorFor(model => model.GameName, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.GameName, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.GameName, htmlAttributes: new { @class = "col-sm-3" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.GameName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.GameName, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.EntryCost, htmlAttributes: new { @class = "col-sm-3" })
-        <div class="col-md-4">
-            @Html.EditorFor(model => model.EntryCost, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.EntryCost, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.EntryCost, htmlAttributes: new { @class = "col-sm-3" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.EntryCost, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.EntryCost, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.InitialUserBalance, htmlAttributes: new { @class = "col-sm-3" })
-        <div class="col-md-4">
-            @Html.EditorFor(model => model.InitialUserBalance, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.InitialUserBalance, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.InitialUserBalance, htmlAttributes: new { @class = "col-sm-3" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.InitialUserBalance, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.InitialUserBalance, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.MaxEntriesPeruser, htmlAttributes: new { @class = "col-sm-3" })
-        <div class="col-md-4">
-            @Html.EditorFor(model => model.MaxEntriesPeruser, new { htmlAttributes = new { @class = "form-control"} })
-            @Html.ValidationMessageFor(model => model.MaxEntriesPeruser, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.MaxEntriesPeruser, htmlAttributes: new { @class = "col-sm-3" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.MaxEntriesPeruser, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.MaxEntriesPeruser, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.EntriesToDraw, htmlAttributes: new { @class = "col-sm-3" })
-        <div class="col-md-4">
-            @Html.EditorFor(model => model.EntriesToDraw, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.EntriesToDraw, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.EntriesToDraw, htmlAttributes: new { @class = "col-sm-3" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.EntriesToDraw, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.EntriesToDraw, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.NumberOfDraws, htmlAttributes: new { @class = "col-sm-3" })
-        <div class="col-md-4">
-            @Html.EditorFor(model => model.NumberOfDraws, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.NumberOfDraws, "", new { @class = "text-danger" })
-        </div>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NumberOfDraws, htmlAttributes: new { @class = "col-sm-3" })
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.NumberOfDraws, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.NumberOfDraws, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.IsActive)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.IsActive, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.IsActive)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.IsActive, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.IsInternal)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.IsInternal, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.IsInternal)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.IsInternal, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.RemoveDrawnEntries)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.RemoveDrawnEntries, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.RemoveDrawnEntries)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.RemoveDrawnEntries, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.RemoveDrawnUsers)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.RemoveDrawnUsers, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.RemoveDrawnUsers)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.RemoveDrawnUsers, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.PassDrawnToNext)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.PassDrawnToNext, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.PassDrawnToNext)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.PassDrawnToNext, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.PassUndrawnToNext)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.PassUndrawnToNext, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.PassUndrawnToNext)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.PassUndrawnToNext, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.AutoDraw)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.AutoDraw, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.AutoDraw)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.AutoDraw, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.JoinConfirmationRequired)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.JoinConfirmationRequired, new { @class = "switch" })
-        </div>
-    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.JoinConfirmationRequired)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.JoinConfirmationRequired, new { @class = "switch" })
+                </div>
+            </div>
 
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.RefundConfirmationRequired)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.RefundConfirmationRequired, new { @class = "switch" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.HasSchedule)
-        </div>
-        <div class="col-md-1">
-            @Html.CheckBoxFor(model => model.HasSchedule, new { @class = "switch" })
-        </div>
-    </div>
-    <div class="form-group row" id="schedule" hidden>
-        <table class="table table-bordered table-responsive">
-            <caption>Set Schedule</caption>
-            <thead>
-                <tr>
-                    
-                    <th scope="col">@Model.Schedule.Days[0].Abbr</th>
-                    <th scope="col">@Model.Schedule.Days[1].Abbr</th>
-                    <th scope="col">@Model.Schedule.Days[2].Abbr</th>
-                    <th scope="col">@Model.Schedule.Days[3].Abbr</th>
-                    <th scope="col">@Model.Schedule.Days[4].Abbr</th>
-                    <th scope="col">@Model.Schedule.Days[5].Abbr</th>
-                    <th scope="col">@Model.Schedule.Days[6].Abbr</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    
-                    <td>@Html.EditorFor(model => model.Schedule.Days[0].DrawTime)</td>
-                    <td>@Html.EditorFor(model => model.Schedule.Days[1].DrawTime)</td>
-                    <td>@Html.EditorFor(model => model.Schedule.Days[2].DrawTime)</td>
-                    <td>@Html.EditorFor(model => model.Schedule.Days[3].DrawTime)</td>
-                    <td>@Html.EditorFor(model => model.Schedule.Days[4].DrawTime)</td>
-                    <td>@Html.EditorFor(model => model.Schedule.Days[5].DrawTime)</td>
-                    <td>@Html.EditorFor(model => model.Schedule.Days[6].DrawTime)</td>
-                </tr>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.RefundConfirmationRequired)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.RefundConfirmationRequired, new { @class = "switch" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.HasSchedule)
+                </div>
+                <div class="col-md-1">
+                    @Html.CheckBoxFor(model => model.HasSchedule, new { @class = "switch" })
+                </div>
+            </div>
+            <div class="form-group row" id="schedule" hidden>
+                <table class="table table-bordered table-responsive">
+                    <caption>Set Schedule</caption>
+                    <thead>
+                        <tr>
 
-            </tbody>
-        </table>
-    </div>
-    <div class="form-group">
-        <div class="col-md-4">
-            @if(Model == null) {
-            <input type="submit" value="Create" class="btn btn-success btn-info" />
-            }else {
-            <input type="submit" value="Save" class="btn btn-success btn-info" />
-            }
+                            <th scope="col">@Model.Schedule.Days[0].Abbr</th>
+                            <th scope="col">@Model.Schedule.Days[1].Abbr</th>
+                            <th scope="col">@Model.Schedule.Days[2].Abbr</th>
+                            <th scope="col">@Model.Schedule.Days[3].Abbr</th>
+                            <th scope="col">@Model.Schedule.Days[4].Abbr</th>
+                            <th scope="col">@Model.Schedule.Days[5].Abbr</th>
+                            <th scope="col">@Model.Schedule.Days[6].Abbr</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                            <td>@Html.EditorFor(model => model.Schedule.Days[0].DrawTime)</td>
+                            <td>@Html.EditorFor(model => model.Schedule.Days[1].DrawTime)</td>
+                            <td>@Html.EditorFor(model => model.Schedule.Days[2].DrawTime)</td>
+                            <td>@Html.EditorFor(model => model.Schedule.Days[3].DrawTime)</td>
+                            <td>@Html.EditorFor(model => model.Schedule.Days[4].DrawTime)</td>
+                            <td>@Html.EditorFor(model => model.Schedule.Days[5].DrawTime)</td>
+                            <td>@Html.EditorFor(model => model.Schedule.Days[6].DrawTime)</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    @if (Model == null)
+                    {
+                        <input type="submit" value="Create" class="btn btn-success btn-info" />
+                    }
+                    else
+                    {
+                        <input type="submit" value="Save" class="btn btn-success btn-info" />
+                    }
+                </div>
+            </div>
         </div>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "Index")
     </div>
 </div>
-}
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+
 
 <script type="text/javascript">
     $(window).on('load', function () {
