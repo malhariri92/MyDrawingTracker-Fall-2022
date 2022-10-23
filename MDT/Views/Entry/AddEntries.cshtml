@@ -11,9 +11,7 @@ else
     {
         <h2 class="text-danger">Problem purchasing entries</h2>
         <h3 class="text-danger">@Model.Message</h3>
-    }
-    using (Html.BeginForm("AddEntries", "Entry", FormMethod.Post, new { @id = "entryForm0" }))
-    {
+
         @Html.AntiForgeryToken()
         @Html.HiddenFor(model => model.DrawId);
         @Html.HiddenFor(model => model.DrawDate);

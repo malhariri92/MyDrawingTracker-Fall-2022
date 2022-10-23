@@ -50,6 +50,19 @@ namespace MDT.Controllers
                    .Include(de => de.Draw)
                    .Include(de => de.User)
                    .FirstOrDefault();
+            if (drawEntry == null)
+            {
+                drawEntry = new DrawEntry();
+                drawEntry.DrawId = drawId;
+                drawEntry.UserId = userId;
+                drawEntry.EntryCode = WebManager.GetUniqueKey(6);
+                db.Entry(drawEntry).State = EntityState.Added;
+                db.SaveChanges();
+                drawEntry = db.DrawEntries.Where(de => de.EntryId == drawEntry.EntryId)
+                    .Include(de => de.Draw)
+                    .Include(de => de.User)
+                    .FirstOrDefault();
+            }
             EntryVM vm = new EntryVM(drawEntry);
 
             if (!ModelState.IsValid)
