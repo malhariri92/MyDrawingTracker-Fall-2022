@@ -17,36 +17,38 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Group()
         {
-            this.GroupDrawTypes = new HashSet<GroupDrawType>();
             this.GroupInvites = new HashSet<GroupInvite>();
-            this.SubGroups = new HashSet<Group>();
             this.GroupUsers = new HashSet<GroupUser>();
             this.Ledgers = new HashSet<Ledger>();
             this.Users = new HashSet<User>();
+            this.Transactions = new HashSet<Transaction>();
+            this.PendingTransactions = new HashSet<PendingTransaction>();
+            this.GroupDrawTypes = new HashSet<GroupDrawType>();
         }
     
         public int GroupId { get; set; }
         public string GroupName { get; set; }
-        public Nullable<int> ParentGroupId { get; set; }
         public Nullable<bool> IsApproved { get; set; }
         public bool IsActive { get; set; }
-        public bool IsPrimary { get; set; }
         public string AccessCode { get; set; }
         public bool JoinConfirmationRequired { get; set; }
         public bool AllowUserReportedTransactions { get; set; }
+        public Nullable<int> LedgerId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupInvite> GroupInvites { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Group> SubGroups { get; set; }
-        public virtual Group ParentGroup { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupUser> GroupUsers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Ledger> Ledgers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<User> Users { get; set; }
+        public virtual Ledger AccountBalanceLedger { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Transaction> Transactions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PendingTransaction> PendingTransactions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
     }
 }

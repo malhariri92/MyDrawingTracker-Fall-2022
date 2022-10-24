@@ -22,23 +22,24 @@ namespace MDT.Controllers
 
         public ActionResult Index()
         {
-            if (TempData["VerificationSuccess"] != null)
+
+            if (TempData["Message"] != null)
             {
-                ViewBag.Message = TempData["VerificationSuccess"];
-                TempData["VerificationSuccess"] = null;
+                ViewBag.Message = TempData["Message"];
+                TempData["Message"] = null;
             }
 
-            if (TempData["VerificationFailure"] != null)
+            if (TempData["Error"] != null)
             {
-                ViewBag.Error = TempData["VerificationFailure"];
-                TempData["VerificationFailure"] = null;
+                ViewBag.Error = TempData["Error"];
+                TempData["Error"] = null;
             }
             return View();
         }
 
+
         public ActionResult NewUser()
         {
-
             return PartialView();
         }
 
@@ -50,7 +51,7 @@ namespace MDT.Controllers
                 return PartialView();
 
             }
-            return PartialView("GroupInfo");
+            return PartialView("UserAccess", user);
 
         }
 
@@ -66,8 +67,8 @@ namespace MDT.Controllers
                 if (cred.LoginResult == PasswordManager.Result.SuccessfulLogin)
                 {
                     SessionSetup(WebManager.GetUserDTO(cred.User.UserId));
-                    
-                    return PartialView("UserAccess",cred.User);
+
+                    return PartialView("UserAccess", cred.User);
 
                 }
 
@@ -80,9 +81,6 @@ namespace MDT.Controllers
 
             return PartialView(cred);
         }
-
-
-
 
         public ActionResult ForgotPass()
         {
@@ -193,9 +191,6 @@ namespace MDT.Controllers
                     return View(vm);
                 }
 
-
-
-
                 if (PasswordManager.SetNewHash(key.UserId, vm.NewPassword))
                 {
                     vm.Success = true;
@@ -283,9 +278,9 @@ namespace MDT.Controllers
 
             WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
 
-           
-            
-            
+
+
+
             //Create the GroupUser entry
             GroupUser newGroupUser = new GroupUser()
             {
@@ -334,21 +329,30 @@ namespace MDT.Controllers
             {
                 GroupName = vm.GroupName,
                 IsActive = true,
-                IsPrimary = true,
                 AccessCode = WebManager.GetUniqueKey(10),
                 JoinConfirmationRequired = true,
             };
 
             db.Groups.Add(group);
-
+            db.SaveChanges();
             Dictionary<string, string> variables = new Dictionary<string, string>()
             {
-                { "[[GroupName]]", group.GroupName }
+                { "[[GroupName]]", group.GroupName },
+                { "[[Reason]]", vm.Reason }
             };
             List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
             WebManager.SendTemplateEmail(recipients, 3, variables);
 
-            // Create a new user
+            Description desc = new Description()
+            {
+                ObjectTypeId = 5,
+                ObjectId = group.GroupId,
+                SortOrder = 1,
+                TextBody = vm.Reason,
+                IsHTML = false
+            };
+
+            db.Entry(desc).State = EntityState.Added;
             user = new User()
             {
                 UserName = vm.UserName,
@@ -386,6 +390,7 @@ namespace MDT.Controllers
                 GroupId = group.GroupId,
                 UserId = user.UserId,
                 IsAdmin = true,
+                IsOwner = true
             });
 
             db.SaveChanges();
@@ -434,14 +439,14 @@ namespace MDT.Controllers
                 db.Entry(vk).State = EntityState.Modified;
                 db.Entry(u).State = EntityState.Modified;
                 db.SaveChanges();
-                TempData["VerificationSuccess"] = $"Email address {user.EmailAddress} has been verified.";
-                Session["User"] = new UserDTO(u);
+                TempData["Message"] = $"Email address {user.EmailAddress} has been verified.";
+                SessionSetup(new UserDTO(u));
             }
             else
             {
                 if (u.VerificationKeys.Any(k => k.VKey.Equals(key, StringComparison.CurrentCultureIgnoreCase) || k.EmailAddress.Equals(user.EmailAddress, StringComparison.CurrentCultureIgnoreCase)))
                 {
-                    TempData["VerificationFailure"] = $"The email address you are attempting to verify does not match your current email address.";
+                    TempData["Error"] = $"The email address you are attempting to verify does not match your current email address.";
                 }
             }
 
@@ -449,16 +454,34 @@ namespace MDT.Controllers
         }
 
         public ActionResult Nav()
-        {         
+        {
             UserDTO user = (UserDTO)Session["User"];
             if (user != null)
             {
-                List<int> ids = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.GroupId).ToList();
-                List<DdlItem> groups = db.Groups.ToList().Where(g => ids.Contains(g.GroupId))
-                    .Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
-                ViewBag.Groups = groups;
+                ViewBag.Groups = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.Group).ToList().Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
+            }
+            else
+            {
+                ViewBag.Groups = new List<DdlItem>();
             }
             return PartialView();
+        }
+
+        public ActionResult GroupNav()
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            int GroupId = user?.CurrentGroupId ?? -1;
+            List<DrawType> dts = db.DrawTypes.Where(dt => dt.GroupDrawTypes.Any(gdt => gdt.GroupId == GroupId))
+                                             .Include(dt => dt.UserDrawTypeOptions)
+                                             .Include(dt => dt.UserDrawTypeOptions.Select(udto => udto.User))
+                                             .Include(dt => dt.Schedules)
+                                             .Include(dt => dt.Draws)
+                                             .Include(dt => dt.Draws.Select(d => d.DrawType))
+                                             .Include(dt => dt.Draws.Select(d => d.DrawOption))
+                                             .ToList();
+
+            GroupNavVM vm = new GroupNavVM(dts);
+            return PartialView(vm);
         }
 
         public void SessionSetup(UserDTO user)
@@ -483,7 +506,26 @@ namespace MDT.Controllers
 
             Session["User"] = WebManager.GetUserDTO(user.UserId);
             Session["Group"] = WebManager.GetGroupDTO(user.CurrentGroupId);
+            Session["VerifiedUser"] = WebManager.GetUserDTO(user.UserId).IsVerified;
+            Session["ApprovedGroup"] = (WebManager.GetGroupDTO(user.CurrentGroupId).IsApproved ?? false);
             Session["Ident"] = new GenericPrincipal(new GenericIdentity(user.EmailAddress), new string[] { role });
+        }
+
+        [LoginFilter]
+        public ActionResult ChangeGroup(int groupId)
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            if (user.CurrentGroupId != groupId && db.GroupUsers.Find(groupId, user.UserId) != null)
+            {
+                User u = db.Users.Find(user.UserId);
+                u.CurrentGroupId = groupId;
+                db.Entry(u).State = EntityState.Modified;
+                db.SaveChanges();
+                Session["User"] = new UserDTO(u);
+                Session["Group"] = WebManager.GetGroupDTO(groupId);
+            }
+
+            return RedirectToAction("Index", "Group", null);
         }
 
         protected override void Dispose(bool disposing)

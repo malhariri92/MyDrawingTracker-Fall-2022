@@ -20,6 +20,9 @@ namespace MDT.ViewModels
         [Required(ErrorMessage = "Group name is required")]
         public string GroupName { get; set; }
 
+        [Required]
+        public string Reason { get; set; }
+
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         [PasswordValidation]
@@ -31,7 +34,5 @@ namespace MDT.ViewModels
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPass { get; set; }
 
-
-        public AdminUserVM() { }
     }
 }

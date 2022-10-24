@@ -18,10 +18,10 @@ namespace MDT.Models
         public DrawType()
         {
             this.Draws = new HashSet<Draw>();
-            this.GroupDrawTypes = new HashSet<GroupDrawType>();
             this.Schedules = new HashSet<Schedule>();
             this.UserDrawTypeOptions = new HashSet<UserDrawTypeOption>();
             this.NumberSets = new HashSet<NumberSet>();
+            this.GroupDrawTypes = new HashSet<GroupDrawType>();
         }
     
         public int DrawTypeId { get; set; }
@@ -45,12 +45,12 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Draw> Draws { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Schedule> Schedules { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NumberSet> NumberSets { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
     }
 }

@@ -9,18 +9,43 @@
     var group = (GroupDTO)Session["Group"];
 }
 
-<h2>Group Settings</h2>
+<h1>
+
+    @Model.GroupName
+
+    @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+    {
+
+        <button class="btn btn-xs btn-success" onclick="location.href='@Url.Action("Edit", "Group")'" title="Edit Group Info"><span class="fa fa-pencil"></span></button>
+        @Html.EditorFor(model => model.JoinConfirmation, new
+        {
+            htmlAttributes = new
+            {
+                data_toggle = "toggle",
+                data_size = "mini",
+                data_off = "<span title='Anyone with the access code can join.'><i class='fa fa-unlock'></i></span>",
+                data_on = "<span title='Requires admin confirmation to join.'><i class='fa fa-lock'></i></span>",
+                data_offstyle = "success",
+                data_onstyle = "danger"
+            }
+        })
+
+    }
+    else
+    {
+        if (Model.JoinConfirmation)
+        {
+            <button class="btn btn-xs btn-danger" title="Requires admin confirmation to join."><span class="fa fa-lock" disabled></span></button>
+        }
+        else
+        {
+            <button class="btn btn-xs btn-success" title="Anyone with the access code can join."><span class="fa fa-unlock" disabled></span></button>
+        }
+    }
+</h1>
 
 <div class="form-horizontal">
     <hr />
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.GroupName)
-        </div>
-        <div class="col-md-8">
-            @Html.DisplayFor(model => model.GroupName)
-        </div>
-    </div>
     <div class="form-group">
         <div class="col-md-4">
             @Html.LabelFor(model => model.AccessCode)
@@ -32,19 +57,21 @@
     @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
     {
         <div class="form-group">
-            <div class="col-md-4">
-                @Html.LabelFor(model => model.JoinConfirmation)
-            </div>
+
             <div class="col-md-8">
-                <input type="checkbox" id="joinConfirm" data-toggle="toggle" data-on="Yes" data-offset="No" />
+
             </div>
         </div>
 
         <script type="text/javascript">
-            $(document).on('change', '#joinConfirm', function () {
-            console.log("test");
-            let flag = $(this).is(':checked');
-            $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
+            $(function () {
+                $('#JoinConfirmation').bootstrapToggle();
+            });
+
+            $(document).on('change', '#JoinConfirmation', function () {
+                let flag = $(this).is(':checked');
+
+                $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
             });
         </script>
     }
@@ -60,41 +87,7 @@
         }
     }
 
-    <hr />
-    <div class="form-group">
-        <div class="col-md-10">
-            <input id="subGroup" type="button" class="btn btn-sm btn-info" value="New Group" data-toggle="modal" data-target="#SubGroupModal"/>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-10">
-            <input id="changeGroup" type="button" class="btn btn-sm btn-info" value="New Group" />
-        </div>
-    </div>
-
-    <div class="modal fade" id="SubGroupModal" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Request For A New Group</h4>
-                </div>
-                <div class="modal-body">
-                    @{Html.RenderAction("SubGroup", "Group");}
-                </div>
-                </div>              
-            </div>
-        </div>
-    </div>
-
-    @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
-    {
-
-        <div class="form-group">
-            <div class="col-md-10">
-                <input type="button" class="btn btn-sm btn-info" value="Edit" onclick="location.href='@Url.Action("Edit", "Group")'" />
-            </div>
-        </div>
-    }
 </div>
+
+
 

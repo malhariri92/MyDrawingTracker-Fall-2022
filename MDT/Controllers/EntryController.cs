@@ -88,26 +88,11 @@ namespace MDT.Controllers
                     return PartialView(vm);
                 }
 
-                if (drawType.MaxEntriesPerUser < entryCount)
+                if (drawType.MaxEntriesPerUser != 0 && drawType.MaxEntriesPerUser < entryCount)
                 {
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "You are attempting to purchase more entries than allowed (" + drawType.MaxEntriesPerUser + ")";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-
-                User user = db.Users.Find(userId);
-                if (user == null)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Failed to find current user. Please contact your administrator.";
                     DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
                     if (remove != null)
                     {
@@ -144,7 +129,7 @@ namespace MDT.Controllers
                     }
                     return PartialView(vm);
                 }
-                Balance userBalance = db.Balances.Where(b => b.UserId == userId && b.LedgerId == gdt.LedgerId).First();
+                Balance userBalance = db.Balances.Where(b => b.UserId == userId && (drawType.IsolateBalance ? b.LedgerId == gdt.LedgerId : b.LedgerId == group.AccountBalanceLedgerId)).FirstOrDefault();
                 if (userBalance == null)
                 {
                     vm.Success = false;
@@ -193,23 +178,21 @@ namespace MDT.Controllers
                     TransactionTypeId = 6,
                     Amount = totalCost,
                     UserId = user.UserId,
-                    TransactionDateTime = System.DateTime.Now,
+                    GroupId = group.GroupId,
+                    TransactionDateTime = DateTime.Now,
                     DrawId = drawId,
-                    SourceLedger = gdt.LedgerId,
+                    SourceLedger = group.AccountBalanceLedgerId,
                     DestinationLedger = gdt.LedgerId
                 };
                 db.Entry(newTransaction).State = EntityState.Added;
                 db.SaveChanges();
-                newTransaction = db.Transactions.Where(t => t.TransactionId == newTransaction.TransactionId)
-                    .Include(t => t.Draw)
-                    .Include(t => t.User)
-                    .Include(t => t.ToLedger)
-                    .Include(t => t.FromLedger)
-                    .Include(t => t.TransactionType)
-                    .FirstOrDefault();
+
 
                 userBalance.CurrentBalance = userBalance.CurrentBalance - totalCost;
                 db.Entry(userBalance).State = EntityState.Modified;
+                Ledger drawTypeLedger = db.Ledgers.Find(gdt.LedgerId);
+                drawTypeLedger.Balance += totalCost;
+                db.Entry(drawTypeLedger).State = EntityState.Modified;
                 db.SaveChanges();
 
             }
@@ -256,31 +239,31 @@ namespace MDT.Controllers
         }
 
         [AdminFilter(Role = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public void RemoveEntry(int EntryId = 0)
+        public void RemoveEntry(int id = 0)
         {
-            DrawEntry entry = db.DrawEntries.Find(EntryId);
+            DrawEntry entry = db.DrawEntries.Find(id);
 
             if (entry != null)
             {
-                const int transType = 7;
-
-                Balance balance = db.Balances.Where(b => b.UserId == entry.UserId).FirstOrDefault();
                 Draw draw = db.Draws.Find(entry.DrawId);
-                balance.CurrentBalance -= draw.DrawType.EntryCost;
+                Ledger drawledger = db.GroupDrawTypes.Find(group.GroupId, draw.DrawTypeId).Ledger;
+                Balance balance = db.Balances.Find(group.AccountBalanceLedgerId,entry.UserId);
+
+                balance.CurrentBalance += draw.DrawType.EntryCost;
 
                 Transaction trans = new Transaction()
                 {
-                    DestinationLedger = 1,
-                    SourceLedger = 1,
+                    DestinationLedger = group.AccountBalanceLedgerId,
+                    GroupId = group.GroupId,
+                    SourceLedger = drawledger.LedgerId,
                     Amount = draw.DrawType.EntryCost,
                     DrawId = entry.DrawId,
                     TransactionDateTime = DateTime.Now,
-                    TransactionTypeId = transType,
+                    TransactionTypeId = 7,
                     UserId = entry.UserId,
                 };
-
+                drawledger.Balance -= draw.DrawType.EntryCost;
+                db.Entry(drawledger).State = EntityState.Modified;
                 db.Entry(balance).State = EntityState.Modified;
                 db.Entry(trans).State = EntityState.Added;
                 db.Entry(entry).State = EntityState.Deleted;

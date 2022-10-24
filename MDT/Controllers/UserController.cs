@@ -43,18 +43,7 @@ namespace MDT.Controllers
                 .Where(d => d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId) && d.EndDateTime > DateTime.Now)
                 .ToList();
         }
-        public void ChangeGroup(int groupId)
-        {
-            if (WebManager.IsGroupMember(groupId, user.UserId))
-            {
-                User u = db.Users.Find(user.UserId);
-                u.CurrentGroupId = groupId;
-                db.Entry(u).State = EntityState.Modified;
-                db.SaveChanges();
-                Session["User"] = new UserDTO(u);
-                Session["Group"] = WebManager.GetGroupDTO(groupId);
-            }
-        }
+       
 
         public ActionResult ChangePass()
         {
@@ -81,7 +70,7 @@ namespace MDT.Controllers
                 return PartialView(vm);
             }
 
-            if (!WebManager.CheckCurrentHash(user.UserId, vm.CurrentPassword))
+            if (!CheckCurrentHash(user.UserId, vm.CurrentPassword))
             {
                 vm.Success = false;
                 ModelState.AddModelError("CurrentPassword", "Current password incorrect.");
@@ -186,6 +175,21 @@ namespace MDT.Controllers
             vm.Error = false;
             return View(vm);
 
-        }    
+        }
+
+        private bool CheckCurrentHash(int userId, string str)
+        {
+            using (var db = new DbEntities())
+            {
+                string hash = db.Users.Find(userId)?.Hash;
+                if (hash == null)
+                {
+                    return false;
+                }
+
+                return PasswordManager.TestHashMatch(str, hash);
+            }
+
+        }
     }
 }

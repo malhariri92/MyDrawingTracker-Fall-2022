@@ -3,8 +3,9 @@
 @{
     UserDTO user = (UserDTO)Session["User"];
     GroupDTO group = (GroupDTO)Session["Group"];
+    bool? UserVerified = (bool?)Session["VerifiedUser"];
+    bool? GroupApproved = (bool?)Session["ApprovedGroup"];
     bool isGroupAdmin = user != null && group != null ? WebManager.IsGroupAdmin(group.GroupId, user.UserId) : false;
-    bool admin = (bool?)Session["IsAdmin"] ?? false;
 }
 
 <nav class="navbar navbar-default" style="vertical-align:middle;background-color: #000;padding:10px;">
@@ -24,19 +25,34 @@
 
                 if (ViewBag.Groups.Count > 1)
                 {
-                    <li>
-                        <a class="dropdown-toggle" data-toggle="dropdown">
-                            Change Group
-                            <span class="caret"></span>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            My Groups <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu" style="vertical-align:middle;background-color: #000; color: white; cursor:pointer;">
+                        <ul class="dropdown-menu">
                             @foreach (var x in ViewBag.Groups)
                             {
-                                <li>@Html.ActionLink((string) @x.txt, "ChangeGroup", "User", new {groupId= @x.val }, new { @class = "groups"})</li>
-                                
+                                <li>@Html.ActionLink((string)@x.txt, "ChangeGroup", "Home", new { groupId = @x.val }, new { @class = "groups" })</li>
+                            }
+                            @if ((UserVerified ?? false) && (GroupApproved ?? false))
+                            {
+                                <li><a href="#" id="btnCreateNewGroup">Create A New Group</a></li>
                             }
                         </ul>
+
                     </li>
+                }
+                else
+                {
+                    <li>@Html.ActionLink("My Group", "Index", "Group", null, null)</li>
+                    if ((UserVerified ?? false) && (GroupApproved ?? false))
+                    {
+                        <li><a href="#" id="btnCreateNewGroup">Create A New Group</a></li>
+                    }
+                }
+
+                {
+                    Html.RenderAction("GroupNav", "Home");
                 }
 
             }
@@ -44,38 +60,36 @@
         <ul class="nav navbar-nav navbar-right">
             @if (user != null)
             {
-                <li>@Html.ActionLink("Sign Out", "SignOut", "Home")</li>
+                if (WebManager.IsGroupAdmin(0, user.UserId))
+                {
+                    <li>@Html.ActionLink("Group Requests", "Index", "Admin", null, null)</li>
+                }
+                <li>@Html.ActionLink("Sign Out", "SignOut", "Home", null, null)</li>
             }
             else
             {
                 <li>
-                   
-                        
-                        <span class="fa fa-user fa-2x dropdown-toggle" data-toggle="dropdown" style="vertical-align:middle;background-color: #000; color: white; cursor:pointer;"></span>
-                    
-                    <ul class="dropdown-menu" style="vertical-align:middle;background-color: #000; color: white; cursor:pointer;">
-                        <li>@Html.ActionLink("SignIn", "SignIn", "Home")</li>
-                        <li>@Html.ActionLink("Create Account", "CreateUser", "Home")</li>
-                    </ul>
+                    <a id="btnUserAccess" href="#">
+                        <span class="fa fa-user"></span>
+                    </a>
                 </li>
             }
         </ul>
     </div>
 </nav>
 
-<script>
-    $(document).ready(function () {
-        $(".groups").click(function (event) {
-            event.preventDefault();
-            $.ajax({
-
-                url: $(this).attr("href"), 
-                success: function () {
-                    location.reload();
-                }
-            });
-            
-        });
+<script type="text/javascript">
+    $('#btnCreateNewGroup').on('click', function () {
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load(`@Url.Action("CreateNew", "Group", null)`);
     });
-   
+
+     $('#btnUserAccess').on('click', function () {
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load('@Url.Action("SignIn", "Home", null, null)');
+    });
 </script>

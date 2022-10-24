@@ -1,0 +1,101 @@
+﻿@using MDT.Models;
+@using MDT.ViewModels;
+@using MDT.Models.DTO;
+@model GroupNavVM
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+    bool? UserVerified = (bool?)Session["VerifiedUser"];
+    bool? GroupApproved = (bool?)Session["ApprovedGroup"];
+    bool isGroupAdmin = user != null && group != null ? WebManager.IsGroupAdmin(group.GroupId, user.UserId) : false;
+}
+
+@if (user != null && (UserVerified ?? false) && (GroupApproved?? false))
+{
+    <li class="dropdown">
+        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Draw Types <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            @if (isGroupAdmin)
+            {
+                <li><a href="#" id="btnCreateNewDrawType">Create New Draw Type</a></li>
+            }
+            @foreach (DrawTypeVM dt in Model.DrawTypes)
+            {
+                <li>@Html.ActionLink(dt.TypeName, "ViewDrawType", "Draw", new { id = dt.DrawTypeId }, null)</li>
+            }
+        </ul>
+    </li>
+
+
+    if (Model.ActiveDraws.Any())
+    {
+
+        <li class="dropdown">
+            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Active Draws <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (DrawVM dvm in Model.ActiveDraws.OrderBy(d => d.EndDate))
+                {
+                    <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
+                }
+            </ul>
+        </li>
+    }
+
+    if (Model.EndedDraws.Any())
+    {
+
+        <li class="dropdown">
+            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Completed Draws <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (DrawVM dvm in Model.ActiveDraws.OrderBy(d => d.EndDate))
+                {
+                    <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
+                }
+            </ul>
+        </li>
+    }
+
+    if (Model.InactiveDraws.Any() && isGroupAdmin)
+    {
+
+        <li class="dropdown">
+            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Inactive Draws <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                @foreach (DrawVM dvm in Model.InactiveDraws)
+                {
+                    <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
+                }
+            </ul>
+        </li>
+    }
+    if (user != null)
+    {
+        <li>@Html.ActionLink("Transactions", "Index", "Transaction", null, null)</li>
+        if (isGroupAdmin)
+        {
+            <li>@Html.ActionLink("Group Members", "Members", "Group", null, null)</li>
+
+        }
+    }
+
+    if (isGroupAdmin)
+    {
+        <script type="text/javascript">
+        $('#btnCreateNewDrawType').on('click', function () {
+            $('#modaldiv').empty();
+            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $('#popup').modal("show");
+            $('#modaldiv').load(`@Url.Action("EditDrawType", "Draw", null)`);
+        });
+        </script>
+    }
+}

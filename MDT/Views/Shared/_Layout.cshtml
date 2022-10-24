@@ -44,7 +44,7 @@
                         else
                         {
                             <h2 style="margin-top:unset;">
-                                @user.UserName<br />
+                                @Html.ActionLink(user.UserName, "Index", "User", null, null)<br />
                                 @group.GroupName @(admin ? "(Admin)" : "")
                             </h2>
                         }

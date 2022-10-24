@@ -1,7 +1,7 @@
 ﻿@model MDT.ViewModels.EntryVM
 
-@{
-    //using (Html.BeginForm("AddEntries", "Entry", FormMethod.Post, new { @id = "form0" }))
+@using (Ajax.BeginForm("AddEntries", "Entry", new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "modaldiv" }))
+{
     <div>
         @Html.AntiForgeryToken()
         @Html.HiddenFor(model => model.DrawId)
