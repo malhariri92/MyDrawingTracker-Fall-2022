@@ -17,12 +17,6 @@ namespace MDT.ViewModels
 
 		public string EmailAddress { get; set; }
 
-		//[Display(Name = "Phone Number")]
-		//[Required(ErrorMessage = "{0} is required")]
-		//[DataType(DataType.PhoneNumber)]
-		//[PhoneNumberValidation]
-		//public string PhoneNumber { get; set; }
-
         [Display(Name = "Current Group")]
         [Required(ErrorMessage = "{0} is required")]
         [DataType(DataType.Text)]
@@ -44,11 +38,9 @@ namespace MDT.ViewModels
 		public UserDetailsChangeVM (UserDTO user = null) {
 			if (user != null)
 			{
-
 				UserId = user.UserId;
 				UserName = user.UserName;
 				EmailAddress = user.EmailAddress;
-				//PhoneNumber = user.PhoneNumber;
 				CurrentGroupId = user.CurrentGroupId;
 				IsVerified = user.IsVerified;
 				IsActive = user.IsActive;

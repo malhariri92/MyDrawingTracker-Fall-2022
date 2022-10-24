@@ -32,70 +32,58 @@ namespace MDT.Controllers
                 return View(vm);
             }
 
-            else
+            Balance userBalance = db.Balances.Find(group.AccountBalanceLedgerId, vm.UserId);
+            if (userBalance == null)
             {
-                var foundType = db.TransactionTypes.Where(t => t.TransactionTypeId == vm.TransactionTypeId).FirstOrDefault();
-                if (foundType.IsDebit)
+                userBalance = new Balance()
                 {
-                    var userBalance = db.Balances.Where(b => b.UserId == vm.UserId && b.LedgerId == 2).FirstOrDefault();
-                    if (userBalance == null)
-                    {
-                        Balance bal = new Balance()
-                        {
-                            UserId = vm.UserId,
-                            LedgerId = 2,
-                            CurrentBalance = vm.Amount
-                        };
-                        db.Balances.Add(bal);
-                    }
-
-                    else
-                    {
-                        userBalance.CurrentBalance += vm.Amount;
-                        db.Entry(userBalance).State = EntityState.Modified;
-                    }
-                    db.SaveChanges();
-                }
-
-                Transaction entry = new Transaction()
-                {
-                    TransactionTypeId = vm.TransactionTypeId,
-                    Amount = vm.Amount,
+                    LedgerId = group.AccountBalanceLedgerId,
                     UserId = vm.UserId,
-                    TransactionDateTime = DateTime.Now,
-                    SourceLedger = 1,
-                    DestinationLedger = 2
+                    CurrentBalance = 0.0m
                 };
-
-                db.Transactions.Add(entry);
+                db.Balances.Add(userBalance);
                 db.SaveChanges();
-
-                return RedirectToAction("Index");
             }
+
+            Transaction entry = new Transaction()
+            {
+                TransactionTypeId = vm.TransactionTypeId,
+                Amount = vm.Amount,
+                UserId = vm.UserId,
+                GroupId = group.GroupId,
+                TransactionDateTime = DateTime.Now,
+                SourceLedger = 1,
+                DestinationLedger = group.AccountBalanceLedgerId
+            };
+
+            db.Transactions.Add(entry);
+
+            userBalance.CurrentBalance += vm.Amount;
+            db.Entry(userBalance).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
         }
-        
+
         public ActionResult Index()
         {
-                
+
             List<TransactionDTO> tld = new List<TransactionDTO>();
             using (var db = new DbEntities())
             {
                 if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
                 {
-                    List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
-                    foreach (User u in ml)
+                    List<Transaction> transactions = db.Transactions.Where(t => t.GroupId == group.GroupId).ToList();
+                    foreach (Transaction t in transactions)
                     {
-                        List<Transaction> transactions = db.Transactions.Where(t => t.UserId == u.UserId).ToList();
-                        foreach(Transaction t in transactions)
-                        {
-                            tld.Add(new TransactionDTO(t));
-                        }
+                        tld.Add(new TransactionDTO(t));
                     }
+
                 }
                 else
                 {
-                    List<Transaction> transactions = db.Transactions.Where(t => t.UserId == user.UserId).ToList();
-                    foreach(Transaction t in transactions)
+                    List<Transaction> transactions = db.Transactions.Where(t => t.UserId == user.UserId && t.GroupId == group.GroupId).ToList();
+                    foreach (Transaction t in transactions)
                     {
                         tld.Add(new TransactionDTO(t));
                     }
@@ -199,9 +187,10 @@ namespace MDT.Controllers
                     TransactionTypeId = vm.TransactionTypeId,
                     Amount = vm.Amount,
                     UserId = user.UserId,
+                    GroupId = group.GroupId,
                     TransactionDateTime = DateTime.Now,
                     SourceLedger = 1,
-                    DestinationLedger = 2
+                    DestinationLedger = group.AccountBalanceLedgerId
                 };
 
                 db.PendingTransactions.Add(entry);

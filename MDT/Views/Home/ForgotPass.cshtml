@@ -1,46 +1,52 @@
 ﻿@model MDT.ViewModels.UserPasswordResetSetupVM
 
-<div id="passDiv">
-    @if (Model.Error)
-    {
-        <div class="row text-center">
-            <h3>Could not send password reset email.</h3>
-            <h3>Please Contact your administrator.</h3>
-            <br />
-            <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
-        </div>
-    }
-    @if (Model.Success)
-    {
-        <div class="row text-center">
-            <h3>Check your email for password reset instructions.</h3>
-            <br />
-            <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
-        </div>
-    }
-    @if(!Model.Success && !Model.Error)
-    {
-        using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "userAccess" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+
+    <div id="passDiv">
+        @if (Model.Error)
         {
-            <div class="form-horizontal">
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.UserEmail, htmlAttributes: new { @class = "control-label col-xs-4" })
-                    <div class="col-xs-8">
-                        @Html.EditorFor(model => model.UserEmail, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
-                        @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-xs-8 pull-right">
-                        <button type="button" class="btn btn-warning btnBackToSignIn">Back</button>
-                        <button type="submit" class="btn btn-success">Reset Password</button>
-                    </div>
-                </div>
+            <div class="row text-center">
+                <h3>Could not send password reset email.</h3>
+                <h3>Please Contact your administrator.</h3>
+                <br />
+                <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
             </div>
         }
-    }
+        @if (Model.Success)
+        {
+            <div class="row text-center">
+                <h3>Check your email for password reset instructions.</h3>
+                <br />
+                <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
+            </div>
+        }
+        @if (!Model.Success && !Model.Error)
+        {
+            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "userAccess" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
+            {
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.UserEmail, htmlAttributes: new { @class = "control-label col-xs-4" })
+                        <div class="col-xs-8">
+                            @Html.EditorFor(model => model.UserEmail, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-8 pull-right">
+                            <button type="button" class="btn btn-warning btnBackToSignIn">Back</button>
+                            <button type="submit" class="btn btn-success">Reset Password</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>

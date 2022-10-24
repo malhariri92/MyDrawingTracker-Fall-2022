@@ -1,0 +1,54 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model DrawTypeVM
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+}
+<br />
+<br />
+<div class="row">
+    <h3>
+        Rules
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+        {
+            <button type="button" class="btn btn-xs btn-success" title="Edit Rules" id="btnRuleEdit"><span class="fa fa-pencil"></span></button>
+        }
+    </h3>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <b>Entry Cost: </b> @Model.EntryCost <br />
+        <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "∞" : $"{Model.MaxEntriesPerUser}" ) <br />
+        <b>Entries Selected: </b> @Model.EntriesToDraw <br />
+        @if (Model.EntriesToDraw > 1)
+        {
+            <b>Single Prize Per Entry:  @(Model.RemoveDrawnEntries ? "Yes" : $"No" )</b> <br />
+            <b>Single Prize Per User:  @(Model.RemoveDrawnUsers ? "Yes" : $"No" )</b> <br />
+        }
+        <b>Number of Draws:  @Model.NumberOfDraws</b> <br />
+        @if (Model.NumberOfDraws > 1)
+        {
+            string s = "";
+            if (Model.PassDrawnToNext || Model.PassUndrawnToNext)
+            {
+                s = Model.PassDrawnToNext ? "Drawn Entries" : "Undrawn Entries";
+            }
+            else
+            {
+                s = "All Entries";
+            }
+            <b>Using: </b> @s <br />
+        }
+
+        @if (Model.JoinConfirmationRequired)
+        {
+            <button class="btn btn-sm btn-warning" type="button" id="btnRequest">Request to Join</button>
+        }
+        else
+        {
+            <button class="btn btn-sm btn-success" type="button" id="btnEnter">Join</button>
+        }
+    </div>
+</div>

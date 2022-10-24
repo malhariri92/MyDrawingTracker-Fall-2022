@@ -1,0 +1,58 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model List<DrawVM>
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+}
+<br />
+<br />
+<div class="row">
+    <h3>
+        Drawings
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+        {
+            <button type="button" class="btn btn-xs btn-success" id="btnAddDraw"><span class="fa fa-plus-circle"></span></button>
+        }
+    </h3>
+</div>
+
+@if (Model.Count != 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (DrawVM draw in Model)
+            {
+                <tr>
+                    <td>@Html.ActionLink(draw.Title ?? draw.VirtualTitle, "ViewDraw", "Draw", new { id = draw.DrawId }, null)</td>
+                    <td>@(draw.StartDate?.ToString("MM/dd/yyyy") ?? "Not Started")</td>
+                    <td>@draw.EndDate.ToString("MM/dd/yyyy")</td>
+                    @if (draw.Results != null)
+                    {
+                        <td>Ended</td>
+                    }
+                    else
+                    {
+                        <td>@(draw.IsActive ? "Active" : "Inactive")</td>
+                    }
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>
+        <p class="text-danger">No draws have been created for this Draw Type.</p>
+    </div>
+}

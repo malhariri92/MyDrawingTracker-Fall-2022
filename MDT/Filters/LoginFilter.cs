@@ -18,7 +18,6 @@ namespace MDT.Filters
             {
                 filterContext.HttpContext.Session["RedirectUrl"] = filterContext.HttpContext.Request.RawUrl;
                 filterContext.Result = new HttpUnauthorizedResult();
-
             }
             else
             {

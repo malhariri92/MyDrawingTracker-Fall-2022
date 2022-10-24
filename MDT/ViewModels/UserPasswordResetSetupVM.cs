@@ -9,8 +9,7 @@ namespace MDT.ViewModels
     public class UserPasswordResetSetupVM
     {
         public int UserId { get; set; }
-        public int CustomerId {get; set; }
-
+       
         [Display(Name = "Username")]
         [Required(ErrorMessage = "{0} is required")]
         public string UserName { get; set; }

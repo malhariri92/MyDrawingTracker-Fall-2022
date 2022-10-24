@@ -40,7 +40,7 @@ namespace MDT.ViewModels
         public string DayName { get; set; }
         public string Abbr { get; set; }
         public int DayNumber { get; set; }
-        public TimeSpan DrawTime { get; set; }
+        public TimeSpan? DrawTime { get; set; }
         public bool Active { get; set; }
     }
 }

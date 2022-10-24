@@ -6,7 +6,7 @@ using System.Web;
 
 namespace MDT.ViewModels
 {
-    public class SubGroupVM
+    public class NewGroupVM
     {
         [Required(ErrorMessage = "Group name is required")]
         [Display(Name = "Group Name")]
@@ -15,7 +15,5 @@ namespace MDT.ViewModels
         [Required(ErrorMessage = "Reason is required")]
         public string Reason { get; set; }
 
-        public SubGroupVM()
-        { }
     }
 }

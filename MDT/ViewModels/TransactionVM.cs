@@ -18,7 +18,7 @@ namespace MDT.ViewModels
 
         [Display(Name = "Amount")]
         [Required(ErrorMessage = "{0} is required")]
-        [Range(0.01, 79228162514264337593543950335.0, ErrorMessage = "{0} must be greater than $0.00")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "{0} must be greater than $0.00")]
         public decimal Amount { get; set; }
         public DateTime TransactionDateTime { get; set; }
 

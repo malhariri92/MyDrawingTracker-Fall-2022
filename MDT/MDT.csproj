@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -195,6 +195,7 @@
     <Compile Include="Models\DTO\DrawTypeDTO.cs" />
     <Compile Include="Models\DTO\UserDTO.cs" />
     <Compile Include="Models\EmailMessage.cs" />
+    <Compile Include="Models\DTO\LoginDTO.cs" />
     <Compile Include="Models\EmailTemplate.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -213,7 +214,6 @@
     <Compile Include="Models\Ledger.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\DTO\LoginDTO.cs" />
     <Compile Include="Models\NumberSet.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -252,17 +252,16 @@
     <Compile Include="Models\WebManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AdminUserVM.cs" />
+    <Compile Include="ViewModels\GroupNavVM.cs" />
     <Compile Include="ViewModels\DrawOptionsVM.cs" />
     <Compile Include="ViewModels\DrawVM.cs" />
     <Compile Include="ViewModels\EntryVM.cs" />
-    <Compile Include="ViewModels\GameSettingsVM.cs" />
     <Compile Include="ViewModels\DrawTypeVM.cs" />
-    <Compile Include="ViewModels\GroupListVM.cs" />
     <Compile Include="ViewModels\GroupOptionsVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
     <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\PendingTransactionVM.cs" />
-    <Compile Include="ViewModels\SubGroupVM.cs" />
+    <Compile Include="ViewModels\NewGroupVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
@@ -482,25 +481,29 @@
     <Content Include="Views\Group\ExistingInGroup.cshtml" />
     <Content Include="Views\Group\EmailFailed.cshtml" />
     <Content Include="Views\Group\Members.cshtml" />
-    <Content Include="Views\Draw\CreateDraw.cshtml" />
-    <Content Include="Views\Draw\CreateDrawType.cshtml" />
-    <Content Include="Views\Draw\CreateEditDrawForm.cshtml" />
-    <Content Include="Views\Draw\DrawCreated.cshtml" />
-    <Content Include="Views\Draw\EditList.cshtml" />
-    <Content Include="Views\Draw\DrawEdited.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
     <Content Include="Views\Transaction\AddNewTransaction.cshtml" />
     <Content Include="Views\Draw\ViewDraw.cshtml" />
     <Content Include="Views\Draw\DrawDescription.cshtml" />
     <Content Include="Views\Draw\DrawRules.cshtml" />
     <Content Include="Views\Draw\DrawDescriptionEdit.cshtml" />
-    <Content Include="Views\Entry\Index.cshtml" />
+    <Content Include="Views\Draw\EditDraw.cshtml" />
+    <Content Include="Views\Draw\EditDrawType.cshtml" />
     <Content Include="Views\Entry\AddEntries.cshtml" />
-    <Content Include="Views\Group\SubGroup.cshtml" />
+    <Content Include="Views\Group\CreateNew.cshtml" />
     <Content Include="Views\Transaction\ReportNewTransaction.cshtml" />
+    <Content Include="Views\Entry\GoToEntryForm.cshtml" />
     <Content Include="Views\User\Info.cshtml" />
     <Content Include="Views\Shared\Nav.cshtml" />
     <Content Include="Views\Transaction\ViewPendingTransactions.cshtml" />
+    <Content Include="Views\Draw\DrawList.cshtml" />
+    <Content Include="Views\Entry\AddNewEntry.cshtml" />
+    <Content Include="Views\Shared\GroupNav.cshtml" />
+    <Content Include="Views\Draw\DrawTypeDescription.cshtml" />
+    <Content Include="Views\Draw\DrawTypeDescriptionEdit.cshtml" />
+    <Content Include="Views\Draw\DrawTypeRules.cshtml" />
+    <Content Include="Views\Draw\ViewDrawType.cshtml" />
+    <Content Include="Views\Draw\EditExtDraw.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
