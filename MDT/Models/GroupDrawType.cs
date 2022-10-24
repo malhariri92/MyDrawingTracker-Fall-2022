@@ -14,13 +14,13 @@ namespace MDT.Models
     
     public partial class GroupDrawType
     {
-        public int DrawTypeId { get; set; }
         public int GroupId { get; set; }
+        public int DrawTypeId { get; set; }
         public int LedgerId { get; set; }
         public bool IsActive { get; set; }
     
         public virtual DrawType DrawType { get; set; }
-        public virtual Ledger Ledger { get; set; }
         public virtual Group Group { get; set; }
+        public virtual Ledger Ledger { get; set; }
     }
 }

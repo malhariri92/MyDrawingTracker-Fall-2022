@@ -64,12 +64,12 @@ namespace MDT.Controllers
         protected List<DrawType> GetDrawTypes(List<int> ids)
         {
             return db.DrawTypes
-                     .Where(g => ids.Contains(g.DrawTypeId))
-                     .Include(g => g.NumberSets)
-                     .Include(g => g.Draws)
-                     .Include(g => g.Schedules)
-                     .Include(g => g.UserDrawTypeOptions)
-                     .Include(g => g.UserDrawTypeOptions.Select(pg => pg.User))
+                     .Where(dt => ids.Contains(dt.DrawTypeId) && dt.GroupDrawTypes.Any(gdt => gdt.GroupId == group.GroupId))
+                     .Include(dt => dt.NumberSets)
+                     .Include(dt => dt.Draws)
+                     .Include(dt => dt.Schedules)
+                     .Include(dt => dt.UserDrawTypeOptions)
+                     .Include(dt => dt.UserDrawTypeOptions.Select(udto => udto.User))
                      .ToList();
         }
 
@@ -81,13 +81,13 @@ namespace MDT.Controllers
         protected List<User> GetUsers(List<int> ids)
         {
             return db.Users
-                     .Where(g => ids.Contains(g.UserId))
-                     .Include(g => g.CurrentGroupId)
-                     .Include(g => g.GroupUsers)
-                     .Include(g => g.UserDrawTypeOptions)
-                     .Include(g => g.UserDrawTypeOptions.Select(pg => pg.DrawType))
-                     .Include(g => g.DrawEntries)
-                     .Include(g => g.DrawEntries.Select(e => e.Draw))
+                     .Where(u => ids.Contains(u.UserId))
+                     .Include(u => u.CurrentGroupId)
+                     .Include(u => u.GroupUsers)
+                     .Include(u => u.UserDrawTypeOptions)
+                     .Include(u => u.UserDrawTypeOptions.Select(udto => udto.DrawType))
+                     .Include(u => u.DrawEntries)
+                     .Include(u => u.DrawEntries.Select(de => de.Draw))
                      .ToList();
         }
 
@@ -155,9 +155,19 @@ namespace MDT.Controllers
                                             .Include(dt => dt.UserDrawTypeOptions)
                                             .Include(dt => dt.UserDrawTypeOptions.Select(udto => udto.User))
                                             .Include(dt => dt.Schedules)
+                                            .Include(dt => dt.Draws)
+                                            .Include(dt => dt.Draws.Select(d => d.DrawType))
+                                            .Include(dt => dt.Draws.Select(d => d.DrawOption))
                                             .FirstOrDefault();
 
-            return new DrawTypeVM(drawType);
+            DrawTypeVM vm =  new DrawTypeVM(drawType);
+
+            if (drawType != null)
+            {
+                vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectTypeId == 2 && d.ObjectId == drawType.DrawTypeId).ToList());
+            }
+
+            return vm;
         }
 
         protected DrawVM GetDrawVM(int id)

@@ -29,11 +29,10 @@ namespace MDT.ViewModels
         public bool IsInternal { get; set; }
 
         [Display(Name = "Entries to draw")]
-        [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0.")]
         public int EntriesToDraw { get; set; }
 
         [Display(Name = "Max entries per user")]
-        public int MaxEntriesPeruser { get; set; }
+        public int MaxEntriesPerUser { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0")]
         [DefaultValue(1)]
@@ -65,18 +64,24 @@ namespace MDT.ViewModels
         public bool IsolateBalance { get; set; }
 
         [Display(Name = "Initial user balance?")]
-        [Range(1, double.MaxValue, ErrorMessage = "{0} must be greater than 0")]
+        [Range(0, double.MaxValue, ErrorMessage = "{0} cannot be negative")]
         public decimal InitialUserBalance { get; set; }
 
         [Display(Name = "Recurring?")]
         public bool HasSchedule { get; set; }
 
+        public List<Description> Descriptions { get; set; }
+
         public ScheduleVM Schedule { get; set; }
+
+        public List<DrawVM> Draws { get; set; }
 
         public DrawTypeVM()
         {
             Schedule = new ScheduleVM();
             NumberOfDraws = 1;
+            Draws = new List<DrawVM>();
+            Descriptions = new List<Description>();
         }
 
         /// <summary>
@@ -98,7 +103,7 @@ namespace MDT.ViewModels
                 PassDrawnToNext = dt.PassDrawnToNext;
                 PassUndrawnToNext = dt.PassUndrawnToNext;
                 EntriesToDraw = dt.EntriesToDraw;
-                MaxEntriesPeruser = dt.MaxEntriesPerUser;
+                MaxEntriesPerUser = dt.MaxEntriesPerUser;
                 RemoveDrawnEntries = dt.RemoveDrawnEntries;
                 RemoveDrawnUsers = dt.RemoveDrawnUsers;
                 JoinConfirmationRequired = dt.JoinConfirmationRequired;
@@ -107,6 +112,16 @@ namespace MDT.ViewModels
                 NumberOfDraws = dt.NumberOfDraws;
                 InitialUserBalance = dt.InitialUserBalance;
                 IsolateBalance = dt.IsolateBalance;
+                Draws = dt.Draws.Select(d => new DrawVM(d)).ToList();
+            }
+        }
+
+        public void SetDescriptions(List<Description> desc)
+        {
+            Descriptions = desc;
+            foreach (Description d in Descriptions)
+            {
+                d.IsActive = true;
             }
         }
     }

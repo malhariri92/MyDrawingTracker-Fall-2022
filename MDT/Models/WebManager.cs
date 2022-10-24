@@ -54,10 +54,7 @@ namespace MDT.Models
             using (var db = new DbEntities())
             {
                 return new GroupDTO(db.Groups.Where(g => g.GroupId == groupId)
-                                             .Include(g => g.ParentGroup)
                                              .Include(g => g.GroupUsers)
-                                             .Include(g => g.SubGroups)
-                                             .Include(g => g.SubGroups.Select(sg => sg.GroupUsers))
                                              .FirstOrDefault());
             }
         }

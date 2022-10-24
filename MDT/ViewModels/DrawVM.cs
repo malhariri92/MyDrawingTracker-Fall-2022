@@ -13,6 +13,8 @@ namespace MDT.ViewModels
         public int DrawId { get; set; }
         public List<EntryVM> Entries { get; set; }
 
+        public string Title { get; set; }
+        public string VirtualTitle { get; set; }
         public DateTime? StartDate { get; set; }
 
         [Display(Name = "End Date")]
@@ -24,7 +26,7 @@ namespace MDT.ViewModels
         [Display(Name = "Results")]
         public string Results { get; set; }
 
-        [Display(Name ="Game")]
+        [Display(Name = "Game")]
         [Required(ErrorMessage = "{0} is required.")]
         public int DrawTypeId { get; set; }
         public string DrawTypeName { get; set; }
@@ -58,10 +60,12 @@ namespace MDT.ViewModels
             if (d != null)
             {
                 DrawId = d.DrawId;
+                Title = d.Title;
+                VirtualTitle = $"{d.DrawType.DrawTypeName} {d.EndDateTime:yyyy-MM-dd}";
                 StartDate = d.StartDateTime;
                 EndDate = d.EndDateTime;
                 Results = d.Results;
-                IsActive = d.StartDateTime != null && d.EndDateTime < DateTime.Now && Results == null;
+                IsActive = d.StartDateTime != null && d.EndDateTime > DateTime.Now && Results == null;
                 DrawTypeId = d.DrawTypeId;
                 DrawTypeName = d.DrawType.DrawTypeName;
 
@@ -83,7 +87,7 @@ namespace MDT.ViewModels
                     EntryCost = d.DrawType.EntryCost;
                 }
                 else
-                { 
+                {
                     MaxEntriesPerUser = d.DrawOption.MaxEntriesPerUser;
                     EntriesToDraw = d.DrawOption.EntriesToDraw;
                     RemoveDrawnEntries = d.DrawOption.RemoveDrawnEntries;
@@ -98,6 +102,27 @@ namespace MDT.ViewModels
 
             }
         }
+
+        public DrawVM(DrawType d) : this()
+        {
+
+            DrawTypeId = d.DrawTypeId;
+            DrawTypeName = d.DrawTypeName;
+
+            EntryCost = d.EntryCost;
+
+            MaxEntriesPerUser = d.MaxEntriesPerUser;
+            EntriesToDraw = d.EntriesToDraw;
+            RemoveDrawnEntries = d.RemoveDrawnEntries;
+            RemoveDrawnUsers = d.RemoveDrawnUsers;
+            PassDrawnToNext = d.PassDrawnToNext;
+            PassUndrawnToNext = d.PassUndrawnToNext;
+            AutoDraw = d.AutoDraw;
+            JoinConfirmationRequired = d.JoinConfirmationRequired;
+            RefundConfirmationRequired = d.RefundConfirmationRequired;
+            EntryCost = d.EntryCost;
+        }
+
 
         public void SetDescriptions(List<Description> desc)
         {

@@ -43,18 +43,7 @@ namespace MDT.Controllers
                 .Where(d => d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId) && d.EndDateTime > DateTime.Now)
                 .ToList();
         }
-        public void ChangeGroup(int groupId)
-        {
-            if (db.GroupUsers.Find(groupId, user.UserId) != null)
-            {
-                User u = db.Users.Find(user.UserId);
-                u.CurrentGroupId = groupId;
-                db.Entry(u).State = EntityState.Modified;
-                db.SaveChanges();
-                Session["User"] = new UserDTO(u);
-                Session["Group"] = WebManager.GetGroupDTO(groupId);
-            }
-        }
+       
 
         public ActionResult ChangePass()
         {

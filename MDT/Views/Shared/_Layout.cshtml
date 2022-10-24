@@ -44,7 +44,7 @@
                         else
                         {
                             <h2 style="margin-top:unset;">
-                                @user.UserName<br />
+                                @Html.ActionLink(user.UserName, "Index", "User", null, null)<br />
                                 @group.GroupName @(admin ? "(Admin)" : "")
                             </h2>
                         }
@@ -53,7 +53,7 @@
             </div>
         </div>
         @{
-            Html.RenderPartial("Nav", user);
+            Html.RenderAction("Nav", "Home");
         }
     </div>
     <div class="container body-content">

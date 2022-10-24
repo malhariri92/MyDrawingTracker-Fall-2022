@@ -30,6 +30,7 @@ namespace MDT.Models
         public int DrawTypeId { get; set; }
         public string Results { get; set; }
         public string DrawCode { get; set; }
+        public string Title { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawEntry> DrawEntries { get; set; }

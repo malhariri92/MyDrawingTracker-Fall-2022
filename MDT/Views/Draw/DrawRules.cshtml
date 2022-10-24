@@ -13,7 +13,7 @@
         Rules
         @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) && !Model.IsActive)
         {
-            <button type="button" class="btn btn-xs btn-success" title="Edit Rules" id="btnRuleEdit"><span class="fa fa-pencil-square-o"></span></button>
+            <button type="button" class="btn btn-xs btn-success" title="Edit Rules" id="btnRuleEdit"><span class="fa fa-pencil"></span></button>
         }
     </h3>
 </div>
@@ -71,7 +71,14 @@
         {
             if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
             {
-                <button class="btn btn-sm btn-success" type="button" id="btnStart">Start Drawing</button>
+                if (Model.EndDate > DateTime.Now)
+                {
+                    <button class="btn btn-sm btn-success" type="button" id="btnStart">Start Drawing</button>
+                }
+                else
+                {
+                    <button class="btn btn-sm btn-success" type="button" disabled title="Cannot start a draw with an end date that has already passed.">Start Drawing</button>
+                }
 
             }
         }

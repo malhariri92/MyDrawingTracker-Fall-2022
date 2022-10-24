@@ -5,26 +5,31 @@
     GroupDTO group = (GroupDTO)Session["Group"];
 }
 
-@if (user == null)
-{
-    Html.RenderPartial("SignIn");
-}
-else
-{
-    if (user.IsVerified)
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+    @if (user == null)
     {
-        if (group.IsApproved ?? false)
-        {
-            Html.RenderPartial("Welcome", user);
-
-        }
-        else
-        {
-            Html.RenderPartial("UnverifiedGroup");
-        }
+        Html.RenderPartial("SignIn");
     }
     else
     {
-        Html.RenderPartial("UnverifiedEmail");
+        if (user.IsVerified)
+        {
+            if (group.IsApproved ?? false)
+            {
+                Html.RenderPartial("Welcome", user);
+
+            }
+            else
+            {
+                Html.RenderPartial("UnverifiedGroup");
+            }
+        }
+        else
+        {
+            Html.RenderPartial("UnverifiedEmail");
+        }
     }
-} 
+</div>

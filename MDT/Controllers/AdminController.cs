@@ -58,15 +58,14 @@ namespace MDT.Controllers
             }
 
             g.IsApproved = true;
-            db.Entry(g).State = EntityState.Modified;
-            Ledger gl = new Ledger()
+            g.AccountBalanceLedger = new Ledger()
             {
                 GroupId = g.GroupId,
-                LedgerName = g.GroupName,
+                LedgerName = "Account Balance",
                 Balance = 0.0m
             };
 
-            db.Entry(gl).State = EntityState.Added;
+            db.Entry(g).State = EntityState.Modified;
             db.SaveChanges();
 
             User u = g.GroupUsers.Where(gu => gu.IsAdmin).Select(gu => gu.User).FirstOrDefault();

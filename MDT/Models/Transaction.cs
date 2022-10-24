@@ -22,11 +22,13 @@ namespace MDT.Models
         public Nullable<int> DrawId { get; set; }
         public int SourceLedger { get; set; }
         public int DestinationLedger { get; set; }
+        public int GroupId { get; set; }
     
         public virtual Draw Draw { get; set; }
         public virtual Ledger ToLedger { get; set; }
         public virtual Ledger FromLedger { get; set; }
         public virtual TransactionType TransactionType { get; set; }
         public virtual User User { get; set; }
+        public virtual Group Group { get; set; }
     }
 }

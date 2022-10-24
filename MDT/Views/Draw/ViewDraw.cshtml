@@ -1,60 +1,33 @@
 ﻿@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
-@model UIDrawVM
+@model DrawVM
 @{
-    ViewBag.Title = "View Draw";
+    ViewBag.Title = $"View {(Model.Title ?? Model.VirtualTitle)}";
     UserDTO user = (UserDTO)Session["User"];
 }
 
 <div class="row text-center ">
-    <h1>Drawing for @Model.DrawTypeName</h1>
+    <h1>@(Model.Title ?? Model.VirtualTitle)</h1>
+    <h2>@Html.ActionLink(Model.DrawTypeName, "ViewDrawType", "Draw", new { id = Model.DrawTypeId }, null)</h2>
 </div>
 <div class="row">
     <div class="col-md-7 col-xs-12" id="divDesc">
         @{
-            if (Model.Descriptions.Any())
-            {
-                Html.RenderPartial("DrawDescription", Model);
-            }
-            else
-            {
-                Html.RenderPartial("DrawDescriptionEdit", Model);
-            }
+            Html.RenderPartial("DrawDescription", Model);
         }
     </div>
-    <div class="col-md-5 col-xs-12">
+    <div class="col-md-5 col-xs-12" id="rules">
         @{
             Html.RenderPartial("DrawRules", Model);
         }
     </div>
-    <div>
-        @using (Html.BeginForm("Index", "Entry", FormMethod.Post, new { @id = "form0" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.Hidden("drawId", Model.DrawId)
-            @Html.Hidden("drawTypeId", Model.DrawTypeId)
-            @Html.Hidden("userId", user.UserId)
-            <input type="submit" value="Add Entries" class="btn btn-primary" />
-        }
-    </div>
-    <div class="row">
-        <button class="btn btn-primary" id="toggleDrawListBtn">Show EditList</button>
-        @{
-            Html.RenderPartial("EditList", Model.drawDTOs);
-        }
-    </div>
-    <div class="row">
-        <button class="btn btn-primary" id="toggleCreateDrawBtn">Show CreateDraw</button>
-        @{
-            Html.RenderPartial("CreateDraw", Model.drawInnerVM);
-        }
-    </div>
 
-    if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+
+    @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
     {
-<script type="text/javascript">
-            let ct = @Model.drawVm.Descriptions.Count;
+        <script type="text/javascript">
+            let ct = @Model.Descriptions.Count;
 
             $(document).on('click', '#btnAddDesc', function () {
                 $('#descedit').append(
@@ -85,39 +58,31 @@
                 $(`#desc-${id}`).hide();
             });
 
-            $(document).on('click', '#btnCancelDescEdit', function () {
-                $('#divDesc').empty();
-                $('#divDesc').load('@Url.Action("DrawDescription", "Draw", new { id = Model.drawVm.DrawId })');
-            });
-
             $(document).on('click', '#btnDescEdit', function () {
-                $('#divDesc').empty();
-                $('#divDesc').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.drawVm.DrawId })');
+                $('#modaldiv').empty();
+                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+                $('#popup').modal("show");
+                $('#modaldiv').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.DrawId })');
             });
 
-            $(document).on('click', '#toggleDrawTypeBtn', function () {
-                $(this).text($(this).text() == "Show DrawType" ? "Hide DrawType" : "Show DrawType");
-                $('#createEditDrawTypeForm').toggle();
+            $(document).on('click', '#btnEnter', function () {
+                $('#modaldiv').empty();
+                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+                $('#popup').modal("show");
+                $('#modaldiv').load('@Html.Raw(Url.Action("GoToEntryForm", "Entry", new { drawId = Model.DrawId, drawTypeId = Model.DrawTypeId, userId = user.UserId }))');
             });
 
-            $(document).on('click', '#toggleDrawListBtn', function () {
-                $(this).text($(this).text() == "Show EditList" ? "Hide EditList" : "Show EditList");
-                $('#editList').toggle();
+            $(document).on('click', '#btnStart', function () {
+                $('#rules').empty();
+                $('#rules').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+                $('#rules').load('@Url.Action("StartDraw", "Draw", new { id = Model.DrawId }, null)');
             });
 
-            $(document).on('click', '#toggleCreateDrawBtn', function () {
-                $(this).text($(this).text() == "Show CreateDraw" ? "Hide CreateDraw" : "Show CreateDraw");
-                $('#createEditForm').toggle();
-            });
-
-            $(document).on('click', '#goToEntryFormBtn', function () {
-                $('#addEntries').empty();
-                $('#addEntries').load('@Html.Raw(Url.Action("GoToEntryForm", "Entry", new { drawId = Model.drawVm.DrawId, drawTypeId = Model.drawVm.DrawTypeId, userId = user.UserId }))');
-            });
-
-            $(document).on('click', '#cancelAddEntries', function () {
-                $('#addEntries').empty();
-                $('#addEntries').append('<button class="btn btn-primary" id="goToEntryFormBtn">Add Entry</button>')
+            $(document).on('click', '#btnRuleEdit', function () {
+                $('#modaldiv').empty();
+                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+                $('#popup').modal("show");
+                $('#modaldiv').load('@Url.Action("EditDraw", "Draw", new { id = Model.DrawId })');
             });
 
             $(document).on('click', '#submitEntriesBtn', function () {
@@ -125,8 +90,8 @@
                 let numEntries = parseInt($('#EntryCount').val());
                 let baseURL = '@Url.Action("AddEntries", "Entry")';
                 let parameters = {
-                    drawId: @Model.drawVm.DrawId,
-                    drawTypeId: @Model.drawVm.DrawTypeId,
+                    drawId: @Model.DrawId,
+                    drawTypeId: @Model.DrawTypeId,
                     userId: @user.UserId,
                     entryCount: numEntries,
                     entryId: entryID
@@ -136,6 +101,21 @@
                 $('#addEntries').empty();
                 $('#addEntries').load(fullURL);
             });
-</script>
+        </script>
     }
-}
+    else
+    {
+        <script type="text/javascript">
+           
+
+            $(document).on('click', '#btnEnter', function () {
+                $('#modaldiv').empty();
+                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+                $('#popup').modal("show");
+                $('#modaldiv').load('@Html.Raw(Url.Action("GoToEntryForm", "Entry", new { drawId = Model.DrawId, drawTypeId = Model.DrawTypeId, userId = user.UserId }))');
+            });
+
+           
+        </script>
+    }
+</div>

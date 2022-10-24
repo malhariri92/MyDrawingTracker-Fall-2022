@@ -22,21 +22,11 @@ namespace MDT.Controllers
             return View(vm);
         }
 
+        [AdminFilter(Role = "Admin")]
         public ActionResult Members()
-        { 
-                List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
-                List<UserDTO> mld = new List<UserDTO>();
-                foreach (User u in ml)
-                {
-                    if (user.UserId == u.UserId)
-                    {
-                        continue;
-                    }
-                    GroupUser gu = db.GroupUsers.Where(g => g.UserId == u.UserId && g.GroupId == u.CurrentGroupId).FirstOrDefault();
-
-                    mld.Add(new UserDTO(u));
-                }
-                return PartialView(mld);
+        {
+            GroupVM vm = new GroupVM(GetGroup(user.CurrentGroupId));
+            return View(vm);
         }
 
         [AdminFilter(Role = "Admin")]
@@ -119,10 +109,16 @@ namespace MDT.Controllers
             return RedirectToAction("Index", "Group");
         }
 
-        [AdminFilter(Role="Admin")]
+        [AdminFilter(Role = "Admin")]
         public ActionResult InviteList()
         {
-           return View(db.GroupInvites.Where(gI => gI.GroupId == group.GroupId).ToList());          
+            return PartialView(db.GroupInvites.Where(gI => gI.GroupId == group.GroupId).ToList());
+        }
+
+        [AdminFilter(Role = "Admin")]
+        public ActionResult InviteForm()
+        {
+            return PartialView();
         }
 
         [HttpPost]
@@ -165,6 +161,8 @@ namespace MDT.Controllers
 
 
         [AdminFilter(Role = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult SendInvite(GroupInvite grpInvite)
         {
             GroupInvite dBGroupInvite =
@@ -280,23 +278,19 @@ namespace MDT.Controllers
             return PartialView(grpInvite);
         }
 
-        [HttpGet]
-        public ActionResult SubGroup()
+        public ActionResult CreateNew()
         {
-            return PartialView("SubGroup");
+            return PartialView();
         }
 
         [HttpPost]
-        public ActionResult SubGroup(SubGroupVM vm)
+        public ActionResult CreateNew(NewGroupVM vm)
         {
-            GroupDTO parentGroup = (GroupDTO)Session["Group"];
             Group group = new Group()
             {
                 GroupName = vm.GroupName,
                 IsActive = false,
-                IsApproved = false,
-                ParentGroupId = parentGroup.GroupId,
-                IsPrimary = false
+                AccessCode = WebManager.GetUniqueKey(10)
             };
 
             db.Groups.Add(group);
@@ -309,15 +303,23 @@ namespace MDT.Controllers
                 GroupId = group.GroupId,
                 UserId = user.UserId,
                 IsAdmin = true,
-                IsApproved = false,
-                //IsOwner = true
+                IsApproved = true,
+                IsOwner = true
             };
             db.GroupUsers.Add(groupUser);
             db.SaveChanges();
 
+            Dictionary<string, string> variables = new Dictionary<string, string>()
+            {
+                { "[[GroupName]]", group.GroupName },
+                { "[[Reason]]", vm.Reason }
+            };
+            List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
+            WebManager.SendTemplateEmail(recipients, 3, variables);
+
             Description desc = new Description()
             {
-                ObjectTypeId = 7,
+                ObjectTypeId = 5,
                 ObjectId = group.GroupId,
                 SortOrder = 1,
                 TextBody = vm.Reason,
@@ -366,7 +368,7 @@ namespace MDT.Controllers
 
         private void deleteInvitation(string EmailAddress, int GroupId)
         {
-            GroupInvite delete = db.GroupInvites.Find(GroupId,EmailAddress);
+            GroupInvite delete = db.GroupInvites.Find(GroupId, EmailAddress);
             if (delete != null)
             {
                 db.Entry(delete).State = EntityState.Deleted;
