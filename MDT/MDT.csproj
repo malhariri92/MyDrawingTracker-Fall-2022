@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -260,6 +260,7 @@
     <Compile Include="ViewModels\GroupOptionsVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
     <Compile Include="ViewModels\GroupUserVM.cs" />
+    <Compile Include="ViewModels\PendingTransactionVM.cs" />
     <Compile Include="ViewModels\NewGroupVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
@@ -494,6 +495,7 @@
     <Content Include="Views\Entry\GoToEntryForm.cshtml" />
     <Content Include="Views\User\Info.cshtml" />
     <Content Include="Views\Shared\Nav.cshtml" />
+    <Content Include="Views\Transaction\ViewPendingTransactions.cshtml" />
     <Content Include="Views\Draw\DrawList.cshtml" />
     <Content Include="Views\Entry\AddNewEntry.cshtml" />
     <Content Include="Views\Shared\GroupNav.cshtml" />
@@ -505,6 +507,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\PendingTransactionVM\" />
+    <Folder Include="Views\PendingTransaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

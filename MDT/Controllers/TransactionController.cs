@@ -92,6 +92,75 @@ namespace MDT.Controllers
             }
         }
 
+        [AdminFilter(Role = "Admin")]
+        public ActionResult ViewPendingTransactions()
+        {
+            List<PendingTransactionVM> tld = new List<PendingTransactionVM>();
+            using (var db = new DbEntities())
+            {
+                if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+                {
+                    List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
+                    foreach (User u in ml)
+                    {
+                        List<PendingTransaction> transactions = db.PendingTransactions.Where(t => t.UserId == u.UserId).ToList();
+                        foreach (PendingTransaction t in transactions)
+                        {
+                            tld.Add(new PendingTransactionVM(t));
+                        }
+                    }
+                }
+                return PartialView(tld);
+            }
+        }
+
+        [AdminFilter(Role = "Admin")]
+        public ActionResult AcceptTransaction(int PendTransactionId)
+        {
+            var transaction = db.PendingTransactions.Where(p => p.PendingTransactionId == PendTransactionId).FirstOrDefault();
+            var foundType = db.TransactionTypes.Where(t => t.TransactionTypeId == transaction.TransactionTypeId).FirstOrDefault();
+            if (foundType.IsDebit)
+            {
+                var userBalance = db.Balances.Where(b => b.UserId == transaction.UserId && b.LedgerId == 2).FirstOrDefault();
+                if (userBalance == null)
+                {
+                    Balance bal = new Balance()
+                    {
+                        UserId = transaction.UserId,
+                        LedgerId = 2,
+                        CurrentBalance = transaction.Amount
+                    };
+                    db.Balances.Add(bal);
+                }
+
+                else
+                {
+                    userBalance.CurrentBalance += transaction.Amount;
+                    db.Entry(userBalance).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
+
+            Transaction entry = new Transaction()
+            {
+                TransactionTypeId = transaction.TransactionTypeId,
+                Amount = transaction.Amount,
+                UserId = transaction.UserId,
+                TransactionDateTime = transaction.TransactionDateTime,
+                SourceLedger = 1,
+                DestinationLedger = 2
+            };
+
+            db.Transactions.Add(entry);
+            db.SaveChanges();
+
+            db.PendingTransactions.Remove(transaction);
+            db.SaveChanges();
+
+
+            return RedirectToAction("ViewPendingTransactions");
+        }
+
         [LoginFilter]
         public ActionResult ReportNewTransaction()
         {

@@ -1,6 +1,7 @@
 ﻿@using MDT.Models.DTO
+@using MDT.ViewModels
 @using MDT.Models
-@model List<TransactionDTO>
+@model List<PendingTransactionVM>
 
 @{
     ViewBag.title = "Transactions";
@@ -23,10 +24,11 @@
                     <th>Date</th>
                     <th>Source Ledger</th>
                     <th>Destination Ledger</th>
+                    <th>Accept</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (TransactionDTO transaction in Model)
+                @foreach (PendingTransactionVM transaction in Model)
                 {
                     <tr>
                         <td>@transaction.UserName</td>
@@ -35,6 +37,10 @@
                         <td>@transaction.TransactionDateTime</td>
                         <td>@transaction.SourceLedgerName</td>
                         <td>@transaction.DestinationLedgerName</td>
+                        <td>
+                            <input type="submit" class="btn btn-sm" value="Approve" onclick="location.href='@Url.Action("AcceptTransaction", "Transaction",
+                                                                                                           new {pendTransactionId = transaction.PendingTransactionId})'" />
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -55,17 +61,9 @@ else
 {
     <h1 class="text-center">No Transactions</h1>
 }
-
-@if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
-{
-    <input type="button" class="btn btn-lg btn-info" value="Add a Transaction" onclick="location.href='@Url.Action("AddNewTransaction", "Transaction")'" />
-    <input type="button" class="btn btn-lg btn-info" value="View Pending Transactions" onclick="location.href='@Url.Action("ViewPendingTransactions", "Transaction")'" />
-}
-
-else
-{
-    <input type="button" class="btn btn-lg btn-info" value="Report a Transaction" onclick="location.href='@Url.Action("ReportNewTransaction", "Transaction")'" />
-}
+<div class="col-md-10">
+    <input type="button" class="btn btn-lg btn-danger" value="Return" onclick="location.href='@Url.Action("Index", "Transaction")'" />
+</div>
 
 <script src="~/Scripts/jquery.dataTables.min.js"></script>
 <script src="~/Scripts/dataTables.searchPanes.min.js"></script>
@@ -93,23 +91,5 @@ else
                 }
             });
         });
-
-        /*var transactionTable = $('#transactions_table').DataTable(
-            {
-                searchPanes:
-                {
-                    viewTotal: true
-                },
-                dom: 'Plfrtip',
-                columnDefs: [
-                    {
-                        searchPanes: {
-                            threshold: 1
-                        },
-                        targets: [0, 1, 2, 3, 4, 5]
-                    }
-                ]
-            }
-        );*/
     });
 </script>

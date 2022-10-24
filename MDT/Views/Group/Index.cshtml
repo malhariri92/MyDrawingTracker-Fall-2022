@@ -1,4 +1,4 @@
-﻿@model MDT.ViewModels.GroupOptionsVM
+@model MDT.ViewModels.GroupOptionsVM
 @using MDT.Models
 @using MDT.Models.DTO
 
@@ -64,6 +64,10 @@
         </div>
 
         <script type="text/javascript">
+
+            $(document).on('change', '#joinConfirm', function () {
+            let flag = $(this).is(':checked');
+            $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
             $(function () {
                 $('#JoinConfirmation').bootstrapToggle();
             });
@@ -89,5 +93,12 @@
 
 </div>
 
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <input type="button" class="btn btn-sm btn-info" value="Edit" onclick="location.href='@Url.Action("Edit", "Group")'" />
+            </div>
+        </div>
+    }
 
 
