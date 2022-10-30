@@ -24,6 +24,7 @@ namespace MDT.Models
         public int DrawId { get; set; }
         public int UserId { get; set; }
         public string EntryCode { get; set; }
+        public bool PendingRemoval { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawResult> DrawResults { get; set; }

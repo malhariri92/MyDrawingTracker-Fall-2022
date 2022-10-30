@@ -66,6 +66,7 @@
         <AssociationConnector Association="DbModel.FK_GroupDrawType_DrawType" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_Ledgers" />
+        <AssociationConnector Association="DbModel.FK_DrawTypes_Groups" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
