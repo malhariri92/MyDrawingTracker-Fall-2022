@@ -35,6 +35,7 @@
           <Property Name="DrawId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="EntryCode" Type="nvarchar" MaxLength="6" />
+          <Property Name="PendingRemoval" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DrawNumberSets">
           <Key>
@@ -88,6 +89,7 @@
           </Key>
           <Property Name="DrawTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DrawTypeName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="GroupId" Type="int" />
           <Property Name="EntryCost" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsInternal" Type="bit" Nullable="false" />
@@ -103,6 +105,7 @@
           <Property Name="RefundConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="InitialUserBalance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="IsolateBalance" Type="bit" Nullable="false" />
+          <Property Name="AllowAllocation" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="EmailTemplates">
           <Key>
@@ -393,6 +396,18 @@
             </Principal>
             <Dependent Role="Draws">
               <PropertyRef Name="DrawTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawTypes_Groups">
+          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1" />
+          <End Role="DrawTypes" Type="Self.DrawTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Groups">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="DrawTypes">
+              <PropertyRef Name="GroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -806,6 +821,10 @@
             <End Role="DrawTypes" EntitySet="DrawTypes" />
             <End Role="Draws" EntitySet="Draws" />
           </AssociationSet>
+          <AssociationSet Name="FK_DrawTypes_Groups" Association="Self.FK_DrawTypes_Groups">
+            <End Role="Groups" EntitySet="Groups" />
+            <End Role="DrawTypes" EntitySet="DrawTypes" />
+          </AssociationSet>
           <AssociationSet Name="FK_EmailMessages_EmailTemplates" Association="Self.FK_EmailMessages_EmailTemplates">
             <End Role="EmailTemplates" EntitySet="EmailTemplates" />
             <End Role="SentEmails" EntitySet="SentEmails" />
@@ -1100,6 +1119,10 @@
             <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
           </AssociationSet>
+          <AssociationSet Name="FK_DrawTypes_Groups" Association="DbModel.FK_DrawTypes_Groups">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="DrawType" EntitySet="DrawTypes" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Balance">
           <Key>
@@ -1137,6 +1160,7 @@
           <NavigationProperty Name="DrawResults" Relationship="DbModel.FK_DrawResults_Entry" FromRole="DrawEntry" ToRole="DrawResult" />
           <NavigationProperty Name="Draw" Relationship="DbModel.FK_Entry_Draws" FromRole="DrawEntry" ToRole="Draw" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_Entry_User" FromRole="DrawEntry" ToRole="User" />
+          <Property Name="PendingRemoval" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="DrawOption">
           <Key>
@@ -1213,6 +1237,9 @@
           <NavigationProperty Name="NumberSets" Relationship="DbModel.DrawNumberSets" FromRole="DrawType" ToRole="NumberSet" />
           <Property Name="IsolateBalance" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_DrawType" FromRole="DrawType" ToRole="GroupDrawType" />
+          <Property Name="GroupId" Type="Int32" />
+          <Property Name="AllowAllocation" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="DrawType" ToRole="Group" />
         </EntityType>
         <EntityType Name="EmailTemplate">
           <Key>
@@ -1640,6 +1667,7 @@
           <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_Groups" FromRole="Group" ToRole="Transaction" />
           <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_Groups" FromRole="Group" ToRole="PendingTransaction" />
           <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="Group" ToRole="GroupDrawType" />
+          <NavigationProperty Name="DrawTypes" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="Group" ToRole="DrawType" />
         </EntityType>
         <Association Name="FK_GroupInvites_Group">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
@@ -1886,6 +1914,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DrawTypes_Groups">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
+          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="DrawType">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1916,6 +1956,7 @@
           <EntitySetMapping Name="DrawEntries">
             <EntityTypeMapping TypeName="DbModel.DrawEntry">
               <MappingFragment StoreEntitySet="DrawEntries">
+                <ScalarProperty Name="PendingRemoval" ColumnName="PendingRemoval" />
                 <ScalarProperty Name="EntryCode" ColumnName="EntryCode" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="DrawId" ColumnName="DrawId" />
@@ -1966,6 +2007,8 @@
           <EntitySetMapping Name="DrawTypes">
             <EntityTypeMapping TypeName="DbModel.DrawType">
               <MappingFragment StoreEntitySet="DrawTypes">
+                <ScalarProperty Name="AllowAllocation" ColumnName="AllowAllocation" />
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
                 <ScalarProperty Name="IsolateBalance" ColumnName="IsolateBalance" />
                 <ScalarProperty Name="InitialUserBalance" ColumnName="InitialUserBalance" />
                 <ScalarProperty Name="RefundConfirmationRequired" ColumnName="RefundConfirmationRequired" />
