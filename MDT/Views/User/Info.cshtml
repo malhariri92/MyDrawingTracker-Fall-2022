@@ -69,6 +69,7 @@
         }
         <br />
         @Ajax.ActionLink("Change Password", "ChangePass", null, new AjaxOptions() { UpdateTargetId = "screen" }, new { @class = "btn btn-info" })
+        <button type="button" id="btnJoinGroup" class="btn btn-info">Join a Group</button>
     </p>
     <br />
     <vr />
@@ -102,3 +103,12 @@
          </div>
      }
 </div>
+
+<script type="text/javascript">
+    $('#btnJoinGroup').on('click', function () {
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load('@Url.Action("JoinGroupWithCode", "User", null, null)');
+    });
+</script>

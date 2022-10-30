@@ -177,6 +177,54 @@ namespace MDT.Controllers
 
         }
 
+        [HttpGet]
+        public ActionResult JoinGroupWithCode()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+
+        public ActionResult JoinGroupWithCode(string AccessCode = "")
+        {
+            if (AccessCode.Equals(""))
+            {
+                ViewBag.Error = "You must enter a group access code!";
+                return PartialView();
+            }
+
+            MDT.Models.Group grp = db.Groups.Where(g => g.AccessCode == AccessCode).FirstOrDefault();
+
+            if (grp == null)
+            {
+                ViewBag.Error = $"No group exists with the access code {AccessCode}!";
+            } else if (db.GroupUsers.Where(gu => gu.UserId == user.UserId && gu.GroupId == grp.GroupId).Any())
+            {
+                ViewBag.Error = $"You are already a member of {grp.GroupName}!";
+            } else 
+            {
+                GroupUser grpUsr = new GroupUser()
+                {
+                    GroupId = grp.GroupId,
+                    IsAdmin = false,
+                    IsApproved = !grp.JoinConfirmationRequired,
+                    IsOwner = false,
+                    UserId = user.UserId,
+                };
+
+                db.Entry(grpUsr).State = EntityState.Added;
+
+                db.SaveChanges();
+
+                ViewBag.SuccessMessage = 
+                    grp.JoinConfirmationRequired 
+                    ? $"A request to join {grp.GroupName} has been sent!" 
+                    : $"You have successfully been added to {grp.GroupName}!";
+
+            }
+            return PartialView();
+        }
+
         private bool CheckCurrentHash(int userId, string str)
         {
             using (var db = new DbEntities())
