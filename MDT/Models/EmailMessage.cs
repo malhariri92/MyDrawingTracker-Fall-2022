@@ -204,7 +204,8 @@ namespace MDT.Models
                     }
                 }
 
-                RawBody = RawBody.Replace("[[RootUrl]]", "https://mydrawingtracker.com");
+                //RawBody = RawBody.Replace("[[RootUrl]]", "https://mydrawingtracker.com");
+                RawBody = RawBody.Replace("[[RootUrl]]", "https://localhost:44361/");
                 RawBody = RawBody.Replace("[[Year]]", $"{DateTime.Now.Year}");
                 RawBody = RawBody.Replace("[[Date]]", $"{DateTime.Now:MM/dd/yyyy}");
                 email.Body = RawBody;

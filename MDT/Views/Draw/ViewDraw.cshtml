@@ -118,4 +118,12 @@
            
         </script>
     }
+    <script type="text/javascript">
+        $(document).on('click', '#btnEntryDisplay', function () {
+            $('#modaldiv').empty();
+            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $('#popup').modal("show");
+            $('#modaldiv').load('@Url.Action("ShowEntries", "Entry", new { drawId = Model.DrawId})');
+        });
+    </script>
 </div>
