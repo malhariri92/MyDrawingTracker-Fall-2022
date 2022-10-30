@@ -405,5 +405,58 @@ namespace MDT.Controllers
             }
             return PartialView("Nope");
         }
+
+        public ActionResult ViewEntries(int id)
+        {
+            List<User> ml = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId).Select(gu => gu.User).ToList();
+            List<DrawEntry> el = db.DrawEntries.Where(de => de.DrawId == id).ToList();
+
+            List<UserDrawEntriesVM> vm = new List<UserDrawEntriesVM>();
+            int myEntries = 0;
+
+            foreach (User member in ml)
+            {
+                int count = 0;
+
+                foreach(DrawEntry entry in el)
+                {
+                    if (entry.UserId == member.UserId)
+                    {
+                        ++count;
+                    }
+                }
+
+                if(count > 0)
+                {
+                    vm.Add(new UserDrawEntriesVM(id, member.UserId, member.UserName, count));
+                    if(member.UserId == user.UserId)
+                    {
+                        myEntries = count;
+                    }
+                }
+            }
+
+            ViewBag.MyEntries = myEntries;
+            return PartialView(vm);
+        }
+
+        [AdminFilter(Role = "Admin")]
+        public ActionResult RemoveEntries(int UserId, int DrawId)
+        {
+            RemoveEntriesVM vm = new RemoveEntriesVM();
+
+            vm.UserId = UserId;
+            vm.DrawId = DrawId;
+
+            return PartialView(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AdminFilter(Role = "Admin")]
+        public ActionResult RemoveEntries(RemoveEntriesVM vm)
+        {
+            //RemoveEntries();
+            return null;
+        }
     }
 }
