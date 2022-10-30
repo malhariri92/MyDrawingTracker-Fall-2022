@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -262,8 +262,10 @@
     <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\PendingTransactionVM.cs" />
     <Compile Include="ViewModels\NewGroupVM.cs" />
+    <Compile Include="ViewModels\RemoveEntriesVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
+    <Compile Include="ViewModels\UserDrawEntriesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="ViewModels\UserPasswordChangeVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetSetupVM.cs" />
@@ -504,11 +506,15 @@
     <Content Include="Views\Draw\DrawTypeRules.cshtml" />
     <Content Include="Views\Draw\ViewDrawType.cshtml" />
     <Content Include="Views\Draw\EditExtDraw.cshtml" />
+    <Content Include="Views\Draw\ViewEntries.cshtml" />
+    <Content Include="Views\Draw\RemoveEntries.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\PendingTransactionVM\" />
     <Folder Include="Views\PendingTransaction\" />
+    <Folder Include="Views\RemoveEntriesVM\" />
+    <Folder Include="Views\UserDrawEntriesVM\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

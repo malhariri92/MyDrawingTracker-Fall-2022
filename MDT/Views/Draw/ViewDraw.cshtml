@@ -22,6 +22,11 @@
             Html.RenderPartial("DrawRules", Model);
         }
     </div>
+    <div class="col-md-12" id="Entries">
+        @{ 
+            Html.RenderAction("ViewEntries", Model.DrawId);
+        }
+    </div>
 
 
     @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
