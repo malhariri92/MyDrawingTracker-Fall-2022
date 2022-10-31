@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -178,6 +178,11 @@ namespace MDT.Controllers
         }
 
         [HttpGet]
+        public ActionResult Member(int id)
+        {
+            return View(new UserVM(db.Users.Find(id)));
+        }
+
         public ActionResult JoinGroupWithCode()
         {
             return PartialView();

@@ -507,6 +507,7 @@
     <Content Include="Views\Draw\DrawTypeRules.cshtml" />
     <Content Include="Views\Draw\ViewDrawType.cshtml" />
     <Content Include="Views\Draw\EditExtDraw.cshtml" />
+    <Content Include="Views\User\Member.cshtml" />
     <Content Include="Views\Draw\ViewEntries.cshtml" />
     <Content Include="Views\Draw\RemoveEntries.cshtml" />
     <Content Include="Views\User\JoinGroupWithCode.cshtml" />
