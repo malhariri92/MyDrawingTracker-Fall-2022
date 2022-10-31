@@ -1,0 +1,14 @@
+﻿@using MDT.ViewModels
+@model EntryVM
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+@if (Model.Success)
+{
+    <h3 class="text-success" style="text-align:center">@Model.Message</h3>
+}
+else
+{
+    <h3 class="text-danger" style="text-align:center">@Model.Message.</h3>
+}
+
