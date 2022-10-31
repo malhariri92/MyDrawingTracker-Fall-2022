@@ -177,6 +177,12 @@ namespace MDT.Controllers
 
         }
 
+        [HttpGet]
+        public ActionResult Member(int id)
+        {
+            return View(new UserVM(db.Users.Find(id)));
+        }
+
         private bool CheckCurrentHash(int userId, string str)
         {
             using (var db = new DbEntities())

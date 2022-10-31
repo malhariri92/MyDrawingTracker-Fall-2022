@@ -10,7 +10,7 @@ namespace MDT.ViewModels
         public string UserName { get; set; }
         public string EmailAddress { get; set; }
         public string PhoneNumber { get; set; }
-        public int Balance { get; set; }
+        public List<Balance> Balances { get; set; }
         public int CurrentGroupId { get; set; }
         public List<int> AdminGroups { get; set; }
         public List<int> MemberGroups { get; set; }
@@ -34,7 +34,7 @@ namespace MDT.ViewModels
                 CurrentGroupId = u.CurrentGroupId;
                 IsVerified = u.IsVerified;
                 IsActive = u.IsActive;
-
+                Balances = u.Balances.Where(x => x.UserId == u.UserId && x.Ledger.GroupId == CurrentGroupId).ToList();
                 AdminGroups = u.GroupUsers.Where(g => g.IsAdmin).Select(g => g.GroupId).ToList();
                 MemberGroups = u.GroupUsers.Select(g => g.GroupId).ToList();
             }

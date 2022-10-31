@@ -106,7 +106,7 @@ namespace MDT.Controllers
             }
             catch { }
 
-            return RedirectToAction("Index", "Group");
+            return RedirectToAction("Members", "Group");
         }
 
         [AdminFilter(Role = "Admin")]
