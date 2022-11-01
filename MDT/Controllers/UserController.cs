@@ -180,6 +180,8 @@ namespace MDT.Controllers
         [HttpGet]
         public ActionResult Member(int id)
         {
+            ViewBag.IsOwner = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsOwner == true).Any();
+            ViewBag.IsAdmin = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsAdmin == true).Any();
             return View(new UserVM(db.Users.Find(id)));
         }
 
