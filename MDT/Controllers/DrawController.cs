@@ -9,6 +9,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using System.Threading;
+using System.Configuration;
 
 namespace MDT.Controllers
 {
@@ -457,6 +459,63 @@ namespace MDT.Controllers
         {
             //RemoveEntries();
             return null;
+        }
+
+        public ActionResult SelectWinnersSUP(int drawId)
+        {
+            int diffUsers = 0;
+            List<int> drawUsers = new List<int>();
+            List<DrawEntry> drawEntries = db.DrawEntries.Where(e => e.DrawId == drawId).ToList();
+            Draw draw = db.Draws.Find(drawId);
+            DrawType drawType = draw.DrawType;
+            int numWinners = drawType.EntriesToDraw;
+
+            foreach (DrawEntry drawEntry in drawEntries)
+            {
+                if (!drawUsers.Contains(drawEntry.UserId))
+                {
+                    drawUsers.Add(drawEntry.UserId);
+                    diffUsers++;
+                }
+            }
+            if (diffUsers < numWinners)
+            {
+                numWinners = diffUsers;
+            }
+
+            List<DrawEntry> winners = new List<DrawEntry>();
+            while (numWinners > 0)
+            {
+                Random rnd = new Random();
+                DrawEntry winner = drawEntries[rnd.Next(drawEntries.Count)];
+                winners.Add(winner);
+                drawEntries.RemoveAll(e => e.UserId == winner.UserId);
+                /*foreach (DrawEntry drawEntry in drawEntries)
+                {
+                    if (drawEntry.UserId == winner.UserId)
+                    {
+                        drawEntries.Remove(drawEntry);
+                        //db.Entry(drawEntry).State = EntityState.Deleted;
+                    }
+                }*/
+                DrawResult dr = new DrawResult()
+                {
+                    DrawId = drawId,
+                    DrawCount = (drawType.EntriesToDraw - numWinners) + 1,
+                    EntryId = winner.EntryId,
+                    DrawnDateTime = DateTime.Now,
+                };
+                db.Entry(dr).State = EntityState.Added;
+                dr = db.DrawResults.Where(r => r.DrawId == dr.DrawId && r.DrawCount == dr.DrawCount)
+                    .Include(r => r.DrawEntry)
+                    .Include(r => r.Draw)
+                    .FirstOrDefault();
+                db.SaveChanges();
+
+                numWinners--;
+            }
+
+            return PartialView(winners);
         }
     }
 }

@@ -514,6 +514,7 @@
     <Content Include="Views\Entry\ShowEntries.cshtml" />
     <Content Include="Views\Entry\EntryRemoved.cshtml" />
     <Content Include="Views\Entry\RejectEntryRemoval.cshtml" />
+    <Content Include="Views\Draw\SelectWinnersSUP.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

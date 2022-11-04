@@ -106,6 +106,13 @@
                 $('#addEntries').empty();
                 $('#addEntries').load(fullURL);
             });
+
+            $(document).on('click', '#testWinners', function () {
+                $('#modaldiv').empty();
+                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+                $('#popup').modal("show");
+                $('#modaldiv').load('@Url.Action("SelectWinnersSUP", "Draw", new { drawId = Model.DrawId})');
+            });
         </script>
     }
     else

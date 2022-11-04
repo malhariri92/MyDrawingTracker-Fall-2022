@@ -1,0 +1,16 @@
+﻿@using MDT.Models.DTO
+@using MDT.Models
+@using MDT.ViewModels
+@model List<DrawEntry>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+@if(Model.Any())
+{
+    <h2 class="text-center text-success">Winners</h2>
+    foreach(DrawEntry winner in Model)
+    {
+        <li id="@winner.EntryId">Code: @winner.EntryCode; User: @winner.User.UserName</li>
+    }
+}
