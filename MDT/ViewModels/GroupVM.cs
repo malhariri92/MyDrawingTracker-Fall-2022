@@ -15,6 +15,7 @@ namespace MDT.ViewModels
         public List<UserVM> Members { get; set; }
         public Dictionary<int, List<Description>> Descriptions { get; set; }
         public string TextArea { get; set; }
+        public int OwnerUserId { get; set; }
 
         public GroupVM()
         {
@@ -32,6 +33,7 @@ namespace MDT.ViewModels
                 GroupName = g.GroupName;
                 Admins = g.GroupUsers.Where(u => u.IsAdmin).Select(u => new UserVM(u)).ToList();
                 Members = g.GroupUsers.Where(u => !u.IsAdmin).Select(u => new UserVM(u)).ToList();
+                OwnerUserId = g.GroupUsers.Where(u => u.IsOwner).Select(u => u.UserId).FirstOrDefault();
             }
         }
 

@@ -14,6 +14,7 @@ namespace MDT.Models.DTO
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string EntryCode { get; set; }
+        public bool PendingRemoval { get; set; }
 
         /// <summary>
         /// Create DrawEntryDTO from a DrawEntry entity
@@ -30,6 +31,7 @@ namespace MDT.Models.DTO
                 UserId = entry.UserId;
                 UserName = entry.User.UserName;
                 EntryCode = entry.EntryCode;
+                PendingRemoval = entry.PendingRemoval;
             }
         }
     }

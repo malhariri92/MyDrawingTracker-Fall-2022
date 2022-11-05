@@ -1,0 +1,98 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@model MDT.ViewModels.UserVM
+
+@{
+    ViewBag.Title = "Member";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    UserDTO user = (UserDTO)Session["User"];
+}
+
+
+<div class="col-md-3">
+    <h1>Member Details</h1>
+    <p>
+        <b>Name: </b> @Model.UserName <br />
+        <b>Email: </b> @Model.EmailAddress <br />
+        <b>Phone Number: </b> @Model.PhoneNumber <br />
+        <b>CurrentGroupID: </b> @Model.CurrentGroupId<br />
+        <b>Verification Status: </b>
+        @{
+            if (Model.IsVerified)
+            {
+                <b>Verified</b>
+            }
+            else
+            {
+                <b>Not Verified</b>
+            }
+        }
+        <br />
+        <b>Activity Status: </b>
+        @{
+            if (Model.IsActive)
+            {
+                <b>Active</b> <br /><br />
+
+                <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset">
+                    <span class="fa fa-key">
+                        @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @Model.EmailAddress }, null)
+                    </span>
+                </button>
+                if (!ViewBag.IsOwner && Model.UserId != user.UserId)
+                {
+                    if (ViewBag.IsAdmin)
+                    {
+                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-dark" title="Demote from Admin">
+                            <span class="fa fa-angle-double-down">
+                                @Html.ActionLink("Demote", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
+                            </span>
+                        </button>
+                    }
+
+                    else if (!ViewBag.IsAdmin)
+                    {
+                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-success" title="Promote to Admin">
+                            <span class="fa fa-angle-double-up">
+                                @Html.ActionLink("Promote", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
+                            </span>
+                        </button>
+
+                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions">
+                            <span class="fa fa-file-text-o">
+                                @Html.ActionLink("Permissions", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
+                            </span>
+                        </button>
+                    }
+                    <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-danger" title="Remove from Group">
+                        <span class="fa fa-times-circle">
+                            @Html.ActionLink("Remove", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
+                        </span>
+                    </button>
+                }
+            }
+            else
+            {
+                <b>InActive</b> <br /> <br />
+                <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset">
+                    <span class="fa fa-key">
+                        @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @Model.EmailAddress }, null)
+                    </span>
+                </button>
+            }
+        }
+        <br />
+
+
+
+    </p>
+    <br />
+    <vr />
+</div>
+
+
+<style>
+    a{
+        color:white;
+    }
+</style>

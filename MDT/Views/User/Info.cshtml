@@ -1,4 +1,4 @@
-﻿@using MDT.ViewModels
+@using MDT.ViewModels
 @using MDT.Models
 @using MDT.Models.DTO
 @model UserVM
@@ -12,7 +12,6 @@
         <b>Name: </b> @Model.UserName <br />
         <b>Email: </b> @Model.EmailAddress <br />
         <b>Phone Number: </b> @Model.PhoneNumber <br />
-        <b>Balance: </b> @Model.Balance<br />
         <b>CurrentGroupID: </b> @Model.CurrentGroupId<br />
         <b>Verification Status: </b>
         @{
@@ -69,6 +68,7 @@
         }
         <br />
         @Ajax.ActionLink("Change Password", "ChangePass", null, new AjaxOptions() { UpdateTargetId = "screen" }, new { @class = "btn btn-info" })
+        <button type="button" id="btnJoinGroup" class="btn btn-info">Join a Group</button>
     </p>
     <br />
     <vr />
@@ -76,10 +76,10 @@
 <div class="col-sm-8">
     <h1>Upcoming Draws</h1>
     <hr />
-     @if (ViewBag.Draws != null && ViewBag.Draws.Count != 0)
-     {
-         foreach (Draw d in ViewBag.Draws)
-         {
+    @if (ViewBag.Draws != null && ViewBag.Draws.Count != 0)
+    {
+        foreach (Draw d in ViewBag.Draws)
+        {
             <div class="row">
                 <div class="col-sm-3">
                     <h3>@d.DrawType.DrawTypeName</h3>
@@ -92,13 +92,49 @@
                     Ends on @d.EndDateTime
                 </div>
             </div>
-            <hr /> 
-         }
-     }
-     else
-     {
-         <div class="row">
-             <h3>You are not currently set to participate in any draws.</h3>
-         </div>
-     }
+            <hr />
+        }
+    }
+    else
+    {
+        <div class="row">
+            <h3>You are not currently set to participate in any draws.</h3>
+        </div>
+        <hr />
+    }
+@if (@Model.Balances.Count > 0)
+    {
+        <div>
+            <table class="table table-bordered table-responsive" style="width:60%">
+                <h2>Balance Details</h2>
+                <thead>
+                    <tr> 
+                        <th>Ledger Name</th> <br />
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    @foreach (Balance b in @Model.Balances)
+                    {
+                    <tr>
+                        <td>@b.Ledger.LedgerName</td>
+                        <td>$@b.CurrentBalance</td>
+                    </tr>
+                    }
+                
+
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
+
+<script type="text/javascript">
+    $('#btnJoinGroup').on('click', function () {
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load('@Url.Action("JoinGroupWithCode", "User", null, null)');
+    });
+</script>

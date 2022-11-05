@@ -260,8 +260,10 @@
     <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\PendingTransactionVM.cs" />
     <Compile Include="ViewModels\NewGroupVM.cs" />
+    <Compile Include="ViewModels\RemoveEntriesVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
+    <Compile Include="ViewModels\UserDrawEntriesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="ViewModels\UserPasswordChangeVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetSetupVM.cs" />
@@ -322,6 +324,7 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="EmailTemplates\ConfirmNewUser.html" />
+    <Content Include="EmailTemplates\RemoveEntryRequest.html" />
     <Content Include="EmailTemplates\ResetPass.html" />
     <Content Include="EmailTemplates\ForgotPass.html" />
     <Content Include="EmailTemplates\VerifyEmail.html" />
@@ -503,11 +506,16 @@
     <Content Include="Views\Draw\ViewDrawType.cshtml" />
     <Content Include="Views\Draw\EditExtDraw.cshtml" />
     <Content Include="Views\Draw\UpdateAllocation.cshtml" />
+    <Content Include="Views\User\Member.cshtml" />
+    <Content Include="Views\Draw\ViewEntries.cshtml" />
+    <Content Include="Views\Draw\RemoveEntries.cshtml" />
+    <Content Include="Views\User\JoinGroupWithCode.cshtml" />
+    <Content Include="Views\Entry\ShowEntries.cshtml" />
+    <Content Include="Views\Entry\EntryRemoved.cshtml" />
+    <Content Include="Views\Entry\RejectEntryRemoval.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\PendingTransactionVM\" />
-    <Folder Include="Views\PendingTransaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

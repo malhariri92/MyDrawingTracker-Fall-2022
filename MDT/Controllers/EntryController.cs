@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Policy;
 
 namespace MDT.Controllers
 {
@@ -89,9 +90,84 @@ namespace MDT.Controllers
             return View(vm);
         }
 
-        [AdminFilter(Role = "Admin")]
-        public void RemoveEntry(int id = 0)
+        public ActionResult RequestEntryRemoval(int id)
         {
+            EntryVM entryVM = null;
+            try
+            {
+                DrawEntry drawEntry = db.DrawEntries.Find(id);
+                entryVM = new EntryVM(drawEntry);
+                User groupAdmin = db.GroupUsers.Where(u => u.GroupId == user.CurrentGroupId && u.IsAdmin).Select(gu => gu.User).FirstOrDefault();
+                Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[ConfirmUrl]]", "Draw/ViewDraw/" + drawEntry.DrawId}
+                };
+                WebManager.SendTemplateEmail($"{groupAdmin.EmailAddress}\t{groupAdmin.UserName}", 14, variables);
+
+                drawEntry.PendingRemoval = true;
+                db.Entry(drawEntry).State = EntityState.Modified;
+                db.SaveChanges();
+
+                entryVM.Success = true;
+                entryVM.Error = false;
+                entryVM.Message = "Your request has been sent. Your Administrator Has Been Contacted.";
+
+                return PartialView("EntryRemoved", entryVM);
+            }
+            catch 
+            {
+                entryVM.Success = false;
+                entryVM.Error = true;
+                entryVM.Message = "There was a problem requesting the removal of this entry. Please contact your administrator.";
+            }
+
+            return PartialView("EntryRemoved", entryVM);
+        }
+
+        //[AdminFilter(Role = "Admin")]
+        public ActionResult RejectRemoval(int id)
+        {
+            EntryVM entryVM = null;
+            try
+            {
+                DrawEntry drawEntry = db.DrawEntries.Find(id);
+                entryVM = new EntryVM(drawEntry);
+
+                drawEntry.PendingRemoval = false;
+                db.Entry(drawEntry).State = EntityState.Modified;
+                db.SaveChanges();
+
+                entryVM.Success = true;
+                entryVM.Error = false;
+                entryVM.Message = "You have denied the removal of this entry.";
+
+                return PartialView("RejectEntryRemoval", entryVM);
+            }
+            catch
+            {
+                entryVM.Success = false;
+                entryVM.Error = true;
+                entryVM.Message = "There was a problem rejecting the removal of this entry. Please contact the site administrator.";
+            }
+
+            return PartialView("RejectEntryRemoval", entryVM);
+        }
+
+        //[AdminFilter(Role = "Admin")]
+        public ActionResult RemoveEntry(int id = 0)
+        {
+            EntryVM entryVM = null;
+            try
+            {
+                DrawEntry drawEntry = db.DrawEntries.Find(id);
+                entryVM = new EntryVM(drawEntry);
+                if (drawEntry != null)
+                {
+                    Draw draw = db.Draws.Find(drawEntry.DrawId);
+                    Ledger drawledger = db.GroupDrawTypes.Find(group.GroupId, draw.DrawTypeId).Ledger;
+                    Balance balance = db.Balances.Find(group.AccountBalanceLedgerId, drawEntry.UserId);
+
+                    balance.CurrentBalance += draw.DrawType.EntryCost;
             if (RemoveDrawEntries(new List<int>() { id }, true))
             {
 

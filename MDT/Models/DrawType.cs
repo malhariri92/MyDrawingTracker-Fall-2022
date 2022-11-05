@@ -42,7 +42,6 @@ namespace MDT.Models
         public bool RefundConfirmationRequired { get; set; }
         public decimal InitialUserBalance { get; set; }
         public bool IsolateBalance { get; set; }
-        public bool AllowAllocation { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Draw> Draws { get; set; }

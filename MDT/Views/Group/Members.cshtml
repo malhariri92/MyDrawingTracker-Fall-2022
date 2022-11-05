@@ -21,13 +21,30 @@
             @foreach (UserVM member in Model.Admins)
             {
                 <tr>
-                    <td>@member.UserName (Admin)</td>
+                    <td>
+                        @Html.ActionLink(@member.UserName, "Member", "User", new { id = @member.UserId }, null) (Admin)
+                    </td>
                     <td>@member.EmailAddress</td>
                     <td>
-                        @if (member.UserId != user.UserId)
+                        @if (member.UserId != user.UserId && member.UserId != Model.OwnerUserId)
                         {
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-primary" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                            <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset" style=" margin-left:10px;">
+                                <span class="fa fa-key">
+                                    @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
+                                </span>
+                            </button>
+
+                            <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-dark" title="Demote from Admin" style=" margin-left:10px;">
+                                <span class="fa fa-angle-double-down">
+                                    @Html.ActionLink("Demote", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
+                                </span>
+                            </button>
+
+                            <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group" style=" margin-left:10px;">
+                                <span class="fa fa-times-circle">
+                                    @Html.ActionLink("Remove", "RemoveFromGroup", "Group", new { uId = @member.UserId, guId = @member.CurrentGroupId }, null)
+                                </span>
+                            </button>
                         }
                     </td>
                 </tr>
@@ -35,11 +52,32 @@
             @foreach (UserVM member in Model.Members)
             {
                 <tr>
-                    <td>@member.UserName</td>
+                    <td>@Html.ActionLink(member.UserName, "Member", "User", new { id = member.UserId }, null)</td>
                     <td>@member.EmailAddress</td>
                     <td>
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-primary" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset" style="margin-left:10px;">
+                            <span class="fa fa-key">
+                                @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
+                            </span>
+                        </button>
+
+                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-success" title="Promote to Admin" style=" margin-left:10px;">
+                            <span class="fa fa-angle-double-up">
+                                @Html.ActionLink("Promote", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
+                            </span>
+                        </button>
+
+                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-info" title="Edit Permissions" style=" margin-left: 10px;">
+                            <span class="fa fa-file-text-o">
+                                @Html.ActionLink("Permissions", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
+                            </span>
+                        </button>
+
+                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group" style="margin-left:10px;">
+                            <span class="fa fa-times-circle">
+                                @Html.ActionLink("Remove", "RemoveFromGroup", "Group", new { uId = @member.UserId, guId = @member.CurrentGroupId }, null)
+                            </span>
+                        </button>
                     </td>
                 </tr>
             }
