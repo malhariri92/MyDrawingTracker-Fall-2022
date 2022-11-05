@@ -40,7 +40,7 @@ namespace MDT.Controllers
         private List<Draw> GetDraws()
         {
             return db.Draws
-                .Where(d => d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId) && d.EndDateTime > DateTime.Now)
+                .Where(d => d.DrawType.GroupId == group.GroupId && d.EndDateTime > DateTime.Now)
                 .ToList();
         }
        

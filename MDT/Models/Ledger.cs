@@ -23,7 +23,7 @@ namespace MDT.Models
             this.PendingTo = new HashSet<PendingTransaction>();
             this.PendingFrom = new HashSet<PendingTransaction>();
             this.Groups = new HashSet<Group>();
-            this.GroupDrawTypes = new HashSet<GroupDrawType>();
+            this.DrawTypes = new HashSet<DrawType>();
         }
     
         public int LedgerId { get; set; }
@@ -45,6 +45,6 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Group> Groups { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
+        public virtual ICollection<DrawType> DrawTypes { get; set; }
     }
 }

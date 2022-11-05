@@ -471,7 +471,7 @@ namespace MDT.Controllers
         {
             UserDTO user = (UserDTO)Session["User"];
             int GroupId = user?.CurrentGroupId ?? -1;
-            List<DrawType> dts = db.DrawTypes.Where(dt => dt.GroupDrawTypes.Any(gdt => gdt.GroupId == GroupId))
+            List<DrawType> dts = db.DrawTypes.Where(dt => dt.GroupId == GroupId)
                                              .Include(dt => dt.UserDrawTypeOptions)
                                              .Include(dt => dt.UserDrawTypeOptions.Select(udto => udto.User))
                                              .Include(dt => dt.Schedules)

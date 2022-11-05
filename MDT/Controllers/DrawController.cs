@@ -38,13 +38,24 @@ namespace MDT.Controllers
         [AdminFilter(Role = "Admin")]
         public ActionResult EditDrawType(DrawTypeVM vm)
         {
-            DrawType dt = db.DrawTypes.Find(vm.DrawTypeId) ?? new DrawType();
+            DrawType dt = db.DrawTypes.Find(vm.DrawTypeId) ?? new DrawType()
+            {
+                GroupId = group.GroupId,
+                Ledger = new Ledger()
+                {
+                    GroupId = group.GroupId,
+                    LedgerName = vm.TypeName,
+                    Balance = 0.0m
+                }
+            };
+
             if (vm.DrawTypeId > 0)
             {
                 vm.TypeName = dt.DrawTypeName;
                 ModelState.Clear();
                 TryValidateModel(vm);
             }
+
             if (ModelState.IsValid)
             {
                 dt.DrawTypeName = vm.TypeName;
@@ -63,35 +74,9 @@ namespace MDT.Controllers
                 dt.NumberOfDraws = vm.NumberOfDraws;
                 dt.InitialUserBalance = vm.InitialUserBalance;
 
-                if (dt.DrawTypeId == 0)
-                {
-                    db.Entry(dt).State = EntityState.Added;
-                    Ledger gl = new Ledger()
-                    {
-                        GroupId = group.GroupId,
-                        LedgerName = dt.DrawTypeName,
-                        Balance = 0.0m
-                    };
+                db.Entry(dt).State = dt.DrawTypeId == 0 ? EntityState.Added : EntityState.Modified;
+                db.SaveChanges();
 
-                    db.Entry(gl).State = EntityState.Added;
-                    db.SaveChanges();
-
-                    GroupDrawType gdt = new GroupDrawType()
-                    {
-                        DrawTypeId = dt.DrawTypeId,
-                        IsActive = true,
-                        GroupId = group.GroupId,
-                        LedgerId = gl.LedgerId
-                    };
-
-                    db.Entry(gdt).State = EntityState.Added;
-                }
-                else
-                {
-                    db.Entry(dt).State = EntityState.Modified;
-                }
-
-                
                 if (vm.HasSchedule)
                 {
                     for (int i = 0; i < vm.Schedule.Days.Count; i++)
@@ -102,7 +87,7 @@ namespace MDT.Controllers
                         {
                             Schedule sch = new Schedule()
                             {
-                                DrawTypeId = vm.DrawTypeId,
+                                DrawTypeId = dt.DrawTypeId,
                                 DayOfWeek = i,
                                 Time = schedule.DrawTime.Value
                             };
@@ -122,7 +107,7 @@ namespace MDT.Controllers
                 }
                 else
                 {
-                    db.Schedules.RemoveRange(db.Schedules.Where(s => s.DrawTypeId == vm.DrawTypeId));
+                    db.Schedules.RemoveRange(db.Schedules.Where(s => s.DrawTypeId == dt.DrawTypeId));
                 }
 
                 db.SaveChanges();
@@ -175,7 +160,6 @@ namespace MDT.Controllers
         {
             Draw draw = db.Draws.Where(d => d.DrawId == vm.DrawId)
                               .Include(d => d.DrawType)
-                              .Include(d => d.DrawType.GroupDrawTypes)
                               .Include(d => d.DrawOption)
                               .FirstOrDefault();
 
@@ -184,20 +168,19 @@ namespace MDT.Controllers
                 TempData["Error"] = "Draw not found";
                 return RedirectToAction("Index", "Home");
             }
-            else
+
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(vm);
-                }
-
-                draw = new Draw()
-                {
-                    DrawTypeId = vm.DrawTypeId
-                };
-
-                draw.DrawOption = new DrawOption();
+                return View(vm);
             }
+
+            draw = new Draw()
+            {
+                DrawTypeId = vm.DrawTypeId,
+                DrawCode = WebManager.GetUniqueKey(6)
+            };
+
+            draw.DrawOption = new DrawOption();
 
             draw.EndDateTime = vm.EndDate;
             draw.DrawOption.AutoDraw = vm.AutoDraw;
@@ -223,7 +206,6 @@ namespace MDT.Controllers
         {
             Draw draw = db.Draws.Where(d => d.DrawId == vm.DrawId)
                               .Include(d => d.DrawType)
-                              .Include(d => d.DrawType.GroupDrawTypes)
                               .Include(d => d.DrawOption)
                               .FirstOrDefault();
 
@@ -232,15 +214,15 @@ namespace MDT.Controllers
                 TempData["Error"] = "Draw not found";
                 return RedirectToAction("Index", "Home");
             }
-            else
-            {
 
+            if (vm.DrawId == 0)
+            {
                 draw = new Draw()
                 {
                     DrawTypeId = vm.DrawTypeId
                 };
-
             }
+
 
             draw.EndDateTime = vm.EndDate;
 
@@ -248,7 +230,7 @@ namespace MDT.Controllers
             db.SaveChanges();
 
 
-
+            vm = GetDrawVM(vm.DrawId);
             return View("ViewDraw", vm);
         }
 
@@ -261,6 +243,24 @@ namespace MDT.Controllers
                 draw.StartDateTime = DateTime.Now;
                 db.Entry(draw).State = EntityState.Modified;
                 db.SaveChanges();
+
+                DrawType dt = draw.DrawType;
+                if (dt.AllowAllocation)
+                {
+                    foreach (UserDrawTypeOption udto in dt.UserDrawTypeOptions.Where(o => o.MaxPlay > 0))
+                    {
+                        if (GetDrawEntries(draw.DrawId, udto.UserId, dt.LedgerId, udto.MaxPlay))
+                        {
+                            ViewBag.Entries = (List<DrawEntry>)TempData["Entries"];
+                            TempData.Remove("Entries");
+                        }
+                        else
+                        {
+                            ViewBag.Error = (string)TempData["Error"];
+                            TempData.Remove("Error");
+                        }
+                    }
+                }
             }
 
             return PartialView("DrawRules", GetDrawVM(draw?.DrawId ?? 0));
@@ -404,6 +404,108 @@ namespace MDT.Controllers
                 return PartialView(vm);
             }
             return PartialView("Nope");
+        }
+
+
+        public ActionResult JoinDrawType(int id)
+        {
+            DrawType dt = db.DrawTypes.Find(id);
+            if (dt == null || dt.GroupId != group.GroupId)
+            {
+                return View("Error");
+            }
+            UserDrawTypeOption udto = GetUserDrawTypeOption(id, user.UserId);
+            if (!dt.JoinConfirmationRequired)
+            {
+                //udto.IsApproved = true;
+                db.Entry(udto).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return PartialView("DrawTypeRules");
+        }
+        public ActionResult UpdateAllocation(int id)
+        {
+            DrawType dt = db.DrawTypes.Find(id);
+            if (dt == null || dt.GroupId != group.GroupId)
+            {
+                return View("Error");
+            }
+
+            ViewBag.Users = GetDdl(db.GroupUsers);
+
+            AllocationVM vm = new AllocationVM(GetUserDrawTypeOption(id, user.UserId), GetUserBalance(dt.LedgerId, user.UserId));
+            return PartialView(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateAllocation(AllocationVM vm)
+        {
+            DrawType dt = db.DrawTypes.Find(vm.DrawTypeId);
+            if (dt == null || dt.GroupId != group.GroupId)
+            {
+                return PartialView("Error");
+            }
+
+            if (!WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+            {
+                vm.UserId = user.UserId;
+            }
+
+            Balance source = GetUserBalance(vm.Amount > 0 ? group.AccountBalanceLedgerId : dt.LedgerId, vm.UserId);
+            Balance destination = GetUserBalance(vm.Amount > 0 ? dt.LedgerId : group.AccountBalanceLedgerId, vm.UserId);
+            vm.Amount = Math.Abs(vm.Amount);
+
+            if (!BalanceAvailable(source.LedgerId, vm.UserId, vm.Amount))
+            {
+                return PartialView("Error");
+            }
+
+            UserDrawTypeOption option = GetUserDrawTypeOption(vm.DrawTypeId, vm.UserId);
+
+            option.PlayAll = vm.Join;
+            option.MaxPlay = dt.MaxEntriesPerUser == 0 ? vm.EntriesPerDrawing : dt.MaxEntriesPerUser > vm.EntriesPerDrawing ? vm.EntriesPerDrawing : dt.MaxEntriesPerUser;
+            db.Entry(option).State = EntityState.Modified;
+            if (vm.Amount != 0 && CreateTransaction(vm.UserId, 8, vm.Amount, source.LedgerId, true, destination.LedgerId, true))
+            {
+                if (option.MaxPlay > 0)
+                {
+                    List<Draw> Draws = db.Draws.Where(d => d.DrawTypeId == dt.DrawTypeId && d.StartDateTime != null && d.EndDateTime < DateTime.Now).OrderBy(d => d.EndDateTime).ToList();
+                    Dictionary<Draw, List<DrawEntry>> NewEntries = new Dictionary<Draw, List<DrawEntry>>();
+                    Dictionary<Draw, string> Errors = new Dictionary<Draw, string>();
+                    foreach (Draw draw in Draws)
+                    {
+                        int entryCount = draw.DrawEntries.Where(e => e.UserId == vm.UserId).Count();
+                        int maxEntries = draw.DrawOption.MaxEntriesPerUser == 0 ? option.MaxPlay : draw.DrawOption.MaxEntriesPerUser > option.MaxPlay ? option.MaxPlay : draw.DrawOption.MaxEntriesPerUser;
+
+                        if (entryCount < maxEntries)
+                        {
+                            if (GetDrawEntries(draw.DrawId, vm.UserId, dt.LedgerId, maxEntries - entryCount))
+                            {
+                                NewEntries.Add(draw, (List<DrawEntry>)TempData["Entries"]);
+                                TempData.Remove("Entries");
+                            }
+                            else
+                            {
+                                Errors.Add(draw, (string)TempData["Error"]);
+                                TempData.Remove("Error");
+                            }
+                        }
+                    }
+
+                    ViewBag.Errors = Errors;
+                    ViewBag.Entries = NewEntries;
+                }
+            }
+            else
+            {
+                ViewBag.Error = TempData["Error"];
+                TempData.Remove("Error");
+                return PartialView();
+            }
+
+            return PartialView();
         }
     }
 }

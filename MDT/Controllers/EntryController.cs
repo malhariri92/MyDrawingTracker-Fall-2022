@@ -46,167 +46,18 @@ namespace MDT.Controllers
         public ActionResult AddEntries(int drawId, int drawTypeId, int userId, int entryCount, int entryId)
         {
 
-            DrawEntry drawEntry = db.DrawEntries.Where(de => de.EntryId == entryId)
-                   .Include(de => de.Draw)
-                   .Include(de => de.User)
-                   .FirstOrDefault();
-            if (drawEntry == null)
+            if (GetDrawEntries(drawId, userId, group.AccountBalanceLedgerId, entryCount))
             {
-                drawEntry = new DrawEntry();
-                drawEntry.DrawId = drawId;
-                drawEntry.UserId = userId;
-                drawEntry.EntryCode = WebManager.GetUniqueKey(6);
-                db.Entry(drawEntry).State = EntityState.Added;
-                db.SaveChanges();
-                drawEntry = db.DrawEntries.Where(de => de.EntryId == drawEntry.EntryId)
-                    .Include(de => de.Draw)
-                    .Include(de => de.User)
-                    .FirstOrDefault();
+                ViewBag.Entries = (List<DrawEntry>)TempData["Entries"];
+                TempData.Remove("Entries");
             }
-            EntryVM vm = new EntryVM(drawEntry);
-
-            if (!ModelState.IsValid)
+            else
             {
-                System.Diagnostics.Debug.WriteLine("ModelState invalid in AddEntries");
-                return PartialView(vm);
+                ViewBag.Error = (string)TempData["Error"];
+                TempData.Remove("Error");
             }
-
-            try
-            {
-                DrawType drawType = db.DrawTypes.Find(drawTypeId);
-                if (drawType == null)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Could not find proper drawing. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-
-                if (drawType.MaxEntriesPerUser != 0 && drawType.MaxEntriesPerUser < entryCount)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "You are attempting to purchase more entries than allowed (" + drawType.MaxEntriesPerUser + ")";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-
-                GroupDrawType gdt = db.GroupDrawTypes.Where(g => g.DrawTypeId == drawTypeId && g.GroupId == user.CurrentGroupId).FirstOrDefault();
-                if (gdt == null)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Could not find your group draw type. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-                if (!gdt.IsActive)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Inactive group draw type. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-                Balance userBalance = db.Balances.Where(b => b.UserId == userId && (drawType.IsolateBalance ? b.LedgerId == gdt.LedgerId : b.LedgerId == group.AccountBalanceLedgerId)).FirstOrDefault();
-                if (userBalance == null)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Could not find your balance. Please contact your administrator.";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-                decimal totalCost = (decimal)entryCount * drawType.EntryCost;
-                if (totalCost > userBalance.CurrentBalance)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "Not enough funds";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-
-                decimal limit = drawType.InitialUserBalance - ((decimal)drawType.MaxEntriesPerUser * drawType.EntryCost);
-                if ((userBalance.CurrentBalance - totalCost) < limit)
-                {
-                    vm.Success = false;
-                    vm.Error = true;
-                    vm.Message = "You are attempting to purchase more entries than allowed (" + drawType.MaxEntriesPerUser + ")";
-                    DrawEntry remove = db.DrawEntries.Find(vm.EntryId);
-                    if (remove != null)
-                    {
-                        db.Entry(remove).State = EntityState.Deleted;
-                        db.SaveChanges();
-                    }
-                    return PartialView(vm);
-                }
-
-                Transaction newTransaction = new Transaction
-                {
-                    TransactionTypeId = 6,
-                    Amount = totalCost,
-                    UserId = user.UserId,
-                    GroupId = group.GroupId,
-                    TransactionDateTime = DateTime.Now,
-                    DrawId = drawId,
-                    SourceLedger = group.AccountBalanceLedgerId,
-                    DestinationLedger = gdt.LedgerId
-                };
-                db.Entry(newTransaction).State = EntityState.Added;
-                db.SaveChanges();
-
-
-                userBalance.CurrentBalance = userBalance.CurrentBalance - totalCost;
-                db.Entry(userBalance).State = EntityState.Modified;
-                Ledger drawTypeLedger = db.Ledgers.Find(gdt.LedgerId);
-                drawTypeLedger.Balance += totalCost;
-                db.Entry(drawTypeLedger).State = EntityState.Modified;
-                db.SaveChanges();
-
-            }
-            catch (Exception ex)
-            {
-                vm.Success = false;
-                vm.Error = true;
-                vm.Message = "User Entry Exception: \n" + ex.Message;
-                return PartialView(vm);
-            }
-
-            vm.Success = true;
-            vm.Error = false;
-            return PartialView(vm);
+           
+            return PartialView();
         }
 
         [AdminFilter(Role = "Admin")]
@@ -241,33 +92,9 @@ namespace MDT.Controllers
         [AdminFilter(Role = "Admin")]
         public void RemoveEntry(int id = 0)
         {
-            DrawEntry entry = db.DrawEntries.Find(id);
-
-            if (entry != null)
+            if (RemoveDrawEntries(new List<int>() { id }, true))
             {
-                Draw draw = db.Draws.Find(entry.DrawId);
-                Ledger drawledger = db.GroupDrawTypes.Find(group.GroupId, draw.DrawTypeId).Ledger;
-                Balance balance = db.Balances.Find(group.AccountBalanceLedgerId,entry.UserId);
 
-                balance.CurrentBalance += draw.DrawType.EntryCost;
-
-                Transaction trans = new Transaction()
-                {
-                    DestinationLedger = group.AccountBalanceLedgerId,
-                    GroupId = group.GroupId,
-                    SourceLedger = drawledger.LedgerId,
-                    Amount = draw.DrawType.EntryCost,
-                    DrawId = entry.DrawId,
-                    TransactionDateTime = DateTime.Now,
-                    TransactionTypeId = 7,
-                    UserId = entry.UserId,
-                };
-                drawledger.Balance -= draw.DrawType.EntryCost;
-                db.Entry(drawledger).State = EntityState.Modified;
-                db.Entry(balance).State = EntityState.Modified;
-                db.Entry(trans).State = EntityState.Added;
-                db.Entry(entry).State = EntityState.Deleted;
-                db.SaveChanges();
             }
         }
 
@@ -283,82 +110,18 @@ namespace MDT.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Query the database for relevant objects we need.
-            Draw draw = db.Draws.Find(vm.DrawId);
-            Balance balance = db.Balances.Where(b => b.UserId == vm.UserId).FirstOrDefault();
-
-            // Get the total cost of the transaction
-            decimal totalCost = vm.EntryCount * draw.DrawType.EntryCost;
-
-            //Add the list of possible users to ViewBag.
-            GetUsersList();
-
-            // Check if the number of entries is not negative and if the selected user has enough balance.
-            if (balance == null || balance.CurrentBalance < totalCost)
+            if (GetDrawEntries(vm.DrawId, vm.UserId, group.AccountBalanceLedgerId, vm.EntryCount))
             {
-                ViewBag.tooMuch = true;
-                return View(vm);
+                ViewBag.Entries = (List<DrawEntry>)TempData["Entries"];
+                TempData.Remove("Entries");
             }
-            else if (vm.EntryCount <= 0)
+            else
             {
-                ViewBag.isNeg = true;
-                GetUsersList();
-                return View(vm);
+                ViewBag.Error = (string)TempData["Error"];
+                TempData.Remove("Error");
             }
 
-            // Find the user associated with the entry.
-            User user = db.Users.Find(vm.UserId);
-
-            // Constant int that points towards the correct transaction type id.
-            const int transType = 6;
-
-            // Create the transaction.
-            Transaction trans = new Transaction()
-            {
-                SourceLedger = 1,
-                DestinationLedger = 1,
-                Amount = totalCost,
-                TransactionDateTime = DateTime.Now,
-                DrawId = draw.DrawId,
-                UserId = user.UserId,
-                TransactionTypeId = transType,
-            };
-
-            // Set the state of the transaction to added.
-            db.Entry(trans).State = EntityState.Added;
-
-            // Subtract the total cost of the entry purchase from the balance object and set its entity state to modified.
-            balance.CurrentBalance -= totalCost;
-            db.Entry(balance).State = EntityState.Modified;
-
-            /* Loop through vm.EntryCount number of times, creating a new DrawEntry object with a unique key with a length of 6.
-               Set the new DrawEntry object's state to Added*/
-            for (int i = 0; i < vm.EntryCount; i++)
-            {
-                DrawEntry entry = new DrawEntry()
-                {
-                    EntryCode = WebManager.GetUniqueKey(6),
-                    DrawId = draw.DrawId,
-                    UserId = user.UserId,
-                };
-
-                db.Entry(entry).State = EntityState.Added;
-            }
-
-            // Save the accumulated changes made to the database.
-            db.SaveChanges();
-
-            // All entries have been added to the database, display a success message to the admin.
-            ViewBag.SuccessMessage =
-                $"Successfully added {vm.EntryCount} entries for the user {user.UserName}!";
-
-            // Return to the view again.
-            return View(new EntryVM()
-            {
-                DrawId = draw.DrawId,
-                GameName = draw.DrawType.DrawTypeName,
-                EntryCount = 1,
-            });
+            return View(vm);
         }
 
         private void GetUsersList()
@@ -376,7 +139,7 @@ namespace MDT.Controllers
         private List<int> GetAvailableDrawIds(int DrawId)
         {
             return db.Draws
-                .Where(d => d.DrawId == DrawId && d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId))
+                .Where(d => d.DrawId == DrawId && d.DrawType.GroupId == group.GroupId)
                 .Select(d => d.DrawId)
                 .ToList();
         }

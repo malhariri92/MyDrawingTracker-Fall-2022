@@ -87,7 +87,7 @@ namespace MDT.ViewModels
         /// <summary>
         /// Create DrawTypeVM from DrawType.
         /// </summary>
-        /// <param name="dt">DrawType entity. Must include UserDrawTypeOptions, UserDrawTypeOptions Users, and Schedules</param>
+        /// <param name="dt">DrawType entity. Must include UserDrawTypeOptions, UserDrawTypeOptions Users, Schedules, Draws, and Draw Options</param>
         public DrawTypeVM(DrawType dt) : this()
         {
             if (dt != null)
