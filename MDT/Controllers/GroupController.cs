@@ -387,5 +387,97 @@ namespace MDT.Controllers
 
             return PartialView(vm);
         }
+
+
+        private bool SendReminder(string EmailAddress, int GroupId)
+        {
+            GroupInvite reminding = db.GroupInvites.Find(GroupId, EmailAddress);
+
+            if (reminding != null)
+            {
+                reminding.LastInviteDate = DateTime.Now;
+                db.Entry(reminding).State = EntityState.Modified;
+                db.SaveChanges();
+
+                User targetUser = db.Users.Where(u => u.EmailAddress == EmailAddress).FirstOrDefault();
+
+                Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[Name]]", targetUser?.UserName ?? "" },
+                    { "[[AdminName]]", user.UserName },
+                    { "[[GroupName]]", group.GroupName },
+                    { "[[Code]]", group.AccessCode ?? "" },
+                };
+
+                if (targetUser == null)
+                {
+                    WebManager.SendTemplateEmail($"{reminding.EmailAddress}", 11, variables);
+                }
+                else
+                {
+
+                    WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 12, variables);
+                }
+            }
+            return false;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Promote(int UserId = 0)
+        {
+            PromoteToAdmin(UserId);
+            return RedirectToAction("Members");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PromoteFromUserPage(int UserId = 0)
+        {
+            PromoteToAdmin(UserId);
+            return RedirectToAction("Member", "User", new { id = UserId });
+        }
+
+        /// <summary>
+        /// Promotes a user to an admin.
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns>True when user was promoted to an admin, false otherwise.</returns>
+        private bool PromoteToAdmin(int UserId)
+        {
+            GroupUser usr = db.GroupUsers.Where(gu => gu.UserId == UserId
+                && gu.GroupId == user.CurrentGroupId)
+                .FirstOrDefault();
+            
+            if (usr != null)
+            {
+                if (usr.IsAdmin || usr.IsOwner)
+                {
+                    ViewBag.Error = $"{usr.User.UserName} is already an admin!";
+                    return false;
+                } else if (!usr.IsApproved)
+                {
+                    ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
+                    return false;
+                }
+
+                usr.IsAdmin = true;
+                db.Entry(usr).State = EntityState.Modified;
+                db.SaveChanges();
+                return true;
+            }
+            ViewBag.Error = "That user no longer exists!";
+            return false;
+        }
+
+        private void deleteInvitation(string EmailAddress, int GroupId)
+        {
+            GroupInvite delete = db.GroupInvites.Find(GroupId, EmailAddress);
+            if (delete != null)
+            {
+                db.Entry(delete).State = EntityState.Deleted;
+                db.SaveChanges();
+            }
+        }
     }
 }

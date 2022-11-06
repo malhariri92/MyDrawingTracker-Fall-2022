@@ -1,4 +1,4 @@
-﻿@using MDT.Models
+@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
 @model DrawVM
@@ -64,23 +64,33 @@
                 {
                     <button class="btn btn-sm btn-success" type="button" id="btnResult" @(Model.EndDate > DateTime.Now ? "" : "disabled title=\"Result can be drawn after drawing ends.\"")>Draw Results</button>
 
+                    if (Model.Results == null)
+                    {
+                        <button class="btn btn-sm btn-success" type="button" id="testWinners">Select Winners</button>
+                    }
                 }
             }
             <button class="btn btn-sm btn-success" type="button" id="btnEntryDisplay">Show Entries</button>
         }
         else
         {
-            if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+            if (Model.Results != null)
             {
-                if (Model.EndDate > DateTime.Now)
+                <button class="btn btn-sm btn-info" type="button" id="showWinners">Show Winners</button>
+            }
+            else
+            {
+                if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
                 {
-                    <button class="btn btn-sm btn-success" type="button" id="btnStart">Start Drawing</button>
+                    if (Model.EndDate > DateTime.Now)
+                    {
+                        <button class="btn btn-sm btn-success" type="button" id="btnStart">Start Drawing</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-sm btn-success" type="button" disabled title="Cannot start a draw with an end date that has already passed.">Start Drawing</button>
+                    }
                 }
-                else
-                {
-                    <button class="btn btn-sm btn-success" type="button" disabled title="Cannot start a draw with an end date that has already passed.">Start Drawing</button>
-                }
-
             }
         }
     </div>

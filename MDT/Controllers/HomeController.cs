@@ -287,7 +287,7 @@ namespace MDT.Controllers
                 GroupId = groupMatch.GroupId,
                 UserId = user.UserId,
                 IsAdmin = false,
-                IsApproved = !groupMatch.JoinConfirmationRequired,
+                IsApproved = !groupMatch. JoinConfirmationRequired,
             };
             db.GroupUsers.Add(newGroupUser);
             db.SaveChanges();

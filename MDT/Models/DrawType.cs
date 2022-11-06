@@ -43,6 +43,7 @@ namespace MDT.Models
         public decimal InitialUserBalance { get; set; }
         public bool IsolateBalance { get; set; }
         public bool AllowAllocation { get; set; }
+        public int LedgerId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Draw> Draws { get; set; }
