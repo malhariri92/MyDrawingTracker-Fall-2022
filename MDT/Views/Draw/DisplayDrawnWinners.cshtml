@@ -1,0 +1,23 @@
+﻿@using MDT.Models.DTO
+@using MDT.Models
+@using MDT.ViewModels
+@model List<DrawEntry>
+
+<style>
+    #winnerDisplay {
+        padding: 0 0 0 33%;
+    }
+</style>
+<h2 style="margin: 10px" class="text-center text-success">WINNERS</h2>
+<div id="winnerDisplay">
+    @foreach (DrawEntry winner in Model)
+    {
+        <p id="@winner.EntryId">@winner.User.UserName - Code: @winner.EntryCode</p>
+    }
+</div>
+<div align="center">
+    <button type="button" class="btn btn-primary" style="margin: 10px"
+            onclick="location.href='@Url.Action("ViewDraw", "Draw", new { id = Model[0].DrawId })'">
+        Return
+    </button>
+</div>

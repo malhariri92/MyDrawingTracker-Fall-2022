@@ -466,6 +466,12 @@ namespace MDT.Controllers
             int diffUsers = 0;
             List<int> drawUsers = new List<int>();
             List<DrawEntry> drawEntries = db.DrawEntries.Where(e => e.DrawId == drawId).ToList();
+            List<DrawEntry> winners = new List<DrawEntry>();
+            if (drawEntries.Count == 0)
+            {
+                return PartialView(winners);
+            }
+            string rsltstr = "";
             Draw draw = db.Draws.Find(drawId);
             DrawType drawType = draw.DrawType;
             int numWinners = drawType.EntriesToDraw;
@@ -483,39 +489,65 @@ namespace MDT.Controllers
                 numWinners = diffUsers;
             }
 
-            List<DrawEntry> winners = new List<DrawEntry>();
             while (numWinners > 0)
             {
                 Random rnd = new Random();
                 DrawEntry winner = drawEntries[rnd.Next(drawEntries.Count)];
                 winners.Add(winner);
-                drawEntries.RemoveAll(e => e.UserId == winner.UserId);
-                /*foreach (DrawEntry drawEntry in drawEntries)
+                if (numWinners == 1)
                 {
-                    if (drawEntry.UserId == winner.UserId)
-                    {
-                        drawEntries.Remove(drawEntry);
-                        //db.Entry(drawEntry).State = EntityState.Deleted;
-                    }
-                }*/
+                    rsltstr += winner.User.UserName + ":" + winner.EntryCode;
+                }
+                else
+                {
+                    rsltstr += winner.User.UserName + ":" + winner.EntryCode + "; ";
+                }
+                drawEntries.RemoveAll(e => e.UserId == winner.UserId);
+
                 DrawResult dr = new DrawResult()
                 {
                     DrawId = drawId,
-                    DrawCount = (drawType.EntriesToDraw - numWinners) + 1,
+                    DrawCount = numWinners,
                     EntryId = winner.EntryId,
                     DrawnDateTime = DateTime.Now,
                 };
                 db.Entry(dr).State = EntityState.Added;
-                dr = db.DrawResults.Where(r => r.DrawId == dr.DrawId && r.DrawCount == dr.DrawCount)
+                dr = db.DrawResults.Where(r => r.EntryId == dr.EntryId)
                     .Include(r => r.DrawEntry)
                     .Include(r => r.Draw)
                     .FirstOrDefault();
                 db.SaveChanges();
 
                 numWinners--;
+                System.Diagnostics.Debug.WriteLine(rsltstr);
+            }
+
+            try
+            {
+                draw.Results = rsltstr;
+                db.Entry(draw).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.EntityValidationErrors);
+                System.Diagnostics.Debug.WriteLine("Help");
             }
 
             return PartialView(winners);
+        }
+
+        public ActionResult DisplayDrawnWinners(int drawId)
+        {
+            List<DrawResult> drawResults = db.DrawResults.Where(r => r.DrawId == drawId).ToList();
+            List<DrawEntry> we = new List<DrawEntry>();
+            foreach(DrawResult result in drawResults)
+            {
+                DrawEntry de = db.DrawEntries.Find(result.EntryId);
+                we.Add(de);
+            }
+
+            return PartialView(we);
         }
     }
 }

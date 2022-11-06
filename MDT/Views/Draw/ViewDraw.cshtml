@@ -137,5 +137,12 @@
             $('#popup').modal("show");
             $('#modaldiv').load('@Url.Action("ShowEntries", "Entry", new { drawId = Model.DrawId})');
         });
+
+        $(document).on('click', '#showWinners', function () {
+            $('#modaldiv').empty();
+            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $('#popup').modal("show");
+            $('#modaldiv').load('@Url.Action("DisplayDrawnWinners", "Draw", new {drawId = Model.DrawId})');
+        });
     </script>
 </div>

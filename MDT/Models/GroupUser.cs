@@ -19,6 +19,10 @@ namespace MDT.Models
         public bool IsAdmin { get; set; }
         public bool IsApproved { get; set; }
         public bool IsOwner { get; set; }
+        public bool CanManageUsers { get; set; }
+        public bool CanManageDrawTypes { get; set; }
+        public bool CanManageDrawings { get; set; }
+        public bool CanManageTransactions { get; set; }
     
         public virtual User User { get; set; }
         public virtual Group Group { get; set; }

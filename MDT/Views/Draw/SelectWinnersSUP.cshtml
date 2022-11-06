@@ -3,14 +3,27 @@
 @using MDT.ViewModels
 @model List<DrawEntry>
 
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
-</div>
-@if(Model.Any())
+@if (Model.Any())
 {
-    <h2 class="text-center text-success">Winners</h2>
-    foreach(DrawEntry winner in Model)
-    {
-        <li id="@winner.EntryId">Code: @winner.EntryCode; User: @winner.User.UserName</li>
-    }
+    <h2 class="text-center text-success">THE RESULTS ARE IN</h2>
+    <h3 class="text-center text-success">This draw's winners are:</h3>
+    <div style="padding: 0 0 0 33%; margin-top: 10px">
+        @foreach (DrawEntry winner in Model)
+        {
+        <p id="@winner.EntryId">@winner.User.UserName - Code: @winner.EntryCode</p>
+        }
+    </div>
+    <div align="center">
+        <button type="button" class="btn btn-primary" style="margin: 10px"
+                onclick="location.href='@Url.Action("ViewDraw", "Draw", new { id = Model[0].DrawId })'">
+            Return
+        </button>
+    </div>
+}
+else
+{
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <h2 class="text-center text-warning">NO ENTRIES TO DETERMINE A WINNER</h2>
 }
