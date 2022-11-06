@@ -461,6 +461,37 @@ namespace MDT.Controllers
             return null;
         }
 
+        [AdminFilter(Role = "Admin")]
+        public void SingleWinnerDrawing(DrawVM vm)
+        {
+            var entries= db.DrawEntries.Where(de => de.DrawId == vm.DrawId).ToList();
+            if (entries.Any())
+            {
+                Random r = new Random();
+                int winIndex = r.Next(0, entries.Count);
+                DrawEntry winner = entries[winIndex];
+
+                DrawResult result = new DrawResult()
+                {
+                    DrawId = vm.DrawId,
+                    DrawCount = 1,
+                    EntryId = winner.EntryId,
+                    DrawnDateTime = DateTime.Now,
+                };
+
+                db.DrawResults.Add(result);
+                db.SaveChanges();
+
+                var Drawing = db.Draws.Find(vm.DrawId);
+                Drawing.Results = winner.EntryCode;
+                db.Entry(Drawing).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            //possible error redirect depending on how you plan to implement this?
+        }
+        
+        
         public ActionResult SelectWinnersSUP(int drawId)
         {
             int diffUsers = 0;
@@ -548,6 +579,7 @@ namespace MDT.Controllers
             }
 
             return PartialView(we);
+
         }
     }
 }

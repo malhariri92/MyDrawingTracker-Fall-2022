@@ -1,4 +1,4 @@
-﻿@using MDT.Models
+@using MDT.Models
 @using MDT.Models.DTO
 @model MDT.ViewModels.UserVM
 
@@ -56,6 +56,8 @@
                             @Html.AntiForgeryToken()
                             @Html.Hidden("UserId", Model.UserId)
 
+
+                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions" onclick="loadPermissions(@Model.UserId)">
                             <button type="submit" title="Promote" class="btn btn-sm btn-success">
                                 <span class="fa fa-angle-double-up">
                                     Promote
@@ -64,7 +66,7 @@
                         }
                         <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions">
                             <span class="fa fa-file-text-o">
-                                @Html.ActionLink("Permissions", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
+                                Permissions
                             </span>
                         </button>
                     }
@@ -94,6 +96,15 @@
     <vr />
 </div>
 
+<script type="text/javascript">
+    function loadPermissions(UserId)
+    {
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load(`@Url.Action("Permissions", "User")?UserId=${UserId}`);
+    }
+</script>
 
 <style>
     a{

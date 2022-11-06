@@ -1,4 +1,4 @@
-﻿@using MDT.Models
+@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
 @model DrawVM
@@ -63,6 +63,7 @@
                 if (!Model.AutoDraw)
                 {
                     <button class="btn btn-sm btn-success" type="button" id="btnResult" @(Model.EndDate > DateTime.Now ? "" : "disabled title=\"Result can be drawn after drawing ends.\"")>Draw Results</button>
+
                     if (Model.Results == null)
                     {
                         <button class="btn btn-sm btn-success" type="button" id="testWinners">Select Winners</button>
