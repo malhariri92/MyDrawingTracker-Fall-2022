@@ -1,4 +1,4 @@
-﻿@using MDT.Models
+@using MDT.Models
 @using MDT.Models.DTO
 @model MDT.ViewModels.UserVM
 
@@ -49,16 +49,22 @@
                             </span>
                         </button>
                     }
-
                     else if (!ViewBag.IsAdmin)
                     {
-                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-success" title="Promote to Admin">
-                            <span class="fa fa-angle-double-up">
-                                @Html.ActionLink("Promote", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
-                            </span>
-                        </button>
+                        using (Html.BeginForm("PromoteFromUserPage", "Group", FormMethod.Post, new { @Class = "fa"} ))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("UserId", Model.UserId)
+
 
                         <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions" onclick="loadPermissions(@Model.UserId)">
+                            <button type="submit" title="Promote" class="btn btn-sm btn-success">
+                                <span class="fa fa-angle-double-up">
+                                    Promote
+                                </span>
+                            </button>
+                        }
+                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions">
                             <span class="fa fa-file-text-o">
                                 Permissions
                             </span>
