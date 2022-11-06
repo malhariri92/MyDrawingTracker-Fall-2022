@@ -61,7 +61,7 @@ namespace MDT.Controllers
             return PartialView();
         }
 
-        [AdminFilter(Role = "Admin")]
+        [AdminFilter(Role = "Admin", Permission = "Drawings")]
         public ActionResult AddNewEntry(int DrawId = 0)
         {
             // Get
@@ -124,7 +124,7 @@ namespace MDT.Controllers
             return PartialView("EntryRemoved", entryVM);
         }
 
-        //[AdminFilter(Role = "Admin")]
+        [AdminFilter(Role = "Admin", Permission = "Drawings")]
         public ActionResult RejectRemoval(int id)
         {
             EntryVM entryVM = null;
@@ -156,27 +156,17 @@ namespace MDT.Controllers
         //[AdminFilter(Role = "Admin")]
         public ActionResult RemoveEntry(int id = 0)
         {
-            EntryVM entryVM = null;
-            try
-            {
-                DrawEntry drawEntry = db.DrawEntries.Find(id);
-                entryVM = new EntryVM(drawEntry);
-                if (drawEntry != null)
-                {
-                    Draw draw = db.Draws.Find(drawEntry.DrawId);
-                    Ledger drawledger = db.GroupDrawTypes.Find(group.GroupId, draw.DrawTypeId).Ledger;
-                    Balance balance = db.Balances.Find(group.AccountBalanceLedgerId, drawEntry.UserId);
-
-                    balance.CurrentBalance += draw.DrawType.EntryCost;
             if (RemoveDrawEntries(new List<int>() { id }, true))
             {
 
             }
+
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AdminFilter(Role = "Admin")]
+        [AdminFilter(Role = "Admin", Permission = "Drawings")]
         public ActionResult AddNewEntry(EntryVM vm)
         {
             // Ensure the state of the model is valid.

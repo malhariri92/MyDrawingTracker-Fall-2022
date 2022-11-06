@@ -25,35 +25,8 @@
 </head>
 <body>
     <div id="Banner">
-        <div class="row" id="BannerRow">
-            <div id="LogoBox" class="col-xs-12 col-md-6">
-
-            </div>
-            <div id="InfoBox" class="col-xs-12 col-md-6">
-
-                <div class="row">
-                    <div class="col-xs-0 col-md-6"></div>
-                    <div class="col-xs-12 col-md-6">
-                        @if (user == null)
-                        {
-                            <h2 style="margin-top:unset;">
-                                Anonymous<br />
-                                Unknown
-                            </h2>
-                        }
-                        else
-                        {
-                            <h2 style="margin-top:unset;">
-                                @Html.ActionLink(user.UserName, "Index", "User", null, null)<br />
-                                @group.GroupName @(admin ? "(Admin)" : "")
-                            </h2>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
         @{
-            Html.RenderAction("Nav", "Home");
+            Html.RenderAction("Banner", "Home");
         }
     </div>
     <div class="container body-content">

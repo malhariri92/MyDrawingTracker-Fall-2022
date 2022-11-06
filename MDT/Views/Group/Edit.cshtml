@@ -1,11 +1,8 @@
-﻿@model MDT.ViewModels.GroupOptionsVM
+﻿@model MDT.ViewModels.GroupVM
 
 @{
-    ViewBag.Title = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = $"Edit Info for {Model.GroupName}";
 }
-
-<h2>Edit Group Settings</h2>
 
 
 @using (Html.BeginForm("Edit", "Group", FormMethod.Post))
@@ -16,50 +13,49 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
-        @Html.LabelFor(model => model.GroupName, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.GroupName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.GroupName, new { htmlAttributes = new { @class = "form-control", title="Group Name" } })
             @Html.ValidationMessageFor(model => model.GroupName, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            @Html.EditorFor(modelItem => Model.Descriptions[0].Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Paragraph 1 Heading"} })
-            @Html.ValidationMessageFor(modelItem => Model.Descriptions[0].Title, "", new { @class = "text-danger" })
+            @Html.EditorFor(modelItem => Model.InfoDesc[0].Title, new { htmlAttributes = new { @class = "form-control big-input", title="Heading for first paragraph of group description", placeholder = "Paragraph 1 Heading"} })
+            @Html.ValidationMessageFor(modelItem => Model.InfoDesc[0].Title, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
         
         <div class="col-md-10">
-            @Html.TextAreaFor(modelItem => Model.Descriptions[0].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, placeholder = "Paragraph 1 Text" })
+            @Html.TextAreaFor(modelItem => Model.InfoDesc[0].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, title = "First paragraph of group description", placeholder = "Paragraph 1 Text" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            @Html.EditorFor(modelItem => Model.Descriptions[1].Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Paragraph 2 Heading" } })
-            @Html.ValidationMessageFor(modelItem => Model.Descriptions[1].Title, "", new { @class = "text-danger" })
+            @Html.EditorFor(modelItem => Model.InfoDesc[1].Title, new { htmlAttributes = new { @class = "form-control big-input", title = "Heading for second paragraph of group description", placeholder = "Paragraph 2 Heading" } })
+            @Html.ValidationMessageFor(modelItem => Model.InfoDesc[1].Title, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            @Html.TextAreaFor(modelItem => Model.Descriptions[1].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, placeholder = "Paragraph 2 Text" })
+            @Html.TextAreaFor(modelItem => Model.InfoDesc[1].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, title = "Second paragraph of group description", placeholder = "Paragraph 2 Text" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            @Html.EditorFor(modelItem => Model.Descriptions[2].Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Paragraph 3 Heading" } })
-            @Html.ValidationMessageFor(modelItem => Model.Descriptions[2].Title, "", new { @class = "text-danger" })
+            @Html.EditorFor(modelItem => Model.InfoDesc[2].Title, new { htmlAttributes = new { @class = "form-control big-input", title = "Heading for third paragraph of group description", placeholder = "Paragraph 3 Heading" } })
+            @Html.ValidationMessageFor(modelItem => Model.InfoDesc[2].Title, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            @Html.TextAreaFor(modelItem => Model.Descriptions[2].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, placeholder = "Paragraph 3 Text" })
+            @Html.TextAreaFor(modelItem => Model.InfoDesc[2].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, title = "Third paragraph of group description", placeholder = "Paragraph 3 Text" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            <input type="submit" class="btn btn-sm btn-info" value="Save" />
-            <input type="button" class="btn btn-sm btn-warning" value="Return" onclick="location.href='@Url.Action("Index", "Group")'" />
+            <input type="button" class="btn btn-sm btn-danger" value="Return" onclick="location.href='@Url.Action("Index", "Group")'" />
+            <input type="submit" class="btn btn-sm btn-success" value="Save" />
         </div>
     </div>
 </div>

@@ -11,6 +11,7 @@ namespace MDT.Models
 {
     public static class WebManager
     {
+        private static RandomNumberGenerator RNG = RandomNumberGenerator.Create();
         internal static string GenerateUserKey(UserPasswordResetSetupVM vm)
         {
             using (var db = new DbEntities())
@@ -35,7 +36,7 @@ namespace MDT.Models
             using (var db = new DbEntities())
             {
                 User user = db.Users.Where(u => u.EmailAddress.Equals(email)).FirstOrDefault();
-                return user == null ? null : new UserDTO(user);
+                return user == null ? null : new UserDTO(db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId && gu.UserId == user.UserId).Include(gu => gu.User).FirstOrDefault());
             }
         }
 
@@ -43,7 +44,8 @@ namespace MDT.Models
         {
             using (var db = new DbEntities())
             {
-                return new UserDTO(db.Users.Where(u => u.UserId == userId).FirstOrDefault());
+                User user = db.Users.Find(userId);
+                return user == null ? null : new UserDTO(db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId && gu.UserId == userId).Include(gu => gu.User).FirstOrDefault());
 
             }
 
@@ -64,6 +66,27 @@ namespace MDT.Models
             using (var db = new DbEntities())
             {
                 return db.GroupUsers.Find(groupId, userId)?.IsAdmin ?? false;
+            }
+        }
+
+        public static bool HasPermission(int groupId, int userId, string permission)
+        {
+            using (var db = new DbEntities())
+            {
+                GroupUser gu = db.GroupUsers.Find(groupId, userId);
+                if (gu?.IsAdmin ?? false)
+                {
+                    return true;
+                }
+                switch (permission.ToLower())
+                {
+                    case "users": return gu?.CanManageUsers ?? false;
+                    case "drawtypes": return gu?.CanManageDrawTypes ?? false;
+                    case "drawings": return gu?.CanManageDrawings ?? false;
+                    case "transactions": return gu?.CanManageTransactions ?? false;
+                    default: return false;
+                }
+
             }
         }
 
@@ -142,13 +165,12 @@ namespace MDT.Models
 
         internal static string RandomString(int l)
         {
-            Random r = new Random();
             string rand = "";
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
             for (int i = 0; i < l; i++)
             {
-                int index = r.Next(chars.Length);
+                int index = RandomNumber(chars.Length);
 
                 char c = chars[index];
 
@@ -156,6 +178,14 @@ namespace MDT.Models
             }
 
             return rand;
+        }
+
+        internal static int RandomNumber(int max)
+        {
+            byte[] b = new byte[4];
+            RNG.GetBytes(b);
+            decimal d = BitConverter.ToUInt32(b, 0) / (decimal)UInt32.MaxValue;
+            return (int)(max * d);
         }
     }
 }

@@ -19,27 +19,58 @@ namespace MDT.Models.DTO
         public string SourceLedgerName { get; set; }
         public int DestinationLedger { get; set; }
         public string DestinationLedgerName { get; set; }
+        public bool IsPending { get; set; }
+
+        public TransactionDTO()
+        {
+
+        }
 
         /// <summary>
         /// Create a TransactionDTO from a Transaction entity
         /// </summary>
-        /// <param name="transaction">Transaction entity, must include TransactionType, User, FromLedger, and ToLedger</param>
-       public TransactionDTO(Transaction transaction = null)
+        /// <param name="t">Transaction entity, must include TransactionType, User, FromLedger, and ToLedger</param>
+       public TransactionDTO(Transaction t)
         {
-            if (transaction !=null)
+            if (t !=null)
             {
-                TransactionId = transaction.TransactionId;
-                TransactionTypeId = transaction.TransactionTypeId;
-                TransactionTypeName = transaction.TransactionType.TypeName;
-                UserId = transaction.UserId;
-                UserName = transaction.User.UserName;
-                Amount = transaction.Amount;
-                TransactionDateTime = transaction.TransactionDateTime;
-                DrawId = transaction.DrawId;
-                SourceLedger = transaction.SourceLedger;
-                SourceLedgerName = transaction.FromLedger.LedgerName;
-                DestinationLedger = transaction.DestinationLedger;
-                DestinationLedgerName = transaction.ToLedger.LedgerName;
+                TransactionId = t.TransactionId;
+                TransactionTypeId = t.TransactionTypeId;
+                TransactionTypeName = t.TransactionType.TypeName;
+                UserId = t.UserId;
+                UserName = t.User.UserName;
+                Amount = t.Amount;
+                TransactionDateTime = t.TransactionDateTime;
+                DrawId = t.DrawId;
+                SourceLedger = t.SourceLedger;
+                SourceLedgerName = t.FromLedger.LedgerName;
+                DestinationLedger = t.DestinationLedger;
+                DestinationLedgerName = t.ToLedger.LedgerName;
+                IsPending = false;
+            }
+        }
+
+        /// <summary>
+        /// Create a TransactionDTO from a PendingTransaction entity
+        /// </summary>
+        /// <param name="pt">PendingTransaction entity, must include TransactionType, User, FromLedger, and ToLedger</param>
+        public TransactionDTO(PendingTransaction pt)
+        {
+            if (pt != null)
+            {
+                TransactionId = pt.PendingTransactionId;
+                TransactionTypeId = pt.TransactionTypeId;
+                TransactionTypeName = pt.TransactionType.TypeName;
+                UserId = pt.UserId;
+                UserName = pt.User.UserName;
+                Amount = pt.Amount;
+                TransactionDateTime = pt.TransactionDateTime;
+                DrawId = pt.DrawId;
+                SourceLedger = pt.SourceLedger;
+                SourceLedgerName = pt.FromLedger.LedgerName;
+                DestinationLedger = pt.DestinationLedger;
+                DestinationLedgerName = pt.ToLedger.LedgerName;
+                IsPending = true;
             }
         }
     }

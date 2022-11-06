@@ -1,24 +1,32 @@
-﻿@using MDT.Models.DTO
+﻿@using MDT.Models
+@using MDT.Models.DTO
 @using MDT.ViewModels
-@using MDT.Models
-@model List<PendingTransactionVM>
+@model TransactionListVM
 
 @{
-    ViewBag.title = "Transactions";
-    Layout = "~/Views/Shared/_Layout.cshtml";
     UserDTO user = (UserDTO)Session["User"];
     GroupDTO group = (GroupDTO)Session["Group"];
+    bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
 }
 
 
-@if (Model.Any())
+<h2>
+    Pending Transactions
+    @if (!admin)
+    {
+        <button type="button" class="btn btn-xs btn-success btnModal" title="Report a Transaction" data-action="@Url.Action("ReportNewTransaction", "Transaction", null, null)"><span class="fa fa-plus-circle"></span></button>
+    }
+</h2>
+@if (Model.PendingTransactions.Any())
 {
-    <h2 class="text-center">Transaction History</h2>
     <div>
-        <table id="transactions_table" class="table table-bordered">
+        <table id="tblPending" class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Username</th>
+                    @if (admin)
+                    {
+                        <th>User</th>
+                    }
                     <th>Transaction Type</th>
                     <th>Amount</th>
                     <th>Date</th>
@@ -28,25 +36,31 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (PendingTransactionVM transaction in Model)
+                @foreach (TransactionDTO pt in Model.PendingTransactions)
                 {
                     <tr>
-                        <td>@transaction.UserName</td>
-                        <td>@transaction.TransactionTypeName</td>
-                        <td>$@transaction.Amount</td>
-                        <td>@transaction.TransactionDateTime</td>
-                        <td>@transaction.SourceLedgerName</td>
-                        <td>@transaction.DestinationLedgerName</td>
+                        @if (admin)
+                        {
+                            <td>@pt.UserName</td>
+                        }
+                        <td>@pt.TransactionTypeName</td>
+                        <td>$@pt.Amount</td>
+                        <td>@pt.TransactionDateTime</td>
+                        <td>@pt.SourceLedgerName</td>
+                        <td>@pt.DestinationLedgerName</td>
                         <td>
                             <input type="submit" class="btn btn-sm" value="Approve" onclick="location.href='@Url.Action("AcceptTransaction", "Transaction",
-                                                                                                           new {pendTransactionId = transaction.PendingTransactionId})'" />
+                                                                                                           new {pendTransactionId = pt.TransactionId})'" />
                         </td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
-                    <th>Username</th>
+                    @if (admin)
+                    {
+                        <th>User</th>
+                    }
                     <th>Transaction Type</th>
                     <th>Amount</th>
                     <th>Date</th>
@@ -59,11 +73,8 @@
 }
 else
 {
-    <h1 class="text-center">No Transactions</h1>
+    <h2 class="text-center">No pending transactions found</h2>
 }
-<div class="col-md-10">
-    <input type="button" class="btn btn-lg btn-danger" value="Return" onclick="location.href='@Url.Action("Index", "Transaction")'" />
-</div>
 
 <script src="~/Scripts/jquery.dataTables.min.js"></script>
 <script src="~/Scripts/dataTables.searchPanes.min.js"></script>
@@ -73,16 +84,15 @@ else
 <link rel="stylesheet" type="text/css" href="~/Content/searchPanes.dataTables.min.css" />
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#transactions_table tfoot th').each(function () {
+    $(function () {
+        $('#tblPending tfoot th').each(function () {
             var title = $(this).text();
             $(this).html('<input type="text" placeholder="Search ' + title + '" />');
         });
 
-        $('#transactions_table').DataTable();
-        var transactionTable = $('#transaction_table').DataTable();
+        var pendingTable = $('#tblPending').DataTable();
 
-        transactionTable.columns().every(function () {
+        pendingTable.columns().every(function () {
             var that = this;
 
             $('input', this.footer()).on('keyup change', function () {

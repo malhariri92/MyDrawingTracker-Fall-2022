@@ -5,7 +5,7 @@
 </div>
 <div class="modal-body">
     <div class="row">
-        @using (Ajax.BeginForm("SendInvite", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "modaldiv" }))
+        @using (Ajax.BeginForm("NewInvite", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "invites" }))
         {
             @Html.AntiForgeryToken()
             <div class="form-horizontal">

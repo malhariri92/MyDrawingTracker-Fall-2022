@@ -31,6 +31,7 @@ namespace MDT.Controllers
             List<GroupVM> vm = db.Groups.Where(g => g.IsApproved == null)
                                         .Include(g => g.GroupUsers)
                                         .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                        .Include(g => g.GroupInvites)
                                         .ToList()
                                         .Select(g => new GroupVM(g))
                                         .ToList();
@@ -85,7 +86,7 @@ namespace MDT.Controllers
 
         public ActionResult Reject(int id)
         {
-            GroupVM vm = new GroupVM(GetGroup(id));
+            GroupVM vm = GetGroupVM(id);
             return PartialView(vm);
         }
 
@@ -128,7 +129,7 @@ namespace MDT.Controllers
                     { "[[RejectReason]]", desc.TextBody},
                 };
 
-            WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
+            WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 5, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
             return RedirectToAction("Index");

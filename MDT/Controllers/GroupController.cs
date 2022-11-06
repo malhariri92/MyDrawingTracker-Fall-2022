@@ -17,113 +17,20 @@ namespace MDT.Controllers
 
         public ActionResult Index()
         {
-            GroupOptionsVM vm = new GroupOptionsVM(db.Groups.Where(g => group.GroupId == g.GroupId).FirstOrDefault());
-            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectId == group.GroupId && d.ObjectTypeId == 1).ToList());
-            return View(vm);
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public ActionResult Members()
-        {
-            GroupVM vm = new GroupVM(GetGroup(user.CurrentGroupId));
+            GroupVM vm = GetGroupVM(user.CurrentGroupId);
             return View(vm);
         }
 
         [AdminFilter(Role = "Admin")]
         public ActionResult Edit()
         {
-            GroupOptionsVM vm = new GroupOptionsVM(db.Groups.Where(g => group.GroupId == g.GroupId).FirstOrDefault());
-            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectId == group.GroupId && d.ObjectTypeId == 1).ToList());
+            GroupVM vm = GetGroupVM(user.CurrentGroupId);
             return View(vm);
-        }
-
-        public ActionResult GroupIndex()
-        {
-            UserDTO user = (UserDTO)Session["User"];
-            GroupDTO group = (GroupDTO)Session["Group"];
-            if (!WebManager.IsGroupAdmin(group.GroupId, user.UserId))
-            {
-                return RedirectToAction("Index", "User");
-            }
-
-            if (group.JoinConfirmationRequired)
-            {
-                List<User> users = db.Users.Where(u => u.CurrentGroupId == group.GroupId && !u.IsActive).ToList();
-                ViewBag.users = users;
-            }
-
-            return View();
-        }
-
-        [HttpPost]
-        [AdminFilter(Role = "Admin")]
-        public ActionResult Reject(UserVM vm)
-        {
-            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, vm.UserId);
-            if (targetUser != null)
-            {
-                db.Entry(targetUser).State = EntityState.Deleted;
-                db.SaveChanges();
-            }
-
-            return View();
-        }
-
-        [HttpPost]
-        [AdminFilter(Role = "Admin")]
-        public ActionResult Approve(UserVM vm)
-        {
-            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, vm.UserId);
-
-            if (targetUser != null)
-            {
-                targetUser.IsApproved = true;
-                db.Entry(targetUser).State = EntityState.Modified;
-                db.SaveChanges();
-
-                Dictionary<string, string> variables = new Dictionary<string, string>()
-                {
-                    { "[[UserName]]", targetUser.User.UserName },
-                    { "[[GroupName]]", group.GroupName },
-                };
-
-                WebManager.SendTemplateEmail($"{targetUser.User.EmailAddress}\t{targetUser.User.UserName}", 9, variables);
-            }
-            return View();
-        }
-
-
-        public ActionResult RemoveFromGroup(int uId, int guId)
-        {
-            try
-            {
-                GroupUser targetUser = db.GroupUsers.Find(group.GroupId, uId);
-                if (targetUser != null)
-                {
-                    db.Entry(targetUser).State = EntityState.Deleted;
-                    db.SaveChanges();
-                }
-            }
-            catch { }
-
-            return RedirectToAction("Members", "Group");
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public ActionResult InviteList()
-        {
-            return PartialView(db.GroupInvites.Where(gI => gI.GroupId == group.GroupId).ToList());
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public ActionResult InviteForm()
-        {
-            return PartialView();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(GroupOptionsVM vm)
+        public ActionResult Edit(GroupVM vm)
         {
             if (ModelState.IsValid)
             {
@@ -131,16 +38,16 @@ namespace MDT.Controllers
                 grp.GroupName = vm.GroupName;
                 db.Entry(grp).State = EntityState.Modified;
                 Description d1 = db.Descriptions.Find(1, group.GroupId, 1) ?? new Description() { ObjectTypeId = 1, ObjectId = group.GroupId, SortOrder = 1, IsNew = true };
-                d1.Title = vm.Descriptions[0].Title;
-                d1.TextBody = vm.Descriptions[0].TextBody;
+                d1.Title = vm.InfoDesc[0].Title;
+                d1.TextBody = vm.InfoDesc[0].TextBody;
                 db.Entry(d1).State = d1.IsNew ? EntityState.Added : EntityState.Modified;
                 Description d2 = db.Descriptions.Find(1, group.GroupId, 2) ?? new Description() { ObjectTypeId = 1, ObjectId = group.GroupId, SortOrder = 2, IsNew = true };
-                d2.Title = vm.Descriptions[1].Title;
-                d2.TextBody = vm.Descriptions[1].TextBody;
+                d2.Title = vm.InfoDesc[1].Title;
+                d2.TextBody = vm.InfoDesc[1].TextBody;
                 db.Entry(d2).State = d2.IsNew ? EntityState.Added : EntityState.Modified;
                 Description d3 = db.Descriptions.Find(1, group.GroupId, 3) ?? new Description() { ObjectTypeId = 1, ObjectId = group.GroupId, SortOrder = 3, IsNew = true };
-                d3.Title = vm.Descriptions[2].Title;
-                d3.TextBody = vm.Descriptions[2].TextBody;
+                d3.Title = vm.InfoDesc[2].Title;
+                d3.TextBody = vm.InfoDesc[2].TextBody;
                 db.Entry(d3).State = d3.IsNew ? EntityState.Added : EntityState.Modified;
                 db.SaveChanges();
 
@@ -159,35 +66,190 @@ namespace MDT.Controllers
             db.SaveChanges();
         }
 
-
-        [AdminFilter(Role = "Admin")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult SendInvite(GroupInvite grpInvite)
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult Members()
         {
-            GroupInvite dBGroupInvite =
-            db.GroupInvites.Where(gI => grpInvite.EmailAddress == gI.EmailAddress && group.GroupId == gI.GroupId).FirstOrDefault();
+            GroupVM vm = GetGroupVM(user.CurrentGroupId);
+            return View(vm);
+        }
 
-            User targetUser = db.Users.Where(u => u.EmailAddress == grpInvite.EmailAddress).FirstOrDefault();
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult GroupMembers()
+        {
+            return PartialView(GetGroupVM(group.GroupId));
+        }
 
-            Models.Group dbGroup = db.Groups.Where(g => g.GroupId == group.GroupId).FirstOrDefault();
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult GroupPending()
+        {
+            return PartialView(GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult GroupInvites()
+        {
+            return PartialView(GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult Remove(int id)
+        {
+            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, id);
 
             if (targetUser != null)
             {
-                if (db.GroupUsers.Where(gU => gU.UserId == targetUser.UserId && gU.GroupId == dbGroup.GroupId).FirstOrDefault() != null)
+                if (!targetUser.IsApproved)
                 {
-                    return PartialView("ExistingInGroup", targetUser);
+                    ViewBag.Error = "Cannot remove a pending member";
+                }
+                else
+                {
+                    if (targetUser.IsOwner)
+                    {
+                        ViewBag.Error = "Cannot remove the group owner";
+                    }
+                    else
+                    {
+                        db.Entry(targetUser).State = EntityState.Deleted;
+                        db.SaveChanges();
+                        ViewBag.Message = $"{targetUser.User.UserName} has been removed";
+                    }
+                }
+            }
+            return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult TriggerPasswordReset(int id)
+        {
+            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, id);
+            if (targetUser == null)
+            {
+                ViewBag.Error = $"Cannot trigger the password reset for a user that is not in this group.";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+            }
+
+            UserPasswordResetSetupVM vm = new UserPasswordResetSetupVM();
+
+            vm.UserId = targetUser.UserId;
+            vm.UserEmail = targetUser.User.EmailAddress;
+
+            string key = WebManager.GenerateUserKey(vm);
+            if (key != null)
+            {
+                Dictionary<string, string> variables = new Dictionary<string, string>()
+                {
+                    { "[[AdminName]]", user.UserName},
+                    { "[[GroupName]]", group.GroupName},
+                    { "[[Key]]", key},
+                    { "[[Name]]", targetUser.User.UserName },
+                };
+
+
+                if (WebManager.SendTemplateEmail($"{targetUser.User.EmailAddress}\t{targetUser.User.UserName}", 13, variables))
+                {
+                    ViewBag.Message = $"Password reset email has been sent to {targetUser.User.EmailAddress}";
+                }
+                else
+                {
+                    ViewBag.Error = $"Error sending password reset email to {targetUser.User.EmailAddress}. Please try again.";
                 }
             }
 
-            if (dBGroupInvite == null)
+            return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult Approve(int id)
+        {
+            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, id);
+
+            if (targetUser != null)
             {
-                grpInvite.LastInviteDate = DateTime.Now;
-                grpInvite.GroupId = group.GroupId;
-                grpInvite.InviteCount = 1;
-                db.Entry(grpInvite).State = EntityState.Added;
-                db.SaveChanges();
+                if (targetUser.IsApproved)
+                {
+                    ViewBag.Error = "Cannot approve an existing member";
+                }
+                else
+                {
+                    targetUser.IsApproved = true;
+                    db.Entry(targetUser).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    Dictionary<string, string> variables = new Dictionary<string, string>()
+                    {
+                        { "[[UserName]]", targetUser.User.UserName },
+                        { "[[GroupName]]", group.GroupName },
+                    };
+
+                    WebManager.SendTemplateEmail($"{targetUser.User.EmailAddress}\t{targetUser.User.UserName}", 9, variables);
+                    ViewBag.Message = $"{targetUser.User.UserName} has been approved";
+                    ViewBag.RefreshGroupMembers = true;
+                }
             }
+            return PartialView("GroupPending", GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult Reject(int id)
+        {
+            GroupUser targetUser = db.GroupUsers.Find(group.GroupId, id);
+            if (targetUser != null)
+            {
+                if (targetUser.IsApproved)
+                {
+                    ViewBag.Error = "Cannot reject an existing member";
+                }
+                else
+                {
+                    string name = targetUser.User.UserName;
+                    db.Entry(targetUser).State = EntityState.Deleted;
+                    db.SaveChanges();
+                    ViewBag.Message = $"{name} has been rejected";
+                }
+            }
+
+            return PartialView("GroupPending", GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult NewInvite()
+        {
+            return PartialView();
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult NewInvite(GroupInvite vm)
+        {
+            GroupInvite invite = db.GroupInvites.Find(group.GroupId, vm.EmailAddress);
+            if (invite != null)
+            {
+                ViewBag.Error = $"{invite.EmailAddress} has already been invited to this group.";
+                return PartialView("GroupInvites", GetGroupVM(group.GroupId));
+            }
+
+            GroupUser gu = db.GroupUsers.Where(u => u.GroupId == group.GroupId && u.User.EmailAddress.Equals(vm.EmailAddress, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            if (gu != null)
+            {
+                ViewBag.Error = $"{gu.User.UserName} is already a {(gu.IsApproved ? "" : "pending ")} member of this group.";
+                return PartialView("GroupInvites", GetGroupVM(group.GroupId));
+            }
+
+            UserDTO targetUser = WebManager.GetUserDTOByEmail(vm.EmailAddress);
+
+            invite = new GroupInvite()
+            {
+                GroupId = group.GroupId,
+                EmailAddress = vm.EmailAddress,
+                LastInviteDate = DateTime.Now,
+                InviteCount = 1
+            };
+
+
+            db.Entry(invite).State = EntityState.Added;
+            db.SaveChanges();
 
             Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
@@ -198,84 +260,78 @@ namespace MDT.Controllers
                 };
 
 
-            if (targetUser == null)
+            if (WebManager.SendTemplateEmail(targetUser == null ? $"{invite.EmailAddress}" : $"{targetUser.EmailAddress}\t{targetUser.UserName}", targetUser == null ? 11 : 12, variables))
             {
-                WebManager.SendTemplateEmail($"{grpInvite.EmailAddress}", 6, variables);
+                ViewBag.Message = $"Invitation reminder has been sent to {invite.EmailAddress}";
             }
             else
             {
 
-                WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 10, variables);
+                ViewBag.Error = $"Error sending invitation reminder to {invite.EmailAddress}. Please try again.";
             }
 
-            return PartialView(grpInvite);
+            ViewBag.Message = $"An invite has been sent to {vm.EmailAddress}.";
+            return PartialView("GroupInvites", GetGroupVM(group.GroupId));
 
         }
 
-        [HttpPost]
-        [AdminFilter(Role = "Admin")]
-        [ValidateAntiForgeryToken]
-        public ActionResult TriggerPasswordReset(string email)
+        [AdminFilter(Role = "Admin", Permission = "Users")]
+        public ActionResult SendReminder(string email)
         {
+            GroupInvite invite = db.GroupInvites.Find(group.GroupId, email);
+            if (invite == null)
+            {
+                ViewBag.Error = $"{invite.EmailAddress} has not been invited to this group yet.";
+                return PartialView("GroupInvites", GetGroupVM(group.GroupId));
+            }
+
+            invite.LastInviteDate = DateTime.Now;
+            db.Entry(invite).State = EntityState.Modified;
+            db.SaveChanges();
 
             UserDTO targetUser = WebManager.GetUserDTOByEmail(email);
-            UserPasswordResetSetupVM vm = new UserPasswordResetSetupVM();
 
-            vm.UserId = targetUser.UserId;
-            vm.UserEmail = targetUser.EmailAddress;
-
-            string key = WebManager.GenerateUserKey(vm);
-            if (key != null)
-            {
-                Dictionary<string, string> variables = new Dictionary<string, string>()
+            Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
-                    { "[[AdminName]]", user.UserName},
-                    { "[[GroupName]]", group.GroupName},
-                    { "[[Key]]", key},
-                    { "[[Name]]", targetUser.UserName },
+                    { "[[Name]]", targetUser?.UserName ?? "" },
+                    { "[[AdminName]]", user.UserName },
+                    { "[[GroupName]]", group.GroupName },
+                    { "[[Code]]", group.AccessCode ?? "" },
                 };
 
-
-                if (WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 13, variables))
-                {
-                    vm.Success = true;
-                }
-                else
-                {
-                    vm.Error = true;
-                }
-            }
-
-            return RedirectToAction("Index", "Group");
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public ActionResult SendReminder(GroupInvite grpInvite)
-        {
-            bool sent = SendReminder(grpInvite.EmailAddress, group.GroupId);
-            Session["sent"] = sent;
-            if (!sent)
+            if (WebManager.SendTemplateEmail(targetUser == null ? $"{invite.EmailAddress}" : $"{targetUser.EmailAddress}\t{targetUser.UserName}", targetUser == null ? 11 : 12, variables))
             {
-                return PartialView("EmailFailed");
+                ViewBag.Message = $"Invitation reminder has been sent to {email}";
             }
-            return PartialView(grpInvite);
+            else
+            {
+
+                ViewBag.Error = $"Error sending invitation reminder to {email}. Please try again.";
+            }
+
+            return PartialView("GroupInvites", GetGroupVM(group.GroupId));
         }
 
-        [HttpPost]
-        [AdminFilter(Role = "Admin")]
-        public ActionResult ConfirmDelete(GroupInvite grpInvite)
-        {
-            return PartialView("ConfirmDelete", grpInvite);
-        }
-
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteInvite(GroupInvite grpInvite)
+        public ActionResult DeleteInvite(string email)
         {
 
-            deleteInvitation(grpInvite.EmailAddress, group.GroupId);
+            GroupInvite invite = db.GroupInvites.Find(group.GroupId, email);
+            if (invite == null)
+            {
+                ViewBag.Error = $"Cannot delete invite. {invite.EmailAddress} has not been invited to this group yet.";
+                return PartialView("GroupInvites", GetGroupVM(group.GroupId));
+            }
 
-            return PartialView(grpInvite);
+            else
+            {
+                db.Entry(invite).State = EntityState.Deleted;
+                db.SaveChanges();
+
+                ViewBag.Message = $"Invitation for {email} has been deleted and is no longer valid";
+            }
+
+            return PartialView("GroupInvites", GetGroupVM(group.GroupId));
         }
 
         public ActionResult CreateNew()
@@ -330,50 +386,6 @@ namespace MDT.Controllers
             db.SaveChanges();
 
             return PartialView(vm);
-        }
-
-
-        private bool SendReminder(string EmailAddress, int GroupId)
-        {
-            GroupInvite reminding = db.GroupInvites.Find(GroupId, EmailAddress);
-
-            if (reminding != null)
-            {
-                reminding.LastInviteDate = DateTime.Now;
-                db.Entry(reminding).State = EntityState.Modified;
-                db.SaveChanges();
-
-                User targetUser = db.Users.Where(u => u.EmailAddress == EmailAddress).FirstOrDefault();
-
-                Dictionary<string, string> variables = new Dictionary<string, string>()
-                {
-                    { "[[Name]]", targetUser?.UserName ?? "" },
-                    { "[[AdminName]]", user.UserName },
-                    { "[[GroupName]]", group.GroupName },
-                    { "[[Code]]", group.AccessCode ?? "" },
-                };
-
-                if (targetUser == null)
-                {
-                    WebManager.SendTemplateEmail($"{reminding.EmailAddress}", 11, variables);
-                }
-                else
-                {
-
-                    WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 12, variables);
-                }
-            }
-            return false;
-        }
-
-        private void deleteInvitation(string EmailAddress, int GroupId)
-        {
-            GroupInvite delete = db.GroupInvites.Find(GroupId, EmailAddress);
-            if (delete != null)
-            {
-                db.Entry(delete).State = EntityState.Deleted;
-                db.SaveChanges();
-            }
         }
     }
 }

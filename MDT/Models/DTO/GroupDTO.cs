@@ -40,11 +40,11 @@ namespace MDT.Models.DTO
                 {
                     if (gu.IsAdmin)
                     {
-                        Admins.Add(new UserDTO(gu.User));
+                        Admins.Add(new UserDTO(gu));
                     }
                     else
                     {
-                        Users.Add(new UserDTO(gu.User));
+                        Users.Add(new UserDTO(gu));
                     }
                 }
 

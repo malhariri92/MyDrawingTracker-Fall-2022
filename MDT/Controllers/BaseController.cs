@@ -33,11 +33,14 @@ namespace MDT.Controllers
             group = (GroupDTO)Session["Group"];
         }
 
+
+
         protected List<Group> GetGroups(List<int> ids)
         {
             return db.Groups.Where(g => ids.Contains(g.GroupId))
                             .Include(g => g.GroupUsers)
                             .Include(g => g.GroupUsers.Select(gu => gu.User))
+                            .Include(g => g.GroupInvites)
                             .ToList();
         }
 
@@ -147,6 +150,18 @@ namespace MDT.Controllers
                         .ToList()
                         .Select(i => new DdlItem(i.DrawId, $"{i.EndDateTime:yyyy-MM-dd HH:mm} ({i.DrawType.DrawTypeName})"))
                         .ToList();
+        }
+
+        protected GroupVM GetGroupVM(int id)
+        {
+            GroupVM vm = new GroupVM(db.Groups.Where(g => id == g.GroupId)
+                                            .Include(g => g.GroupUsers)
+                                            .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                            .Include(g => g.GroupInvites)
+                                            .FirstOrDefault());
+
+            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectId == group.GroupId && new List<int>(){ 1, 5, 6 }.Contains(d.ObjectTypeId)).ToList());
+            return vm;
         }
 
         protected DrawTypeVM GetDrawTypeVM(int id)

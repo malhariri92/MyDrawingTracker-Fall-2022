@@ -40,7 +40,7 @@
         <AssociationConnector Association="DbModel.FK_UserDrawTypeOptions_Users" />
         <EntityTypeShape EntityType="DbModel.SentEmail" Width="1.5" PointX="3" PointY="0.875" />
         <AssociationConnector Association="DbModel.FK_EmailMessages_EmailTemplates" />
-        <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="3" PointY="20.75" />
+        <EntityTypeShape EntityType="DbModel.Group" Width="2.375" PointX="2.625" PointY="20.75" />
         <AssociationConnector Association="DbModel.FK_GroupInvites_Group" />
         <AssociationConnector Association="DbModel.FK_GroupUser_Group" />
         <AssociationConnector Association="DbModel.FK_Ledgers_Group" />

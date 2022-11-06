@@ -1,5 +1,5 @@
-﻿@using MDT.Models.DTO
-@model UserDTO
+﻿@using MDT.Models
+@model User
 @{
     string url = (string)Session["RedirectUrl"];
     Session["RedirectUrl"] = null;
@@ -18,3 +18,9 @@
         }
     </div>
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#Banner').load('@Url.Action("Banner", "Home", null)');
+    });
+</script>

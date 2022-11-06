@@ -80,7 +80,7 @@
           <Property Name="StartDateTime" Type="datetime" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="DrawTypeId" Type="int" Nullable="false" />
-          <Property Name="Results" Type="nvarchar" MaxLength="50" />
+          <Property Name="Results" Type="nvarchar(max)" />
           <Property Name="DrawCode" Type="nvarchar" MaxLength="6" />
         </EntityType>
         <EntityType Name="DrawTypes">
@@ -150,6 +150,10 @@
           <Property Name="IsApproved" Type="bit" Nullable="false" />
           <Property Name="IsAdmin" Type="bit" Nullable="false" />
           <Property Name="IsOwner" Type="bit" Nullable="false" />
+          <Property Name="CanManageUsers" Type="bit" Nullable="false" />
+          <Property Name="CanManageDrawTypes" Type="bit" Nullable="false" />
+          <Property Name="CanManageDrawings" Type="bit" Nullable="false" />
+          <Property Name="CanManageTransactions" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledgers">
           <Key>
@@ -1150,7 +1154,7 @@
           <Property Name="StartDateTime" Type="DateTime" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DrawTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Results" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Results" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DrawCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawEntries" Relationship="DbModel.FK_Entry_Draws" FromRole="Draw" ToRole="DrawEntry" />
           <NavigationProperty Name="DrawOption" Relationship="DbModel.FK_DrawOptions_Draws" FromRole="Draw" ToRole="DrawOption" />
@@ -1194,6 +1198,10 @@
           <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
           <Property Name="IsApproved" Type="Boolean" Nullable="false" />
           <Property Name="IsOwner" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageUsers" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageDrawTypes" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageDrawings" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageTransactions" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledger">
           <Key>
@@ -1941,6 +1949,10 @@
           <EntitySetMapping Name="GroupUsers">
             <EntityTypeMapping TypeName="DbModel.GroupUser">
               <MappingFragment StoreEntitySet="GroupUsers">
+                <ScalarProperty Name="CanManageTransactions" ColumnName="CanManageTransactions" />
+                <ScalarProperty Name="CanManageDrawings" ColumnName="CanManageDrawings" />
+                <ScalarProperty Name="CanManageDrawTypes" ColumnName="CanManageDrawTypes" />
+                <ScalarProperty Name="CanManageUsers" ColumnName="CanManageUsers" />
                 <ScalarProperty Name="IsOwner" ColumnName="IsOwner" />
                 <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
