@@ -80,7 +80,7 @@
           <Property Name="StartDateTime" Type="datetime" />
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="DrawTypeId" Type="int" Nullable="false" />
-          <Property Name="Results" Type="nvarchar" MaxLength="50" />
+          <Property Name="Results" Type="nvarchar(max)" />
           <Property Name="DrawCode" Type="nvarchar" MaxLength="6" />
         </EntityType>
         <EntityType Name="DrawTypes">
@@ -89,7 +89,8 @@
           </Key>
           <Property Name="DrawTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DrawTypeName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="GroupId" Type="int" />
+          <Property Name="GroupId" Type="int" Nullable="false" />
+          <Property Name="LedgerId" Type="int" Nullable="false" />
           <Property Name="EntryCost" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsInternal" Type="bit" Nullable="false" />
@@ -159,6 +160,10 @@
           <Property Name="IsApproved" Type="bit" Nullable="false" />
           <Property Name="IsAdmin" Type="bit" Nullable="false" />
           <Property Name="IsOwner" Type="bit" Nullable="false" />
+          <Property Name="CanManageUsers" Type="bit" Nullable="false" />
+          <Property Name="CanManageDrawTypes" Type="bit" Nullable="false" />
+          <Property Name="CanManageDrawings" Type="bit" Nullable="false" />
+          <Property Name="CanManageTransactions" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Ledgers">
           <Key>
@@ -262,6 +267,7 @@
           <Property Name="PlayAll" Type="bit" Nullable="false" />
           <Property Name="MaxPlay" Type="int" Nullable="false" />
           <Property Name="Priority" Type="int" Nullable="false" />
+          <Property Name="IsApproved" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -400,7 +406,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_DrawTypes_Groups">
-          <End Role="Groups" Type="Self.Groups" Multiplicity="0..1" />
+          <End Role="Groups" Type="Self.Groups" Multiplicity="1" />
           <End Role="DrawTypes" Type="Self.DrawTypes" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Groups">
@@ -408,6 +414,18 @@
             </Principal>
             <Dependent Role="DrawTypes">
               <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawTypes_Ledgers">
+          <End Role="Ledgers" Type="Self.Ledgers" Multiplicity="1" />
+          <End Role="DrawTypes" Type="Self.DrawTypes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledgers">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="DrawTypes">
+              <PropertyRef Name="LedgerId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -825,6 +843,10 @@
             <End Role="Groups" EntitySet="Groups" />
             <End Role="DrawTypes" EntitySet="DrawTypes" />
           </AssociationSet>
+          <AssociationSet Name="FK_DrawTypes_Ledgers" Association="Self.FK_DrawTypes_Ledgers">
+            <End Role="Ledgers" EntitySet="Ledgers" />
+            <End Role="DrawTypes" EntitySet="DrawTypes" />
+          </AssociationSet>
           <AssociationSet Name="FK_EmailMessages_EmailTemplates" Association="Self.FK_EmailMessages_EmailTemplates">
             <End Role="EmailTemplates" EntitySet="EmailTemplates" />
             <End Role="SentEmails" EntitySet="SentEmails" />
@@ -1050,23 +1072,6 @@
             <End Role="EmailTemplate" EntitySet="EmailTemplates" />
             <End Role="SentEmail" EntitySet="SentEmails" />
           </AssociationSet>
-          <EntitySet Name="Groups" EntityType="DbModel.Group" />
-          <AssociationSet Name="FK_GroupInvites_Group" Association="DbModel.FK_GroupInvites_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="GroupInvite" EntitySet="GroupInvites" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GroupUser_Group" Association="DbModel.FK_GroupUser_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="GroupUser" EntitySet="GroupUsers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ledgers_Group" Association="DbModel.FK_Ledgers_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="Ledger" EntitySet="Ledgers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_User_Group" Association="DbModel.FK_User_Group">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="User" EntitySet="Users" />
-          </AssociationSet>
           <EntitySet Name="UniqueKeys" EntityType="DbModel.UniqueKey" />
           <EntitySet Name="VerificationKeys" EntityType="DbModel.VerificationKey" />
           <AssociationSet Name="FK_VerificationKeys_Users" Association="DbModel.FK_VerificationKeys_Users">
@@ -1094,34 +1099,55 @@
             <End Role="User" EntitySet="Users" />
             <End Role="PendingTransaction" EntitySet="PendingTransactions" />
           </AssociationSet>
-          <AssociationSet Name="FK_AccountBalanceLedger" Association="DbModel.FK_AccountBalanceLedger">
-            <End Role="Ledger" EntitySet="Ledgers" />
-            <End Role="Group" EntitySet="Groups" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Transactions_Groups" Association="DbModel.FK_Transactions_Groups">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="Transaction" EntitySet="Transactions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PendingTransactions_Groups" Association="DbModel.FK_PendingTransactions_Groups">
-            <End Role="Group" EntitySet="Groups" />
-            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
-          </AssociationSet>
           <EntitySet Name="GroupDrawTypes" EntityType="DbModel.GroupDrawType" />
           <AssociationSet Name="FK_GroupDrawType_DrawType" Association="DbModel.FK_GroupDrawType_DrawType">
             <End Role="DrawType" EntitySet="DrawTypes" />
-            <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_GroupDrawType_Group" Association="DbModel.FK_GroupDrawType_Group">
-            <End Role="Group" EntitySet="Groups" />
             <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_GroupDrawType_Ledgers" Association="DbModel.FK_GroupDrawType_Ledgers">
             <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
           </AssociationSet>
+          <AssociationSet Name="FK_DrawTypes_Ledgers" Association="DbModel.FK_DrawTypes_Ledgers">
+            <End Role="Ledger" EntitySet="Ledgers" />
+            <End Role="DrawType" EntitySet="DrawTypes" />
+          </AssociationSet>
+          <EntitySet Name="Groups" EntityType="DbModel.Group" />
           <AssociationSet Name="FK_DrawTypes_Groups" Association="DbModel.FK_DrawTypes_Groups">
             <End Role="Group" EntitySet="Groups" />
             <End Role="DrawType" EntitySet="DrawTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GroupDrawType_Group" Association="DbModel.FK_GroupDrawType_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GroupInvites_Group" Association="DbModel.FK_GroupInvites_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="GroupInvite" EntitySet="GroupInvites" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AccountBalanceLedger" Association="DbModel.FK_AccountBalanceLedger">
+            <End Role="Ledger" EntitySet="Ledgers" />
+            <End Role="Group" EntitySet="Groups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_GroupUser_Group" Association="DbModel.FK_GroupUser_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="GroupUser" EntitySet="GroupUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ledgers_Group" Association="DbModel.FK_Ledgers_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="Ledger" EntitySet="Ledgers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_Groups" Association="DbModel.FK_PendingTransactions_Groups">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Groups" Association="DbModel.FK_Transactions_Groups">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Group" Association="DbModel.FK_User_Group">
+            <End Role="Group" EntitySet="Groups" />
+            <End Role="User" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Balance">
@@ -1200,7 +1226,7 @@
           <Property Name="StartDateTime" Type="DateTime" Precision="3" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="DrawTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Results" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Results" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DrawCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawEntries" Relationship="DbModel.FK_Entry_Draws" FromRole="Draw" ToRole="DrawEntry" />
           <NavigationProperty Name="DrawOption" Relationship="DbModel.FK_DrawOptions_Draws" FromRole="Draw" ToRole="DrawOption" />
@@ -1237,8 +1263,10 @@
           <NavigationProperty Name="NumberSets" Relationship="DbModel.DrawNumberSets" FromRole="DrawType" ToRole="NumberSet" />
           <Property Name="IsolateBalance" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_DrawType" FromRole="DrawType" ToRole="GroupDrawType" />
-          <Property Name="GroupId" Type="Int32" />
+          <Property Name="GroupId" Type="Int32" Nullable="false" />
           <Property Name="AllowAllocation" Type="Boolean" Nullable="false" />
+          <Property Name="LedgerId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Ledger" Relationship="DbModel.FK_DrawTypes_Ledgers" FromRole="DrawType" ToRole="Ledger" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="DrawType" ToRole="Group" />
         </EntityType>
         <EntityType Name="EmailTemplate">
@@ -1271,9 +1299,13 @@
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_GroupUser_User" FromRole="GroupUser" ToRole="User" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
           <Property Name="IsApproved" Type="Boolean" Nullable="false" />
           <Property Name="IsOwner" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageUsers" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageDrawTypes" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageDrawings" Type="Boolean" Nullable="false" />
+          <Property Name="CanManageTransactions" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupUser_Group" FromRole="GroupUser" ToRole="Group" />
         </EntityType>
         <EntityType Name="Ledger">
           <Key>
@@ -1286,11 +1318,12 @@
           <NavigationProperty Name="Balances" Relationship="DbModel.FK_Balances_Ledgers" FromRole="Ledger" ToRole="Balance" />
           <NavigationProperty Name="TransactionsTo" Relationship="DbModel.FK_DestinationLedger" FromRole="Ledger" ToRole="Transaction" />
           <NavigationProperty Name="TransactionsFrom" Relationship="DbModel.FK_SourceLedger" FromRole="Ledger" ToRole="Transaction" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_Ledgers_Group" FromRole="Ledger" ToRole="Group" />
           <NavigationProperty Name="PendingTo" Relationship="DbModel.FK_PendingTransactions_DestinationLedger" FromRole="Ledger" ToRole="PendingTransaction" />
           <NavigationProperty Name="PendingFrom" Relationship="DbModel.FK_PendingTransactions_SourceLedger" FromRole="Ledger" ToRole="PendingTransaction" />
-          <NavigationProperty Name="Groups" Relationship="DbModel.FK_AccountBalanceLedger" FromRole="Ledger" ToRole="Group" />
           <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Ledgers" FromRole="Ledger" ToRole="GroupDrawType" />
+          <NavigationProperty Name="DrawTypes" Relationship="DbModel.FK_DrawTypes_Ledgers" FromRole="Ledger" ToRole="DrawType" />
+          <NavigationProperty Name="Groups" Relationship="DbModel.FK_AccountBalanceLedger" FromRole="Ledger" ToRole="Group" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_Ledgers_Group" FromRole="Ledger" ToRole="Group" />
         </EntityType>
         <EntityType Name="NumberSet">
           <Key>
@@ -1366,6 +1399,7 @@
           <Property Name="Priority" Type="Int32" Nullable="false" />
           <NavigationProperty Name="DrawType" Relationship="DbModel.FK_UserDrawTypeOptions_DrawType" FromRole="UserDrawTypeOption" ToRole="DrawType" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_UserDrawTypeOptions_Users" FromRole="UserDrawTypeOption" ToRole="User" />
+          <Property Name="IsApproved" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1388,9 +1422,9 @@
           <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_User" FromRole="User" ToRole="GroupUser" />
           <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_User" FromRole="User" ToRole="Transaction" />
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_Users" FromRole="User" ToRole="UserDrawTypeOption" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_User_Group" FromRole="User" ToRole="Group" />
           <NavigationProperty Name="VerificationKeys" Relationship="DbModel.FK_VerificationKeys_Users" FromRole="User" ToRole="VerificationKey" />
           <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_User" FromRole="User" ToRole="PendingTransaction" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_User_Group" FromRole="User" ToRole="Group" />
         </EntityType>
         <Association Name="FK_Balances_Ledgers">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
@@ -1647,76 +1681,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Group">
-          <Key>
-            <PropertyRef Name="GroupId" />
-          </Key>
-          <Property Name="GroupId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="IsApproved" Type="Boolean" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="AccessCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="JoinConfirmationRequired" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="GroupInvites" Relationship="DbModel.FK_GroupInvites_Group" FromRole="Group" ToRole="GroupInvite" />
-          <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_Group" FromRole="Group" ToRole="GroupUser" />
-          <NavigationProperty Name="Ledgers" Relationship="DbModel.FK_Ledgers_Group" FromRole="Group" ToRole="Ledger" />
-          <NavigationProperty Name="Users" Relationship="DbModel.FK_User_Group" FromRole="Group" ToRole="User" />
-          <Property Name="AllowUserReportedTransactions" Type="Boolean" Nullable="false" />
-          <Property Name="LedgerId" Type="Int32" />
-          <NavigationProperty Name="AccountBalanceLedger" Relationship="DbModel.FK_AccountBalanceLedger" FromRole="Group" ToRole="Ledger" />
-          <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_Groups" FromRole="Group" ToRole="Transaction" />
-          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_Groups" FromRole="Group" ToRole="PendingTransaction" />
-          <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="Group" ToRole="GroupDrawType" />
-          <NavigationProperty Name="DrawTypes" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="Group" ToRole="DrawType" />
-        </EntityType>
-        <Association Name="FK_GroupInvites_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.GroupInvite" Role="GroupInvite" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="GroupInvite">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GroupUser_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.GroupUser" Role="GroupUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="GroupUser">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Ledgers_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
-          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="Ledger">
-              <PropertyRef Name="GroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_User_Group">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.User" Role="User" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
-            </Principal>
-            <Dependent Role="User">
-              <PropertyRef Name="CurrentGroupId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="UniqueKey">
           <Key>
             <PropertyRef Name="KeyLength" />
@@ -1829,6 +1793,113 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="GroupDrawType">
+          <Key>
+            <PropertyRef Name="GroupId" />
+            <PropertyRef Name="DrawTypeId" />
+          </Key>
+          <Property Name="GroupId" Type="Int32" Nullable="false" />
+          <Property Name="DrawTypeId" Type="Int32" Nullable="false" />
+          <Property Name="LedgerId" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="DrawType" Relationship="DbModel.FK_GroupDrawType_DrawType" FromRole="GroupDrawType" ToRole="DrawType" />
+          <NavigationProperty Name="Ledger" Relationship="DbModel.FK_GroupDrawType_Ledgers" FromRole="GroupDrawType" ToRole="Ledger" />
+          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="GroupDrawType" ToRole="Group" />
+        </EntityType>
+        <Association Name="FK_GroupDrawType_DrawType">
+          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="1" />
+          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DrawType">
+              <PropertyRef Name="DrawTypeId" />
+            </Principal>
+            <Dependent Role="GroupDrawType">
+              <PropertyRef Name="DrawTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GroupDrawType_Ledgers">
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
+          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="GroupDrawType">
+              <PropertyRef Name="LedgerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawTypes_Ledgers">
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
+          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="DrawType">
+              <PropertyRef Name="LedgerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Group">
+          <Key>
+            <PropertyRef Name="GroupId" />
+          </Key>
+          <Property Name="GroupId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsApproved" Type="Boolean" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="AccessCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="JoinConfirmationRequired" Type="Boolean" Nullable="false" />
+          <Property Name="AllowUserReportedTransactions" Type="Boolean" Nullable="false" />
+          <Property Name="LedgerId" Type="Int32" />
+          <NavigationProperty Name="DrawTypes" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="Group" ToRole="DrawType" />
+          <NavigationProperty Name="GroupDrawTypes" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="Group" ToRole="GroupDrawType" />
+          <NavigationProperty Name="GroupInvites" Relationship="DbModel.FK_GroupInvites_Group" FromRole="Group" ToRole="GroupInvite" />
+          <NavigationProperty Name="AccountBalanceLedger" Relationship="DbModel.FK_AccountBalanceLedger" FromRole="Group" ToRole="Ledger" />
+          <NavigationProperty Name="GroupUsers" Relationship="DbModel.FK_GroupUser_Group" FromRole="Group" ToRole="GroupUser" />
+          <NavigationProperty Name="Ledgers" Relationship="DbModel.FK_Ledgers_Group" FromRole="Group" ToRole="Ledger" />
+          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_Groups" FromRole="Group" ToRole="PendingTransaction" />
+          <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_Groups" FromRole="Group" ToRole="Transaction" />
+          <NavigationProperty Name="Users" Relationship="DbModel.FK_User_Group" FromRole="Group" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_DrawTypes_Groups">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="DrawType">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GroupDrawType_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="GroupDrawType">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_GroupInvites_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.GroupInvite" Role="GroupInvite" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="GroupInvite">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_AccountBalanceLedger">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="0..1" />
           <End Type="DbModel.Group" Role="Group" Multiplicity="*" />
@@ -1841,14 +1912,26 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Transactions_Groups">
+        <Association Name="FK_GroupUser_Group">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <End Type="DbModel.GroupUser" Role="GroupUser" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Group">
               <PropertyRef Name="GroupId" />
             </Principal>
-            <Dependent Role="Transaction">
+            <Dependent Role="GroupUser">
+              <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Ledgers_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group">
+              <PropertyRef Name="GroupId" />
+            </Principal>
+            <Dependent Role="Ledger">
               <PropertyRef Name="GroupId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1865,64 +1948,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="GroupDrawType">
-          <Key>
-            <PropertyRef Name="GroupId" />
-            <PropertyRef Name="DrawTypeId" />
-          </Key>
-          <Property Name="GroupId" Type="Int32" Nullable="false" />
-          <Property Name="DrawTypeId" Type="Int32" Nullable="false" />
-          <Property Name="LedgerId" Type="Int32" Nullable="false" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="DrawType" Relationship="DbModel.FK_GroupDrawType_DrawType" FromRole="GroupDrawType" ToRole="DrawType" />
-          <NavigationProperty Name="Group" Relationship="DbModel.FK_GroupDrawType_Group" FromRole="GroupDrawType" ToRole="Group" />
-          <NavigationProperty Name="Ledger" Relationship="DbModel.FK_GroupDrawType_Ledgers" FromRole="GroupDrawType" ToRole="Ledger" />
-        </EntityType>
-        <Association Name="FK_GroupDrawType_DrawType">
-          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="1" />
-          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DrawType">
-              <PropertyRef Name="DrawTypeId" />
-            </Principal>
-            <Dependent Role="GroupDrawType">
-              <PropertyRef Name="DrawTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_GroupDrawType_Group">
+        <Association Name="FK_Transactions_Groups">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
-          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
+          <End Type="DbModel.Transaction" Role="Transaction" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Group">
               <PropertyRef Name="GroupId" />
             </Principal>
-            <Dependent Role="GroupDrawType">
+            <Dependent Role="Transaction">
               <PropertyRef Name="GroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_GroupDrawType_Ledgers">
-          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
-          <End Type="DbModel.GroupDrawType" Role="GroupDrawType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Ledger">
-              <PropertyRef Name="LedgerId" />
-            </Principal>
-            <Dependent Role="GroupDrawType">
-              <PropertyRef Name="LedgerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DrawTypes_Groups">
-          <End Type="DbModel.Group" Role="Group" Multiplicity="0..1" />
-          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
+        <Association Name="FK_User_Group">
+          <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+          <End Type="DbModel.User" Role="User" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Group">
               <PropertyRef Name="GroupId" />
             </Principal>
-            <Dependent Role="DrawType">
-              <PropertyRef Name="GroupId" />
+            <Dependent Role="User">
+              <PropertyRef Name="CurrentGroupId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2007,6 +2053,7 @@
           <EntitySetMapping Name="DrawTypes">
             <EntityTypeMapping TypeName="DbModel.DrawType">
               <MappingFragment StoreEntitySet="DrawTypes">
+                <ScalarProperty Name="LedgerId" ColumnName="LedgerId" />
                 <ScalarProperty Name="AllowAllocation" ColumnName="AllowAllocation" />
                 <ScalarProperty Name="GroupId" ColumnName="GroupId" />
                 <ScalarProperty Name="IsolateBalance" ColumnName="IsolateBalance" />
@@ -2052,6 +2099,10 @@
           <EntitySetMapping Name="GroupUsers">
             <EntityTypeMapping TypeName="DbModel.GroupUser">
               <MappingFragment StoreEntitySet="GroupUsers">
+                <ScalarProperty Name="CanManageTransactions" ColumnName="CanManageTransactions" />
+                <ScalarProperty Name="CanManageDrawings" ColumnName="CanManageDrawings" />
+                <ScalarProperty Name="CanManageDrawTypes" ColumnName="CanManageDrawTypes" />
+                <ScalarProperty Name="CanManageUsers" ColumnName="CanManageUsers" />
                 <ScalarProperty Name="IsOwner" ColumnName="IsOwner" />
                 <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
@@ -2129,6 +2180,7 @@
           <EntitySetMapping Name="UserDrawTypeOptions">
             <EntityTypeMapping TypeName="DbModel.UserDrawTypeOption">
               <MappingFragment StoreEntitySet="UserDrawTypeOptions">
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="MaxPlay" ColumnName="MaxPlay" />
                 <ScalarProperty Name="PlayAll" ColumnName="PlayAll" />
@@ -2174,20 +2226,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Groups">
-            <EntityTypeMapping TypeName="DbModel.Group">
-              <MappingFragment StoreEntitySet="Groups">
-                <ScalarProperty Name="LedgerId" ColumnName="LedgerId" />
-                <ScalarProperty Name="AllowUserReportedTransactions" ColumnName="AllowUserReportedTransactions" />
-                <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
-                <ScalarProperty Name="AccessCode" ColumnName="AccessCode" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
-                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
-                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="UniqueKeys">
             <EntityTypeMapping TypeName="DbModel.UniqueKey">
               <MappingFragment StoreEntitySet="UniqueKeys">
@@ -2229,6 +2267,20 @@
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="LedgerId" ColumnName="LedgerId" />
                 <ScalarProperty Name="DrawTypeId" ColumnName="DrawTypeId" />
+                <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Groups">
+            <EntityTypeMapping TypeName="DbModel.Group">
+              <MappingFragment StoreEntitySet="Groups">
+                <ScalarProperty Name="LedgerId" ColumnName="LedgerId" />
+                <ScalarProperty Name="AllowUserReportedTransactions" ColumnName="AllowUserReportedTransactions" />
+                <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
+                <ScalarProperty Name="AccessCode" ColumnName="AccessCode" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
                 <ScalarProperty Name="GroupId" ColumnName="GroupId" />
               </MappingFragment>
             </EntityTypeMapping>

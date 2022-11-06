@@ -19,6 +19,7 @@ namespace MDT.Models
         public bool PlayAll { get; set; }
         public int MaxPlay { get; set; }
         public int Priority { get; set; }
+        public bool IsApproved { get; set; }
     
         public virtual DrawType DrawType { get; set; }
         public virtual User User { get; set; }
