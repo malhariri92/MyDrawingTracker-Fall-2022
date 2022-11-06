@@ -366,6 +366,54 @@ namespace MDT.Controllers
             return false;
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Promote(int UserId = 0)
+        {
+            PromoteToAdmin(UserId);
+            return RedirectToAction("Members");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PromoteFromUserPage(int UserId = 0)
+        {
+            PromoteToAdmin(UserId);
+            return RedirectToAction("Member", "User", new { id = UserId });
+        }
+
+        /// <summary>
+        /// Promotes a user to an admin.
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns>True when user was promoted to an admin, false otherwise.</returns>
+        private bool PromoteToAdmin(int UserId)
+        {
+            GroupUser usr = db.GroupUsers.Where(gu => gu.UserId == UserId
+                && gu.GroupId == user.CurrentGroupId)
+                .FirstOrDefault();
+            
+            if (usr != null)
+            {
+                if (usr.IsAdmin || usr.IsOwner)
+                {
+                    ViewBag.Error = $"{usr.User.UserName} is already an admin!";
+                    return false;
+                } else if (!usr.IsApproved)
+                {
+                    ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
+                    return false;
+                }
+
+                usr.IsAdmin = true;
+                db.Entry(usr).State = EntityState.Modified;
+                db.SaveChanges();
+                return true;
+            }
+            ViewBag.Error = "That user no longer exists!";
+            return false;
+        }
+
         private void deleteInvitation(string EmailAddress, int GroupId)
         {
             GroupInvite delete = db.GroupInvites.Find(GroupId, EmailAddress);

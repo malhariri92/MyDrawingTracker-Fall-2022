@@ -9,6 +9,10 @@
 @if (Model.Admins.Any() || Model.Members.Any())
 {
     <h1>Group Members</h1>
+    if (ViewBag.Error != null)
+    {
+        <div class="text-danger">@ViewBag.Error</div>
+    }
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -60,13 +64,19 @@
                                 @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
                             </span>
                         </button>
-
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-success" title="Promote to Admin" style=" margin-left:10px;">
-                            <span class="fa fa-angle-double-up">
-                                @Html.ActionLink("Promote", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
-                            </span>
-                        </button>
-
+                        <span class="fa">
+                        @using (Html.BeginForm("Promote", "Group", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("UserId", member.UserId)
+                      
+                                <button type="submit" title="Promote" class="btn btn-sm btn-success" style="margin-left:10px;">
+                                    <span class="fa fa-angle-double-up">
+                                        Promote
+                                    </span>
+                                </button>
+                        }
+                        </span>
                         <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-info" title="Edit Permissions" style=" margin-left: 10px;">
                             <span class="fa fa-file-text-o">
                                 @Html.ActionLink("Permissions", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
