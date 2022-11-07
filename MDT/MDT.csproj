@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -203,9 +203,6 @@
     <Compile Include="Models\Group.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\GroupDrawType.cs">
-      <DependentUpon>DbModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\GroupInvite.cs">
       <DependentUpon>DbModel.tt</DependentUpon>
     </Compile>
@@ -253,18 +250,19 @@
     <Compile Include="Models\WebManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AdminUserVM.cs" />
+    <Compile Include="ViewModels\AllocationVM.cs" />
     <Compile Include="ViewModels\GroupNavVM.cs" />
     <Compile Include="ViewModels\DrawOptionsVM.cs" />
     <Compile Include="ViewModels\DrawVM.cs" />
     <Compile Include="ViewModels\EntryVM.cs" />
     <Compile Include="ViewModels\DrawTypeVM.cs" />
-    <Compile Include="ViewModels\GroupOptionsVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
     <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\PendingTransactionVM.cs" />
     <Compile Include="ViewModels\NewGroupVM.cs" />
     <Compile Include="ViewModels\RemoveEntriesVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
+    <Compile Include="ViewModels\TransactionListVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
     <Compile Include="ViewModels\UserDrawEntriesVM.cs" />
     <Compile Include="ViewModels\UserPermissionVM.cs" />
@@ -460,7 +458,6 @@
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
-    <Content Include="Views\Home\Nope.cshtml" />
     <Content Include="Views\Home\CreateUser.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Shared\Nope.cshtml" />
@@ -470,21 +467,13 @@
     <Content Include="Views\Home\UserAccess.cshtml" />
     <Content Include="Views\Home\UnverifiedEmail.cshtml" />
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
-    <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Home\SuccessfulSignIn.cshtml" />
     <Content Include="Views\Group\Edit.cshtml" />
     <Content Include="Views\Home\VerificationEmailSent.cshtml" />
-    <Content Include="Views\Group\GroupIndex.cshtml" />
+    <Content Include="Views\Group\GroupPending.cshtml" />
     <Content Include="Views\Group\Index.cshtml" />
-    <Content Include="Views\Group\InviteList.cshtml" />
-    <Content Include="Views\Group\InviteForm.cshtml" />
-    <Content Include="Views\Group\RemindForm.cshtml" />
-    <Content Include="Views\Group\DeleteForm.cshtml" />
-    <Content Include="Views\Group\SendInvite.cshtml" />
-    <Content Include="Views\Group\SendReminder.cshtml" />
-    <Content Include="Views\Group\ConfirmDelete.cshtml" />
-    <Content Include="Views\Group\DeleteInvite.cshtml" />
-    <Content Include="Views\Group\ExistingInGroup.cshtml" />
-    <Content Include="Views\Group\EmailFailed.cshtml" />
+    <Content Include="Views\Group\GroupInvites.cshtml" />
+    <Content Include="Views\Group\NewInvite.cshtml" />
     <Content Include="Views\Group\Members.cshtml" />
     <Content Include="Views\Transaction\Index.cshtml" />
     <Content Include="Views\Transaction\AddNewTransaction.cshtml" />
@@ -500,7 +489,7 @@
     <Content Include="Views\Entry\GoToEntryForm.cshtml" />
     <Content Include="Views\User\Info.cshtml" />
     <Content Include="Views\Shared\Nav.cshtml" />
-    <Content Include="Views\Transaction\ViewPendingTransactions.cshtml" />
+    <Content Include="Views\Transaction\TransactionsPending.cshtml" />
     <Content Include="Views\Draw\DrawList.cshtml" />
     <Content Include="Views\Entry\AddNewEntry.cshtml" />
     <Content Include="Views\Shared\GroupNav.cshtml" />
@@ -509,6 +498,7 @@
     <Content Include="Views\Draw\DrawTypeRules.cshtml" />
     <Content Include="Views\Draw\ViewDrawType.cshtml" />
     <Content Include="Views\Draw\EditExtDraw.cshtml" />
+    <Content Include="Views\Draw\UpdateAllocation.cshtml" />
     <Content Include="Views\User\Member.cshtml" />
     <Content Include="Views\Draw\ViewEntries.cshtml" />
     <Content Include="Views\Draw\RemoveEntries.cshtml" />
@@ -516,7 +506,10 @@
     <Content Include="Views\Entry\ShowEntries.cshtml" />
     <Content Include="Views\Entry\EntryRemoved.cshtml" />
     <Content Include="Views\Entry\RejectEntryRemoval.cshtml" />
-    <Content Include="Views\User\Permissions.cshtml" />
+    <Content Include="Views\Shared\Banner.cshtml" />
+    <Content Include="Views\Group\GroupMembers.cshtml" />
+    <Content Include="Views\Transaction\Transactions.cshtml" />
+    <Content Include="Views\Group\Permissions.cshtml" />
     <Content Include="Views\Draw\SelectWinnersSUP.cshtml" />
     <Content Include="Views\Draw\DisplayDrawnWinners.cshtml" />
   </ItemGroup>

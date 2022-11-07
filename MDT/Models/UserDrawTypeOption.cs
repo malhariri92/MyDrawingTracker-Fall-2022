@@ -21,7 +21,7 @@ namespace MDT.Models
         public int Priority { get; set; }
         public bool IsApproved { get; set; }
     
-        public virtual DrawType DrawType { get; set; }
         public virtual User User { get; set; }
+        public virtual DrawType DrawType { get; set; }
     }
 }

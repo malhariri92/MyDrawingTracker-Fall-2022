@@ -6,119 +6,39 @@
     UserDTO user = (UserDTO)Session["User"];
 }
 
-@if (Model.Admins.Any() || Model.Members.Any())
-{
-    <h1>Group Members</h1>
-    if (ViewBag.Error != null)
-    {
-        <div class="text-danger">@ViewBag.Error</div>
+<div id="members" class="MemberPanel">
+    @{
+        Html.RenderPartial("GroupMembers", Model);
     }
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email Address</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (UserVM member in Model.Admins)
-            {
-                <tr>
-                    <td>
-                        @Html.ActionLink(@member.UserName, "Member", "User", new { id = @member.UserId }, null) (Admin)
-                    </td>
-                    <td>@member.EmailAddress</td>
-                    <td>
-                        @if (member.UserId != user.UserId && member.UserId != Model.OwnerUserId)
-                        {
-                            <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset" style=" margin-left:10px;">
-                                <span class="fa fa-key">
-                                    @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
-                                </span>
-                            </button>
+</div>
+<hr />
 
-                            <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-dark" title="Demote from Admin" style=" margin-left:10px;">
-                                <span class="fa fa-angle-double-down">
-                                    @Html.ActionLink("Demote", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
-                                </span>
-                            </button>
-
-                            <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group" style=" margin-left:10px;">
-                                <span class="fa fa-times-circle">
-                                    @Html.ActionLink("Remove", "RemoveFromGroup", "Group", new { uId = @member.UserId, guId = @member.CurrentGroupId }, null)
-                                </span>
-                            </button>
-                        }
-                    </td>
-                </tr>
-            }
-            @foreach (UserVM member in Model.Members)
-            {
-                <tr>
-                    <td>@Html.ActionLink(member.UserName, "Member", "User", new { id = member.UserId }, null)</td>
-                    <td>@member.EmailAddress</td>
-                    <td>
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset" style="margin-left:10px;">
-                            <span class="fa fa-key">
-                                @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
-                            </span>
-                        </button>
-
-
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-success" title="Promote to Admin" style=" margin-left:10px;">
-                            <span class="fa fa-angle-double-up">
-                                @Html.ActionLink("Promote", "TriggerPasswordReset", "Group", new { email = @member.EmailAddress }, null)
-                            </span>
-                        </button>
-
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-info" title="Edit Permissions" style=" margin-left: 10px;" onclick="loadPermissions(@member.UserId)">
-
-                        <span class="fa">
-                        @using (Html.BeginForm("Promote", "Group", FormMethod.Post))
-                        {
-                            @Html.AntiForgeryToken()
-                            @Html.Hidden("UserId", member.UserId)
-                      
-                                <button type="submit" title="Promote" class="btn btn-sm btn-success" style="margin-left:10px;">
-                                    <span class="fa fa-angle-double-up">
-                                        Promote
-                                    </span>
-                                </button>
-                        }
-                        </span>
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-info" title="Edit Permissions" style=" margin-left: 10px;">
-                            <span class="fa fa-file-text-o">
-                                Permissions
-                            </span>
-                        </button>
-
-                        <button type="button" data-userid="@member.UserId" class="btn btn-sm btn-danger" title="Remove from Group" style="margin-left:10px;">
-                            <span class="fa fa-times-circle">
-                                @Html.ActionLink("Remove", "RemoveFromGroup", "Group", new { uId = @member.UserId, guId = @member.CurrentGroupId }, null)
-                            </span>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <h1>THERE ARE NO MEMBERS OF THIS GROUP</h1>
-}
+<div id="pending" class="MemberPanel">
+    @{
+        Html.RenderPartial("GroupPending", Model);
+    }
+</div>
+<hr />
+<div id="invites" class="MemberPanel">
+    @{
+        Html.RenderPartial("GroupInvites", Model);
+    }
+</div>
 
 <script type="text/javascript">
-    function loadPermissions(UserId)
-    {
+    $(document).on('click', '.btnModal', function () {
+        let action = $(this).attr('data-action');
         $('#modaldiv').empty();
         $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
         $('#popup').modal("show");
-        $('#modaldiv').load(`@Url.Action("Permissions", "User")?UserId=${UserId}`);
-    }
-</script>
+        $('#modaldiv').load(action);
+    });
 
-@{
-    Html.RenderAction("InviteList", "Group");
-}
+    $(document).on('click', '.btnMember', function () {
+        let div = $(this).closest('.MemberPanel');
+        let action = $(this).attr('data-action');
+        $(div).empty();
+        $(div).append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $(div).load(action);
+    });
+</script>

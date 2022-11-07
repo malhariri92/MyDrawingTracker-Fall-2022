@@ -1,19 +1,19 @@
-@model MDT.ViewModels.GroupOptionsVM
+@model MDT.ViewModels.GroupVM
 @using MDT.Models
 @using MDT.Models.DTO
 
 @{
-    ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    var user = (UserDTO)Session["User"];
-    var group = (GroupDTO)Session["Group"];
+    ViewBag.Title = $"{Model.GroupName}";
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+    bool admin = WebManager.IsGroupAdmin(group.GroupId, user.UserId);
 }
 
 <h1>
 
     @Model.GroupName
 
-    @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+    @if (admin)
     {
 
         <button class="btn btn-xs btn-success" onclick="location.href='@Url.Action("Edit", "Group")'" title="Edit Group Info"><span class="fa fa-pencil"></span></button>
@@ -46,33 +46,19 @@
 
 <div class="form-horizontal">
     <hr />
-    <div class="form-group">
-        <div class="col-md-4">
-            @Html.LabelFor(model => model.AccessCode)
-        </div>
-        <div class="col-md-8">
-            @Html.DisplayFor(model => model.AccessCode)
-        </div>
-    </div>
-    @if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+    <b>Access Code: </b>@Model.AccessCode <br />
+    <b>Members: </b> @if (admin || WebManager.HasPermission(group.GroupId, user.UserId, "Users"))
     {
-        <script type="text/javascript">
-
-            $(document).on('change', '#joinConfirm', function () {
-            let flag = $(this).is(':checked');
-            $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
-            $(function () {
-                $('#JoinConfirmation').bootstrapToggle();
-            });
-
-            $(document).on('change', '#JoinConfirmation', function () {
-                let flag = $(this).is(':checked');
-
-                $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
-            });
-        </script>
+        @Html.ActionLink($"{Model.Admins.Count + Model.Members.Count}", "Members", "Group", null, null) <br />
     }
-    @foreach (Description d in Model.Descriptions)
+    else
+    {
+        <span>@(Model.Admins.Count + Model.Members.Count)</span> <br />
+    }
+
+
+
+    @foreach (Description d in Model.InfoDesc)
     {
         if (!string.IsNullOrEmpty(d.Title))
         {
@@ -86,12 +72,18 @@
 
 </div>
 
+@if (admin)
+{
+    <script type="text/javascript">
 
-        <div class="form-group">
-            <div class="col-md-10">
-                <input type="button" class="btn btn-sm btn-info" value="Edit" onclick="location.href='@Url.Action("Edit", "Group")'" />
-            </div>
-        </div>
-    }
+            $(function () {
+                $('#JoinConfirmation').bootstrapToggle();
+            });
 
+            $(document).on('change', '#JoinConfirmation', function () {
+                let flag = $(this).is(':checked');
 
+                $.get(`@Url.Action("JoinConfirmation", "Group", null, null)?flag=${flag}`);
+            });
+    </script>
+}

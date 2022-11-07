@@ -40,10 +40,10 @@ namespace MDT.Controllers
         private List<Draw> GetDraws()
         {
             return db.Draws
-                .Where(d => d.DrawType.GroupDrawTypes.Any(g => g.GroupId == group.GroupId) && d.EndDateTime > DateTime.Now)
+                .Where(d => d.DrawType.GroupId == group.GroupId && d.EndDateTime > DateTime.Now)
                 .ToList();
         }
-       
+
 
         public ActionResult ChangePass()
         {
@@ -94,7 +94,7 @@ namespace MDT.Controllers
         {
             if (user != null)
             {
-                user = (UserDTO) Session["User"];
+                user = (UserDTO)Session["User"];
                 List<int> ids = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.GroupId).ToList();
                 List<DdlItem> groups = db.Groups.ToList().Where(g => ids.Contains(g.GroupId))
                     .Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
@@ -177,7 +177,6 @@ namespace MDT.Controllers
 
         }
 
-        [HttpGet]
         public ActionResult Member(int id)
         {
             ViewBag.IsOwner = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsOwner == true).Any();
@@ -205,10 +204,12 @@ namespace MDT.Controllers
             if (grp == null)
             {
                 ViewBag.Error = $"No group exists with the access code {AccessCode}!";
-            } else if (db.GroupUsers.Where(gu => gu.UserId == user.UserId && gu.GroupId == grp.GroupId).Any())
+            }
+            else if (db.GroupUsers.Where(gu => gu.UserId == user.UserId && gu.GroupId == grp.GroupId).Any())
             {
                 ViewBag.Error = $"You are already a member of {grp.GroupName}!";
-            } else 
+            }
+            else
             {
                 GroupUser grpUsr = new GroupUser()
                 {
@@ -223,69 +224,16 @@ namespace MDT.Controllers
 
                 db.SaveChanges();
 
-                ViewBag.SuccessMessage = 
-                    grp.JoinConfirmationRequired 
-                    ? $"A request to join {grp.GroupName} has been sent!" 
+                ViewBag.SuccessMessage =
+                    grp.JoinConfirmationRequired
+                    ? $"A request to join {grp.GroupName} has been sent!"
                     : $"You have successfully been added to {grp.GroupName}!";
 
             }
             return PartialView();
         }
 
-        [AdminFilter(Role = "Admin")]
-        public ActionResult Permissions(int UserId)
-        {
-            var GroupUser = db.GroupUsers.Where(gu => gu.GroupId == group.GroupId && gu.UserId == UserId).FirstOrDefault();
-            if (GroupUser == null)
-            {
-                ViewBag.Error = "Error, could not find this user in this group.";
-                RedirectToAction("Members", "Group", null);
-            }
 
-            UserPermissionVM vm = new UserPermissionVM(GroupUser);
-            vm.UserName = db.Users.Where(u => u.UserId == UserId).FirstOrDefault().UserName;
-            return PartialView(vm);
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public void UpdateUserPermission(bool flag, int UserId)
-        {
-            var GroupUser = db.GroupUsers.Where(gu => gu.UserId == UserId && gu.GroupId == group.GroupId).FirstOrDefault();
-
-            GroupUser.CanManageUsers = flag;
-            db.Entry(GroupUser).State = EntityState.Modified;
-            db.SaveChanges();
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public void UpdateDrawTypePermission(bool flag, int UserId)
-        {
-            var GroupUser = db.GroupUsers.Where(gu => gu.UserId == UserId && gu.GroupId == group.GroupId).FirstOrDefault();
-
-            GroupUser.CanManageDrawTypes = flag;
-            db.Entry(GroupUser).State = EntityState.Modified;
-            db.SaveChanges();
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public void UpdateDrawingPermission(bool flag, int UserId)
-        {
-            var GroupUser = db.GroupUsers.Where(gu => gu.UserId == UserId && gu.GroupId == group.GroupId).FirstOrDefault();
-
-            GroupUser.CanManageDrawings = flag;
-            db.Entry(GroupUser).State = EntityState.Modified;
-            db.SaveChanges();
-        }
-
-        [AdminFilter(Role = "Admin")]
-        public void UpdateTransactionPermission(bool flag, int UserId)
-        {
-            var GroupUser = db.GroupUsers.Where(gu => gu.UserId == UserId && gu.GroupId == group.GroupId).FirstOrDefault();
-
-            GroupUser.CanManageTransactions = flag;
-            db.Entry(GroupUser).State = EntityState.Modified;
-            db.SaveChanges();
-        }
 
         private bool CheckCurrentHash(int userId, string str)
         {

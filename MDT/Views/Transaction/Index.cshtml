@@ -1,71 +1,28 @@
 ﻿@using MDT.Models.DTO
 @using MDT.Models
-@model List<TransactionDTO>
+@using MDT.ViewModels
 
+@model TransactionListVM
 @{
-    ViewBag.title = "Transactions";
-    Layout = "~/Views/Shared/_Layout.cshtml";
     UserDTO user = (UserDTO)Session["User"];
     GroupDTO group = (GroupDTO)Session["Group"];
+    bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
+    ViewBag.title = $"Transactions for {(admin ? group.GroupName : user.UserName)}";
 }
 
+<div id="transactions">
+    @{
+        Html.RenderPartial("Transactions", Model);
+    }
+</div>
+<hr />
+<div id="pending">
+    @{
+        Html.RenderPartial("TransactionsPending", Model);
+    }
+</div>
 
-@if (Model.Any())
-{
-    <h2 class="text-center">Transaction History</h2>
-    <div>
-        <table id="transactions_table" class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Transaction Type</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Source Ledger</th>
-                    <th>Destination Ledger</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (TransactionDTO transaction in Model)
-                {
-                    <tr>
-                        <td>@transaction.UserName</td>
-                        <td>@transaction.TransactionTypeName</td>
-                        <td>$@transaction.Amount</td>
-                        <td>@transaction.TransactionDateTime</td>
-                        <td>@transaction.SourceLedgerName</td>
-                        <td>@transaction.DestinationLedgerName</td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Username</th>
-                    <th>Transaction Type</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Source Ledger</th>
-                    <th>Destination Ledger</th>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-}
-else
-{
-    <h1 class="text-center">No Transactions</h1>
-}
 
-@if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
-{
-    <input type="button" class="btn btn-lg btn-info" value="Add a Transaction" onclick="location.href='@Url.Action("AddNewTransaction", "Transaction")'" />
-    <input type="button" class="btn btn-lg btn-info" value="View Pending Transactions" onclick="location.href='@Url.Action("ViewPendingTransactions", "Transaction")'" />
-}
-
-else
-{
-    <input type="button" class="btn btn-lg btn-info" value="Report a Transaction" onclick="location.href='@Url.Action("ReportNewTransaction", "Transaction")'" />
-}
 
 <script src="~/Scripts/jquery.dataTables.min.js"></script>
 <script src="~/Scripts/dataTables.searchPanes.min.js"></script>
@@ -75,41 +32,12 @@ else
 <link rel="stylesheet" type="text/css" href="~/Content/searchPanes.dataTables.min.css" />
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#transactions_table tfoot th').each(function () {
-            var title = $(this).text();
-            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-        });
-
-        $('#transactions_table').DataTable();
-        var transactionTable = $('#transaction_table').DataTable();
-
-        transactionTable.columns().every(function () {
-            var that = this;
-
-            $('input', this.footer()).on('keyup change', function () {
-                if (that.search() !== this.value) {
-                    that.search(this.value).draw();
-                }
-            });
-        });
-
-        /*var transactionTable = $('#transactions_table').DataTable(
-            {
-                searchPanes:
-                {
-                    viewTotal: true
-                },
-                dom: 'Plfrtip',
-                columnDefs: [
-                    {
-                        searchPanes: {
-                            threshold: 1
-                        },
-                        targets: [0, 1, 2, 3, 4, 5]
-                    }
-                ]
-            }
-        );*/
+    $(document).on('click', '.btnModal', function () {
+        let action = $(this).attr('data-action');
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load(action);
     });
+
 </script>

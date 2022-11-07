@@ -25,7 +25,7 @@
         }
         @if (!Model.Success && !Model.Error)
         {
-            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "userAccess" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
+            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "modaldiv" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
             {
                 <div class="form-horizontal">
                     @Html.AntiForgeryToken()

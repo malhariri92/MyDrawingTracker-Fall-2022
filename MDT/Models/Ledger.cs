@@ -22,9 +22,8 @@ namespace MDT.Models
             this.TransactionsFrom = new HashSet<Transaction>();
             this.PendingTo = new HashSet<PendingTransaction>();
             this.PendingFrom = new HashSet<PendingTransaction>();
-            this.GroupDrawTypes = new HashSet<GroupDrawType>();
-            this.DrawTypes = new HashSet<DrawType>();
             this.Groups = new HashSet<Group>();
+            this.DrawTypes = new HashSet<DrawType>();
         }
     
         public int LedgerId { get; set; }
@@ -38,16 +37,14 @@ namespace MDT.Models
         public virtual ICollection<Transaction> TransactionsTo { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> TransactionsFrom { get; set; }
+        public virtual Group Group { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PendingTransaction> PendingTo { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PendingTransaction> PendingFrom { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
+        public virtual ICollection<Group> Groups { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawType> DrawTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Group> Groups { get; set; }
-        public virtual Group Group { get; set; }
     }
 }

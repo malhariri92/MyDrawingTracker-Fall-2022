@@ -1,0 +1,51 @@
+﻿@using MDT.Models
+@using MDT.ViewModels
+@model GroupVM
+
+
+<h2>Group Invitations <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("NewInvite", "Group",null)" title="Invite a new member to the group"><span class="fa fa-plus-circle"></span></button></h2>
+@if (ViewBag.Message != null)
+{
+    <div class="row text-center">
+        <h3 class="text-success">@ViewBag.Message</h3>
+    </div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="row text-center">
+        <h3 class="text-danger">@ViewBag.Error</h3>
+    </div>
+}
+
+
+
+@if (Model.Invites.Count != 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>E-Mail Address</th>
+                <th>Last Invite Sent</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (GroupInvite u in Model.Invites)
+            {
+                <tr>
+                    <td>@u.EmailAddress</td>
+                    <td>@u.LastInviteDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-info btnMember" data-action="@Url.Action("SendReminder", "Group",new { email = u.EmailAddress })" title="Send Reminder"><span class="fa fa-envelope"></span></button>
+                        <button type="button" class="btn btn-sm btn-danger btnMember" data-action="@Url.Action("DeleteInvite", "Group",new { email = u.EmailAddress })" title="Delete Invitation"><span class="fa fa-trash"></span></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>There are no pending invites for this group.</p>
+}

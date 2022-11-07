@@ -1,0 +1,134 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model TransactionListVM
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+    bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
+}
+
+
+<h2>
+    Transaction History
+    @if (admin)
+    {
+        <button type="button" class="btn btn-xs btn-success btnModal" title="Add a Transaction" data-action="@Url.Action("AddNewTransaction", "Transaction", null, null)"><span class="fa fa-plus-circle"></span></button>
+    }
+    
+    
+</h2>
+@if (ViewBag.Message != null)
+{
+    <div class="row text-center">
+        <h3 class="text-success">@ViewBag.Message</h3>
+    </div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="row text-center">
+        <h3 class="text-danger">@ViewBag.Error</h3>
+    </div>
+}
+@if (Model.Transactions.Any())
+{
+    <div class="row">
+        <table id="tblTransactions" class="table table-bordered">
+            <thead>
+                <tr>
+                    @if (admin)
+                    {
+                        <th>User</th>
+                    }
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Source Ledger</th>
+                    <th>Destination Ledger</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (TransactionDTO transaction in Model.Transactions)
+                {
+                    <tr>
+                        @if (admin)
+                        {
+                            <td>@transaction.UserName</td>
+                        }
+                        <td>@transaction.TransactionTypeName</td>
+                        <td>$@transaction.Amount</td>
+                        <td>@transaction.TransactionDateTime</td>
+                        <td>@transaction.SourceLedgerName</td>
+                        <td>@transaction.DestinationLedgerName</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    @if (admin)
+                    {
+                        <th>User</th>
+                    }
+                    <th>Transaction Type</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Source Ledger</th>
+                    <th>Destination Ledger</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+else
+{
+    <h3 class="text-center">No transactions found</h3>
+}
+
+
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/dataTables.searchPanes.min.js"></script>
+<script src="~/Scripts/dataTables.select.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/jquery.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/select.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/searchPanes.dataTables.min.css" />
+
+<script type="text/javascript">
+    $(function () {
+        $('#tblTransactions tfoot th').each(function () {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        });
+
+        var transactionTable = $('#tblTransactions').DataTable();
+
+        transactionTable.columns().every(function () {
+            var that = this;
+
+            $('input', this.footer()).on('keyup change', function () {
+                if (that.search() !== this.value) {
+                    that.search(this.value).draw();
+                }
+            });
+        });
+
+        /*var transactionTable = $('#transactions_table').DataTable(
+            {
+                searchPanes:
+                {
+                    viewTotal: true
+                },
+                dom: 'Plfrtip',
+                columnDefs: [
+                    {
+                        searchPanes: {
+                            threshold: 1
+                        },
+                        targets: [0, 1, 2, 3, 4, 5]
+                    }
+                ]
+            }
+        );*/
+    });
+</script>

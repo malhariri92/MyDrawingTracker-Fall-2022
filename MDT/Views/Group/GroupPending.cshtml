@@ -1,0 +1,61 @@
+﻿@using MDT.ViewModels
+@model GroupVM
+
+
+
+<h2>New Users Requests</h2>
+@if (ViewBag.Message != null)
+{
+    <div class="row text-center">
+        <h3 class="text-success">@ViewBag.Message</h3>
+    </div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="row text-center">
+        <h3 class="text-danger">@ViewBag.Error</h3>
+    </div>
+}
+@if (Model.PendingMembers.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Email Address</th>
+                <th>Approve?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserVM u in Model.PendingMembers)
+            {
+                <tr>
+                    <td>@u.UserName</td>
+                    <td>@u.EmailAddress</td>
+                    <td>
+                        <button type="button" data-action="@Url.Action("Approve", "Group",new { id = u.UserId })" class="btn btn-xs btn-success btnMember" title="Approve this user"><span class="fa fa-check-circle"></span></button>
+                        <button type="submit" data-action="@Url.Action("Reject", "Group",new { id = u.UserId })" class="btn btn-xs btn-danger btnMember" title="Reject this user"><span class="fa fa-times-circle"></span></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h3 class="text-center">No Users need approval.</h3>
+}
+
+
+@if (ViewBag.RefreshGroupMembers ?? false)
+{
+    <script type="text/javascript">
+        $(function () {
+            $('#members').empty();
+            $('#members').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $('#members').load('@Url.Action("GroupMembers", "Group", null, null)');
+        });
+
+    </script>
+}

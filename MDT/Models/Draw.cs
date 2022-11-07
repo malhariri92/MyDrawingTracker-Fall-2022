@@ -39,10 +39,10 @@ namespace MDT.Models
         public virtual ICollection<DrawOption> DrawOptions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawResult> DrawResults { get; set; }
-        public virtual DrawType DrawType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PendingTransaction> PendingTransactions { get; set; }
+        public virtual DrawType DrawType { get; set; }
     }
 }

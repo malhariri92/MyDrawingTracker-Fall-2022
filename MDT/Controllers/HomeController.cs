@@ -68,7 +68,7 @@ namespace MDT.Controllers
                 {
                     SessionSetup(WebManager.GetUserDTO(cred.User.UserId));
 
-                    return PartialView("UserAccess", cred.User);
+                    return PartialView("SuccessfulSignIn", cred.User);
 
                 }
 
@@ -440,7 +440,7 @@ namespace MDT.Controllers
                 db.Entry(u).State = EntityState.Modified;
                 db.SaveChanges();
                 TempData["Message"] = $"Email address {user.EmailAddress} has been verified.";
-                SessionSetup(new UserDTO(u));
+                SessionSetup(new UserDTO(db.GroupUsers.Where(gu => gu.GroupId == u.CurrentGroupId && gu.UserId == u.UserId).Include(gu => gu.User).FirstOrDefault()));
             }
             else
             {
@@ -467,11 +467,25 @@ namespace MDT.Controllers
             return PartialView();
         }
 
+        public ActionResult Banner()
+        {
+            UserDTO user = (UserDTO)Session["User"];
+            if (user != null)
+            {
+                ViewBag.Groups = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.Group).ToList().Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
+            }
+            else
+            {
+                ViewBag.Groups = new List<DdlItem>();
+            }
+            return PartialView();
+        }
+
         public ActionResult GroupNav()
         {
             UserDTO user = (UserDTO)Session["User"];
             int GroupId = user?.CurrentGroupId ?? -1;
-            List<DrawType> dts = db.DrawTypes.Where(dt => dt.GroupDrawTypes.Any(gdt => gdt.GroupId == GroupId))
+            List<DrawType> dts = db.DrawTypes.Where(dt => dt.GroupId == GroupId)
                                              .Include(dt => dt.UserDrawTypeOptions)
                                              .Include(dt => dt.UserDrawTypeOptions.Select(udto => udto.User))
                                              .Include(dt => dt.Schedules)
@@ -517,9 +531,9 @@ namespace MDT.Controllers
             UserDTO user = (UserDTO)Session["User"];
             if (user.CurrentGroupId != groupId && db.GroupUsers.Find(groupId, user.UserId) != null)
             {
-                User u = db.Users.Find(user.UserId);
-                u.CurrentGroupId = groupId;
-                db.Entry(u).State = EntityState.Modified;
+                GroupUser u = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId && gu.UserId == user.UserId).Include(gu => gu.User).FirstOrDefault();
+                u.User.CurrentGroupId = groupId;
+                db.Entry(u.User).State = EntityState.Modified;
                 db.SaveChanges();
                 Session["User"] = new UserDTO(u);
                 Session["Group"] = WebManager.GetGroupDTO(groupId);
