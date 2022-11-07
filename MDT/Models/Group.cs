@@ -17,11 +17,11 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Group()
         {
-            this.DrawTypes = new HashSet<DrawType>();
-            this.GroupDrawTypes = new HashSet<GroupDrawType>();
             this.GroupInvites = new HashSet<GroupInvite>();
             this.GroupUsers = new HashSet<GroupUser>();
             this.Ledgers = new HashSet<Ledger>();
+            this.Users = new HashSet<User>();
+            this.Transactions = new HashSet<Transaction>();
             this.PendingTransactions = new HashSet<PendingTransaction>();
             this.DrawTypes = new HashSet<DrawType>();
         }
@@ -36,18 +36,14 @@ namespace MDT.Models
         public Nullable<int> LedgerId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DrawType> DrawTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupInvite> GroupInvites { get; set; }
-        public virtual Ledger AccountBalanceLedger { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupUser> GroupUsers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Ledger> Ledgers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PendingTransaction> PendingTransactions { get; set; }
+        public virtual ICollection<User> Users { get; set; }
+        public virtual Ledger AccountBalanceLedger { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transaction> Transactions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

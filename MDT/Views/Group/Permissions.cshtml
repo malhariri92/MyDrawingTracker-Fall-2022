@@ -1,0 +1,58 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model  UserPermissionVM
+@{
+    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h2 class="text-center">Permissions for @Html.DisplayFor(model => model.UserName)</h2>
+</div>
+@using (Ajax.BeginForm("Permissions", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "members" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.UserId)
+    <div class="modal-body">
+
+        <div class="form-horizontal">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CanManageUsers, htmlAttributes: new { @class = "control-label col-xs-8" })
+                <div class="col-xs-4">
+                    @Html.EditorFor(model => model.CanManageUsers, new { htmlAttributes = new { @class = "PermissionToggle", data_toggle = "toggle", data_size = "mini", data_off = "No", data_on = "Yes"} })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.CanManageDrawTypes, htmlAttributes: new { @class = "control-label col-xs-8" })
+                <div class="col-xs-4">
+                    @Html.EditorFor(model => model.CanManageDrawTypes, new { htmlAttributes = new { @class = "PermissionToggle", data_toggle = "toggle", data_size = "mini", data_off = "No", data_on = "Yes" } })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.CanManageDrawings, htmlAttributes: new { @class = "control-label col-xs-8" })
+                <div class="col-xs-4">
+                    @Html.EditorFor(model => model.CanManageDrawings, new { htmlAttributes = new { @class = "PermissionToggle", data_toggle = "toggle", data_size = "mini", data_off = "No", data_on = "Yes" } })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.CanManageTransactions, htmlAttributes: new { @class = "control-label col-xs-8" })
+                <div class="col-xs-4">
+                    @Html.EditorFor(model => model.CanManageTransactions, new { htmlAttributes = new { @class = "PermissionToggle", data_toggle = "toggle", data_size = "mini", data_off = "No", data_on = "Yes" } })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-8">
+                <button type="button" class="btn btn-sm btn-success" id="btnSave">Update Permissions</button>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.PermissionToggle').bootstrapToggle();
+    });
+
+</script>

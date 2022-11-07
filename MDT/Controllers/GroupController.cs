@@ -388,96 +388,117 @@ namespace MDT.Controllers
             return PartialView(vm);
         }
 
-
-        private bool SendReminder(string EmailAddress, int GroupId)
+        [AdminFilter(Role = "Admin")]
+        public ActionResult Promote(int id)
         {
-            GroupInvite reminding = db.GroupInvites.Find(GroupId, EmailAddress);
 
-            if (reminding != null)
+            GroupUser usr = db.GroupUsers.Find(group.GroupId, id);
+
+            if (usr == null)
             {
-                reminding.LastInviteDate = DateTime.Now;
-                db.Entry(reminding).State = EntityState.Modified;
-                db.SaveChanges();
-
-                User targetUser = db.Users.Where(u => u.EmailAddress == EmailAddress).FirstOrDefault();
-
-                Dictionary<string, string> variables = new Dictionary<string, string>()
-                {
-                    { "[[Name]]", targetUser?.UserName ?? "" },
-                    { "[[AdminName]]", user.UserName },
-                    { "[[GroupName]]", group.GroupName },
-                    { "[[Code]]", group.AccessCode ?? "" },
-                };
-
-                if (targetUser == null)
-                {
-                    WebManager.SendTemplateEmail($"{reminding.EmailAddress}", 11, variables);
-                }
-                else
-                {
-
-                    WebManager.SendTemplateEmail($"{targetUser.EmailAddress}\t{targetUser.UserName}", 12, variables);
-                }
+                ViewBag.Error = "That user no longer exists!";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
             }
-            return false;
-        }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Promote(int UserId = 0)
-        {
-            PromoteToAdmin(UserId);
-            return RedirectToAction("Members");
-        }
+            if (usr.IsAdmin || usr.IsOwner)
+            {
+                ViewBag.Error = $"{usr.User.UserName} is already an admin!";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult PromoteFromUserPage(int UserId = 0)
-        {
-            PromoteToAdmin(UserId);
-            return RedirectToAction("Member", "User", new { id = UserId });
-        }
-
-        /// <summary>
-        /// Promotes a user to an admin.
-        /// </summary>
-        /// <param name="UserId"></param>
-        /// <returns>True when user was promoted to an admin, false otherwise.</returns>
-        private bool PromoteToAdmin(int UserId)
-        {
-            GroupUser usr = db.GroupUsers.Where(gu => gu.UserId == UserId
-                && gu.GroupId == user.CurrentGroupId)
-                .FirstOrDefault();
+            }
             
-            if (usr != null)
+            if (!usr.IsApproved)
             {
-                if (usr.IsAdmin || usr.IsOwner)
-                {
-                    ViewBag.Error = $"{usr.User.UserName} is already an admin!";
-                    return false;
-                } else if (!usr.IsApproved)
-                {
-                    ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
-                    return false;
-                }
+                ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
 
-                usr.IsAdmin = true;
-                db.Entry(usr).State = EntityState.Modified;
-                db.SaveChanges();
-                return true;
             }
-            ViewBag.Error = "That user no longer exists!";
-            return false;
+
+            usr.IsAdmin = true;
+            db.Entry(usr).State = EntityState.Modified;
+            db.SaveChanges();
+            return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
 
-        private void deleteInvitation(string EmailAddress, int GroupId)
+        [AdminFilter(Role = "Admin")]
+        public ActionResult Demote(int id)
         {
-            GroupInvite delete = db.GroupInvites.Find(GroupId, EmailAddress);
-            if (delete != null)
+
+            GroupUser usr = db.GroupUsers.Find(group.GroupId, id);
+
+            if (usr == null)
             {
-                db.Entry(delete).State = EntityState.Deleted;
-                db.SaveChanges();
+                ViewBag.Error = "That user no longer exists!";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
             }
+
+            if (usr.IsOwner)
+            {
+                ViewBag.Error = $"{usr.User.UserName} cannot be demoted";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+            }
+
+            if (!usr.IsAdmin)
+            {
+                ViewBag.Error = $"{usr.User.UserName} is not an admin";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+            }
+
+            if (!usr.IsApproved)
+            {
+                ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+
+            }
+
+            usr.IsAdmin = false;
+            db.Entry(usr).State = EntityState.Modified;
+            db.SaveChanges();
+            return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+        }
+
+        [AdminFilter(Role = "Admin")]
+        public ActionResult Permissions(int id)
+        {
+            GroupUser gu = db.GroupUsers.Find(group.GroupId,id);
+            if (gu == null)
+            {
+                ViewBag.Error = "Error, could not find this user in this group.";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+            }
+
+            UserPermissionVM vm = new UserPermissionVM(gu);
+            vm.UserName = db.Users.Where(u => u.UserId == id).FirstOrDefault().UserName;
+            return PartialView(vm);
+        }
+
+        [AdminFilter(Role = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Permissions(UserPermissionVM vm)
+        {
+            GroupUser gu = db.GroupUsers.Find(group.GroupId, vm.UserId);
+            if (gu == null)
+            {
+                ViewBag.Error = "Error, could not find this user in this group.";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+            }
+
+            if (gu.IsAdmin || gu.IsOwner)
+            {
+                ViewBag.Error = "Cannot change permissions for this user";
+                return PartialView("GroupMembers", GetGroupVM(group.GroupId));
+            }
+
+            gu.CanManageDrawings = vm.CanManageDrawings;
+            gu.CanManageDrawTypes = vm.CanManageDrawTypes;
+            gu.CanManageTransactions = vm.CanManageTransactions;
+            gu.CanManageUsers = vm.CanManageUsers;
+            db.Entry(gu).State = EntityState.Modified;
+            db.SaveChanges();
+
+            ViewBag.Message = $"Permissions updated for {gu.User.UserName}";
+            return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
     }
 }

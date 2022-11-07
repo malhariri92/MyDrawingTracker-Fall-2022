@@ -34,7 +34,7 @@ namespace MDT.ViewModels
                 CurrentGroupId = u.CurrentGroupId;
                 IsVerified = u.IsVerified;
                 IsActive = u.IsActive;
-                Balances = u.Balances.Where(x => x.UserId == u.UserId && x.Ledger.GroupId == CurrentGroupId).ToList();
+                Balances = u.Balances.Where(x => x.Ledger.GroupId == CurrentGroupId).ToList();
                 AdminGroups = u.GroupUsers.Where(g => g.IsAdmin).Select(g => g.GroupId).ToList();
                 MemberGroups = u.GroupUsers.Select(g => g.GroupId).ToList();
             }
