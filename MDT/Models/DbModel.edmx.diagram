@@ -45,11 +45,6 @@
         <AssociationConnector Association="DbModel.DrawNumberSets" />
         <EntityTypeShape EntityType="DbModel.SentEmail" Width="1.5" PointX="3" PointY="0.875" />
         <AssociationConnector Association="DbModel.FK_EmailMessages_EmailTemplates" />
-        <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="0.75" PointY="10.75" />
-        <AssociationConnector Association="DbModel.FK_GroupInvites_Group" />
-        <AssociationConnector Association="DbModel.FK_GroupUser_Group" />
-        <AssociationConnector Association="DbModel.FK_Ledgers_Group" />
-        <AssociationConnector Association="DbModel.FK_User_Group" />
         <EntityTypeShape EntityType="DbModel.UniqueKey" Width="1.5" PointX="0.75" PointY="4.75" />
         <EntityTypeShape EntityType="DbModel.VerificationKey" Width="1.5" PointX="5.25" PointY="35.5" />
         <AssociationConnector Association="DbModel.FK_VerificationKeys_Users" />
@@ -59,14 +54,20 @@
         <AssociationConnector Association="DbModel.FK_PendingTransactions_SourceLedger" />
         <AssociationConnector Association="DbModel.FK_PendingTransactions_TransactionType" />
         <AssociationConnector Association="DbModel.FK_PendingTransactions_User" />
-        <AssociationConnector Association="DbModel.FK_AccountBalanceLedger" />
-        <AssociationConnector Association="DbModel.FK_Transactions_Groups" />
-        <AssociationConnector Association="DbModel.FK_PendingTransactions_Groups" />
         <EntityTypeShape EntityType="DbModel.GroupDrawType" Width="1.5" PointX="10" PointY="20.75" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_DrawType" />
-        <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_Ledgers" />
+        <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="0.75" PointY="16.25" />
         <AssociationConnector Association="DbModel.FK_DrawTypes_Groups" />
+        <AssociationConnector Association="DbModel.FK_DrawTypes_Ledgers" />
+        <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" />
+        <AssociationConnector Association="DbModel.FK_GroupInvites_Group" />
+        <AssociationConnector Association="DbModel.FK_AccountBalanceLedger" />
+        <AssociationConnector Association="DbModel.FK_GroupUser_Group" />
+        <AssociationConnector Association="DbModel.FK_Ledgers_Group" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_Groups" />
+        <AssociationConnector Association="DbModel.FK_Transactions_Groups" />
+        <AssociationConnector Association="DbModel.FK_User_Group" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
