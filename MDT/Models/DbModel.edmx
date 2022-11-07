@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
@@ -1107,6 +1107,7 @@
           <AssociationSet Name="FK_GroupDrawType_Ledgers" Association="DbModel.FK_GroupDrawType_Ledgers">
             <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
+
           </AssociationSet>
           <EntitySet Name="Groups" EntityType="DbModel.Group" />
           <AssociationSet Name="FK_DrawTypes_Groups" Association="DbModel.FK_DrawTypes_Groups">
@@ -1854,10 +1855,11 @@
         </EntityType>
         <Association Name="FK_DrawTypes_Groups">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+
           <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
             </Principal>
             <Dependent Role="DrawType">
               <PropertyRef Name="GroupId" />

@@ -55,6 +55,7 @@ namespace MDT.Models
         public virtual ICollection<NumberSet> NumberSets { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
+        public virtual Ledger Ledger { get; set; }
         public virtual Group Group { get; set; }
         public virtual Ledger Ledger { get; set; }
     }

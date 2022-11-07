@@ -9,6 +9,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using System.Threading;
+using System.Configuration;
 
 namespace MDT.Controllers
 {
@@ -495,6 +497,126 @@ namespace MDT.Controllers
             db.SaveChanges();
 
             return PartialView(winners);
+        }
+        
+        [AdminFilter(Role = "Admin")]
+        public void SingleWinnerDrawing(DrawVM vm)
+        {
+            var entries= db.DrawEntries.Where(de => de.DrawId == vm.DrawId).ToList();
+            if (entries.Any())
+            {
+                Random r = new Random();
+                int winIndex = r.Next(0, entries.Count);
+                DrawEntry winner = entries[winIndex];
+
+                DrawResult result = new DrawResult()
+                {
+                    DrawId = vm.DrawId,
+                    DrawCount = 1,
+                    EntryId = winner.EntryId,
+                    DrawnDateTime = DateTime.Now,
+                };
+
+                db.DrawResults.Add(result);
+                db.SaveChanges();
+
+                var Drawing = db.Draws.Find(vm.DrawId);
+                Drawing.Results = winner.EntryCode;
+                db.Entry(Drawing).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            //possible error redirect depending on how you plan to implement this?
+        }
+        
+        
+        public ActionResult SelectWinnersSUP(int drawId)
+        {
+            int diffUsers = 0;
+            List<int> drawUsers = new List<int>();
+            List<DrawEntry> drawEntries = db.DrawEntries.Where(e => e.DrawId == drawId).ToList();
+            List<DrawEntry> winners = new List<DrawEntry>();
+            if (drawEntries.Count == 0)
+            {
+                return PartialView(winners);
+            }
+            string rsltstr = "";
+            Draw draw = db.Draws.Find(drawId);
+            DrawType drawType = draw.DrawType;
+            int numWinners = drawType.EntriesToDraw;
+
+            foreach (DrawEntry drawEntry in drawEntries)
+            {
+                if (!drawUsers.Contains(drawEntry.UserId))
+                {
+                    drawUsers.Add(drawEntry.UserId);
+                    diffUsers++;
+                }
+            }
+            if (diffUsers < numWinners)
+            {
+                numWinners = diffUsers;
+            }
+
+            while (numWinners > 0)
+            {
+                Random rnd = new Random();
+                DrawEntry winner = drawEntries[rnd.Next(drawEntries.Count)];
+                winners.Add(winner);
+                if (numWinners == 1)
+                {
+                    rsltstr += winner.User.UserName + ":" + winner.EntryCode;
+                }
+                else
+                {
+                    rsltstr += winner.User.UserName + ":" + winner.EntryCode + "; ";
+                }
+                drawEntries.RemoveAll(e => e.UserId == winner.UserId);
+
+                DrawResult dr = new DrawResult()
+                {
+                    DrawId = drawId,
+                    DrawCount = numWinners,
+                    EntryId = winner.EntryId,
+                    DrawnDateTime = DateTime.Now,
+                };
+                db.Entry(dr).State = EntityState.Added;
+                dr = db.DrawResults.Where(r => r.EntryId == dr.EntryId)
+                    .Include(r => r.DrawEntry)
+                    .Include(r => r.Draw)
+                    .FirstOrDefault();
+                db.SaveChanges();
+
+                numWinners--;
+                System.Diagnostics.Debug.WriteLine(rsltstr);
+            }
+
+            try
+            {
+                draw.Results = rsltstr;
+                db.Entry(draw).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.EntityValidationErrors);
+                System.Diagnostics.Debug.WriteLine("Help");
+            }
+
+            return PartialView(winners);
+        }
+
+        public ActionResult DisplayDrawnWinners(int drawId)
+        {
+            List<DrawResult> drawResults = db.DrawResults.Where(r => r.DrawId == drawId).ToList();
+            List<DrawEntry> we = new List<DrawEntry>();
+            foreach(DrawResult result in drawResults)
+            {
+                DrawEntry de = db.DrawEntries.Find(result.EntryId);
+                we.Add(de);
+            }
+
+            return PartialView(we);
 
         }
     }
