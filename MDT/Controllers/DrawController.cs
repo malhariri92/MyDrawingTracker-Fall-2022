@@ -461,6 +461,44 @@ namespace MDT.Controllers
             return null;
         }
 
+        public ActionResult EliminationDraw(DrawVM vm)
+        {
+            Draw draw = db.Draws.Find(vm.DrawId);
+            List<DrawEntry> elminationResult = WebManager.EliminateEntries(draw);
+            List<DrawEntry> winners = new List<DrawEntry>();
+
+            for (int i = 0; i < draw.DrawOption.EntriesToDraw; i++)
+            {
+                winners.Add(elminationResult[i]);
+            }
+
+            for (int i = 0; i < winners.Count; i++)
+            {
+                DrawResult result = new DrawResult()
+                {
+                    DrawnDateTime = DateTime.Now,
+                    DrawCount = winners.Count,
+                    DrawId = draw.DrawId,
+                    EntryId = winners[i].EntryId,
+                };
+
+                db.DrawResults.Add(result);
+            }
+
+            List<int> winnersIds = new List<int>();
+
+            foreach (DrawEntry e in winners)
+            {
+                winnersIds.Add(e.EntryId);
+            }
+            draw.Results = String.Join(",", winnersIds);
+
+            db.Entry(draw).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return PartialView(winners);
+        }
+        
         [AdminFilter(Role = "Admin")]
         public void SingleWinnerDrawing(DrawVM vm)
         {

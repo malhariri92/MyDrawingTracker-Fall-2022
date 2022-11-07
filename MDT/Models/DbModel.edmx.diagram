@@ -57,9 +57,9 @@
         <EntityTypeShape EntityType="DbModel.GroupDrawType" Width="1.5" PointX="10" PointY="20.75" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_DrawType" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_Ledgers" />
-        <AssociationConnector Association="DbModel.FK_DrawTypes_Ledgers" />
         <EntityTypeShape EntityType="DbModel.Group" Width="1.5" PointX="0.75" PointY="16.25" />
         <AssociationConnector Association="DbModel.FK_DrawTypes_Groups" />
+        <AssociationConnector Association="DbModel.FK_DrawTypes_Ledgers" />
         <AssociationConnector Association="DbModel.FK_GroupDrawType_Group" />
         <AssociationConnector Association="DbModel.FK_GroupInvites_Group" />
         <AssociationConnector Association="DbModel.FK_AccountBalanceLedger" />

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
@@ -1107,14 +1107,15 @@
           <AssociationSet Name="FK_GroupDrawType_Ledgers" Association="DbModel.FK_GroupDrawType_Ledgers">
             <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="GroupDrawType" EntitySet="GroupDrawTypes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DrawTypes_Ledgers" Association="DbModel.FK_DrawTypes_Ledgers">
-            <End Role="Ledger" EntitySet="Ledgers" />
-            <End Role="DrawType" EntitySet="DrawTypes" />
+
           </AssociationSet>
           <EntitySet Name="Groups" EntityType="DbModel.Group" />
           <AssociationSet Name="FK_DrawTypes_Groups" Association="DbModel.FK_DrawTypes_Groups">
             <End Role="Group" EntitySet="Groups" />
+            <End Role="DrawType" EntitySet="DrawTypes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawTypes_Ledgers" Association="DbModel.FK_DrawTypes_Ledgers">
+            <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="DrawType" EntitySet="DrawTypes" />
           </AssociationSet>
           <AssociationSet Name="FK_GroupDrawType_Group" Association="DbModel.FK_GroupDrawType_Group">
@@ -1266,8 +1267,8 @@
           <Property Name="GroupId" Type="Int32" Nullable="false" />
           <Property Name="AllowAllocation" Type="Boolean" Nullable="false" />
           <Property Name="LedgerId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Ledger" Relationship="DbModel.FK_DrawTypes_Ledgers" FromRole="DrawType" ToRole="Ledger" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="DrawType" ToRole="Group" />
+          <NavigationProperty Name="Ledger" Relationship="DbModel.FK_DrawTypes_Ledgers" FromRole="DrawType" ToRole="Ledger" />
         </EntityType>
         <EntityType Name="EmailTemplate">
           <Key>
@@ -1830,18 +1831,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DrawTypes_Ledgers">
-          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
-          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Ledger">
-              <PropertyRef Name="LedgerId" />
-            </Principal>
-            <Dependent Role="DrawType">
-              <PropertyRef Name="LedgerId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Group">
           <Key>
             <PropertyRef Name="GroupId" />
@@ -1866,13 +1855,26 @@
         </EntityType>
         <Association Name="FK_DrawTypes_Groups">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
+
           <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Group">
-              <PropertyRef Name="GroupId" />
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
             </Principal>
             <Dependent Role="DrawType">
               <PropertyRef Name="GroupId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawTypes_Ledgers">
+          <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
+          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ledger">
+              <PropertyRef Name="LedgerId" />
+            </Principal>
+            <Dependent Role="DrawType">
+              <PropertyRef Name="LedgerId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>

@@ -57,5 +57,6 @@ namespace MDT.Models
         public virtual ICollection<GroupDrawType> GroupDrawTypes { get; set; }
         public virtual Ledger Ledger { get; set; }
         public virtual Group Group { get; set; }
+        public virtual Ledger Ledger { get; set; }
     }
 }
