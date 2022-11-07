@@ -248,6 +248,46 @@ namespace MDT.Models
             return rand;
         }
 
+        public static List<DrawEntry> EliminateEntries(Draw draw)
+        {
+            List<DrawEntry> pool = draw.DrawEntries.ToList();
+            return DoEliminateEntries(pool, new List<DrawEntry>(), draw.DrawOption);
+        }
+
+        private static List<DrawEntry> DoEliminateEntries(List<DrawEntry> pool, List<DrawEntry> result, DrawOption options)
+        {
+            if (pool.Count == 0)
+            {
+                result.Reverse();
+                return result;
+            }
+            else if (pool.Count == 1)
+            {
+                result.Add(pool[0]);
+                result.Reverse();
+                return result;
+            }
+            Random random = new Random();
+            List<DrawEntry> nextPool = new List<DrawEntry>();
+            for (int i = 0; i < pool.Count / 2; ++i)
+            {
+                int index = random.Next(0, pool.Count);
+                nextPool.Add(pool[index]);
+
+                pool.RemoveAt(index);
+            }
+
+            if (options.PassDrawnToNext)
+            {
+                result.AddRange(pool);
+                return DoEliminateEntries(nextPool, result, options);
+            }
+
+            result.AddRange(nextPool);
+            return DoEliminateEntries(pool, result, options);
+        }
+    
+
         internal static int RandomNumber(int max)
         {
             byte[] b = new byte[4];
