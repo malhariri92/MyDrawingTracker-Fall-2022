@@ -79,22 +79,34 @@
         $('#modaldiv').load('@Url.Action("SendVerification", "Home", null, null)');
     });
 
-    $(document).on('click', '#btnSignIn', function () {
-        $('#SignIn').validate();
-        if ($('#SignIn').valid()) {
-            $('#SignIn').submit();
-            $('#modaldiv').empty();
-            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        }
+   
+    $(document).on('submit', '#SignIn', function (e) {
+            $('#SignIn').hide();
+            $('#SignInSpinner').show();
     });
+
+    //$(document).on('click', '#btnSignIn', function () {
+    //    $('#SignIn').validate();
+    //    if ($('#SignIn').valid()) {
+    //        $('#SignIn').hide();
+    //        $('#SignInSpinner').show();
+    //        $('#SignIn').submit();
+    //    }
+    //});
 
     $(document).on('change', '#createToggle', function () {
         if ($(this).is(':checked')) {
             $('#groupAdmin').show();
+            $('#groupAdminP').show();
+            $.validator.unobtrusive.parse('#NewAdminForm');
             $('#groupUser').hide();
+            $('#groupUserP').hide();
         } else {
             $('#groupAdmin').hide();
+            $('#groupAdminP').hide();
             $('#groupUser').show();
+            $('#groupUserP').show();
+            $.validator.unobtrusive.parse('#NewUserForm');
         }
     });
 </script>
