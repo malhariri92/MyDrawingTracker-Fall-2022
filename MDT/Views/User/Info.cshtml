@@ -11,7 +11,6 @@
     <p>
         <b>Name: </b> @Model.UserName <br />
         <b>Email: </b> @Model.EmailAddress <br />
-        <b>Phone Number: </b> @Model.PhoneNumber <br />
         <b>CurrentGroupID: </b> @Model.CurrentGroupId<br />
         <b>Verification Status: </b>
         @{
@@ -105,11 +104,11 @@
 @if (@Model.Balances.Count > 0)
     {
         <div>
-            <table class="table table-bordered table-responsive" style="width:60%">
                 <h2>Balance Details</h2>
+            <table class="table table-bordered table-responsive" style="width:60%">
                 <thead>
                     <tr> 
-                        <th>Ledger Name</th> <br />
+                        <th>Ledger Name</th>
                         <th>Amount</th>
                     </tr>
                 </thead>

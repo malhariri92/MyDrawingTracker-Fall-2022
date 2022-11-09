@@ -37,15 +37,15 @@
             {
                 <tr>
                     <td>
-                        @Html.ActionLink(@member.UserName, "Member", "User", new { id = @member.UserId }, null) (Admin)
+                        @Html.ActionLink(@member.UserName, "Member", "User", new { id = @member.UserId }, null) @(member.IsOwner ? "(Owner)" : "(Admin)")
                     </td>
                     <td>@member.EmailAddress</td>
                     <td>
                         @if (member.UserId != user.UserId && member.UserId != Model.OwnerUserId)
                         {
-                            <button type="button" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = member.UserId })" class="btn btn-sm btn-warning btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
-                            <button type="button" data-action="@Url.Action("Demote", "Group",new { id = member.UserId })" class="btn btn-sm btn-dark btnMember" title="Demote from Admin"><span class="fa fa-angle-double-down"></span></button>
-                            <button type="button" data-action="@Url.Action("Remove", "Group",new { id = member.UserId })" class="btn btn-sm btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                            <button type="button" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = member.UserId })" class="btn btn-xs btn-info btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+                            <button type="button" data-action="@Url.Action("Demote", "Group",new { id = member.UserId })" class="btn btn-xs btn-warning btnMember" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
+                            <button type="button" data-action="@Url.Action("Remove", "Group",new { id = member.UserId })" class="btn btn-xs btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
                         }
                     </td>
                 </tr>
@@ -56,10 +56,10 @@
                     <td>@Html.ActionLink(member.UserName, "Member", "User", new { id = member.UserId }, null)</td>
                     <td>@member.EmailAddress</td>
                     <td>
-                        <button type="button" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = member.UserId })" class="btn btn-sm btn-warning btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
-                        <button type="button" data-action="@Url.Action("Promote", "Group",new { id = member.UserId })" class="btn btn-sm btn-success btnMember" title="Promote to Admin"><span class="fa fa-angle-double-down"></span></button>
-                        <button type="button" class="btn btn-sm btn-info" title="Edit Permissions"><span class="fa fa-file-text-o"></span></button>
-                        <button type="button" data-action="@Url.Action("Remove", "Group",new { id = member.UserId })" class="btn btn-sm btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                        <button type="button" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = member.UserId })" class="btn btn-xs btn-info btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+                        <button type="button" data-action="@Url.Action("Promote", "Group",new { id = member.UserId })" class="btn btn-xs btn-success btnMember" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
+                        <button type="button" data-action="@Url.Action("Permissions", "Group",new { id = member.UserId })" class="btn btn-xs btn-primary btnModal" title="Edit Permissions"><span class="fa fa-file-text-o"></span></button>
+                        <button type="button" data-action="@Url.Action("Remove", "Group",new { id = member.UserId })" class="btn btn-xs btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
                     </td>
                 </tr>
             }

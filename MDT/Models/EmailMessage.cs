@@ -231,38 +231,39 @@ namespace MDT.Models
         /// <returns>success/failure of sending</returns>
         public bool SendMessage(bool includeDev = true)
         {
-            if (email.To.Count > 0 && email.Subject.Length > 0 && email.Body.Length > 0)
-            {
-                try
-                {
-                    ServicePointManager.ServerCertificateValidationCallback += ValidateCertificate;
+            //if (email.To.Count > 0 && email.Subject.Length > 0 && email.Body.Length > 0)
+            //{
+            //    try
+            //    {
+            //        ServicePointManager.ServerCertificateValidationCallback += ValidateCertificate;
 
-                    using (SmtpClient smtpClient = new SmtpClient(server, port))
-                    {
-                        smtpClient.UseDefaultCredentials = false;
-                        smtpClient.EnableSsl = true;
-                        smtpClient.Credentials = new NetworkCredential("web@mydrawingtracker.com", "29IQH3xyyDGMubY0q1jl6A"); 
-                        smtpClient.Send(email);
-                    }
-                    return true;
+            //        using (SmtpClient smtpClient = new SmtpClient(server, port))
+            //        {
+            //            smtpClient.UseDefaultCredentials = false;
+            //            smtpClient.EnableSsl = true;
+            //            smtpClient.Credentials = new NetworkCredential("web@mydrawingtracker.com", "29IQH3xyyDGMubY0q1jl6A"); 
+            //            smtpClient.Send(email);
+            //        }
+            //        return true;
 
-                }
-                catch (Exception e)
-                {
-                    email.Body += $"\n\nEXCEPTION:{e.Message} \n {e.StackTrace}";
-                    System.Diagnostics.Debug.WriteLine(e.Message);
-                    Exception ie = e.InnerException;
-                    while (ie != null)
-                    {
-                        email.Body += $"\n\nINNER EXCEPTION:{ie.Message} \n {ie.StackTrace}";
-                        System.Diagnostics.Debug.WriteLine(ie.Message);
-                        ie = ie.InnerException;
-                    }
-                }
-            }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        email.Body += $"\n\nEXCEPTION:{e.Message} \n {e.StackTrace}";
+            //        System.Diagnostics.Debug.WriteLine(e.Message);
+            //        Exception ie = e.InnerException;
+            //        while (ie != null)
+            //        {
+            //            email.Body += $"\n\nINNER EXCEPTION:{ie.Message} \n {ie.StackTrace}";
+            //            System.Diagnostics.Debug.WriteLine(ie.Message);
+            //            ie = ie.InnerException;
+            //        }
+            //    }
+            //}
 
             SaveMessage();
-            return false;
+            return true;
+            //return false;
         }
 
         private static bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors errors)

@@ -16,6 +16,17 @@ namespace MDT.Controllers
     {
         public ActionResult Index()
         {
+            List<GroupVM> vm = db.Groups.Where(g => g.IsApproved ?? false )
+                                       .Include(g => g.GroupUsers)
+                                       .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                       .Include(g => g.GroupInvites)
+                                       .ToList()
+                                       .Select(g => new GroupVM(g))
+                                       .ToList();
+            return View(vm);
+        }
+        public ActionResult Applications()
+        {
             if (TempData.ContainsKey("Message"))
             {
                 ViewBag.Message = TempData["Message"];
@@ -81,7 +92,7 @@ namespace MDT.Controllers
             WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
-            return RedirectToAction("Index");
+            return RedirectToAction("Applications");
         }
 
         public ActionResult Reject(int id)
@@ -104,7 +115,7 @@ namespace MDT.Controllers
             if (g.IsApproved != null)
             {
                 TempData["Error"] = $"Group:  {g.GroupName} has already been {(g.IsApproved.Value ? "approved" : "rejected")}";
-                return RedirectToAction("Index");
+                return RedirectToAction("Applications");
             }
 
             g.IsApproved = false;

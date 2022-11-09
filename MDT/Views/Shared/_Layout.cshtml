@@ -46,6 +46,19 @@
         <p>&copy; @DateTime.Now.Year - My Drawing Tracker</p>
     </footer>
 
+    <script type="text/javascript">
+        $(document).on('click', '.btnModal', function () {
+            let action = $(this).attr('data-action');
+            $('#modaldiv').empty();
+            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $('#popup').modal("show");
+            $('#modaldiv').load(action);
+        });
+
+        function hideModal() {
+            $('#popup').modal("hide");
+        }
+    </script>
 </body>
 
 </html>

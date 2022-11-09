@@ -9,13 +9,13 @@ namespace MDT.ViewModels
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string EmailAddress { get; set; }
-        public string PhoneNumber { get; set; }
         public List<Balance> Balances { get; set; }
         public int CurrentGroupId { get; set; }
         public List<int> AdminGroups { get; set; }
         public List<int> MemberGroups { get; set; }
         public bool IsVerified { get; set; }
         public bool IsActive { get; set; }
+        public bool IsOwner { get; set; }
 
 
 
@@ -37,6 +37,8 @@ namespace MDT.ViewModels
                 Balances = u.Balances.Where(x => x.Ledger.GroupId == CurrentGroupId).ToList();
                 AdminGroups = u.GroupUsers.Where(g => g.IsAdmin).Select(g => g.GroupId).ToList();
                 MemberGroups = u.GroupUsers.Select(g => g.GroupId).ToList();
+                IsOwner = u.GroupUsers.Where(x => x.GroupId == CurrentGroupId).FirstOrDefault().IsOwner;
+
             }
         }
 
@@ -47,7 +49,7 @@ namespace MDT.ViewModels
                 UserId = gu.UserId;
                 UserName = gu.User.UserName;
                 EmailAddress = gu.User.EmailAddress;
-
+                IsOwner = gu.IsOwner;
             }
         }
     }

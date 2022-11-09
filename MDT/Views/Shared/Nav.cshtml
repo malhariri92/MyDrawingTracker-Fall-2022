@@ -6,6 +6,7 @@
     bool? UserVerified = (bool?)Session["VerifiedUser"];
     bool? GroupApproved = (bool?)Session["ApprovedGroup"];
     bool isGroupAdmin = user != null && group != null ? WebManager.IsGroupAdmin(group.GroupId, user.UserId) : false;
+    bool HasCode = Session["AccessCode"] != null;
 }
 
 <nav class="navbar navbar-default" style="vertical-align:middle;background-color: #000;padding:10px;">
@@ -90,6 +91,6 @@
         $('#modaldiv').empty();
         $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
         $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action("SignIn", "Home", null, null)');
+        $('#modaldiv').load('@Url.Action(HasCode ? "NewUser" : "SignIn", "Home", null, null)');
     });
 </script>

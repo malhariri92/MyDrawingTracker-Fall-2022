@@ -11,103 +11,26 @@
 
 <div class="col-md-3">
     <h1>Member Details</h1>
-    <p>
-        <b>Name: </b> @Model.UserName <br />
-        <b>Email: </b> @Model.EmailAddress <br />
-        <b>Phone Number: </b> @Model.PhoneNumber <br />
-        <b>CurrentGroupID: </b> @Model.CurrentGroupId<br />
-        <b>Verification Status: </b>
-        @{
-            if (Model.IsVerified)
-            {
-                <b>Verified</b>
-            }
-            else
-            {
-                <b>Not Verified</b>
-            }
-        }
-        <br />
-        <b>Activity Status: </b>
-        @{
-            if (Model.IsActive)
-            {
-                <b>Active</b> <br /><br />
+    <b>Name: </b> @Model.UserName <br />
+    <b>Role: </b> @Model.CurrentGroupId<br />
+    <b>Email: </b> @Model.EmailAddress <br />
+    <b>Status: </b> @(Model.IsVerified ? "Verified" : "Not Verified") <br />
+    <button type="button" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = Model.UserId })" class="btn btn-sm btn-warning btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
 
-                <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset">
-                    <span class="fa fa-key">
-                        @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @Model.EmailAddress }, null)
-                    </span>
-                </button>
-                if (!ViewBag.IsOwner && Model.UserId != user.UserId)
-                {
-                    if (ViewBag.IsAdmin)
-                    {
-                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-dark" title="Demote from Admin">
-                            <span class="fa fa-angle-double-down">
-                                @Html.ActionLink("Demote", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
-                            </span>
-                        </button>
-                    }
-                    else if (!ViewBag.IsAdmin)
-                    {
-                        using (Html.BeginForm("PromoteFromUserPage", "Group", FormMethod.Post, new { @Class = "fa"} ))
-                        {
-                            @Html.AntiForgeryToken()
-                            @Html.Hidden("UserId", Model.UserId)
-
-
-                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions" onclick="loadPermissions(@Model.UserId)">
-                            <button type="submit" title="Promote" class="btn btn-sm btn-success">
-                                <span class="fa fa-angle-double-up">
-                                    Promote
-                                </span>
-                            </button>
-                        }
-                        <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-info" title="Edit Permissions">
-                            <span class="fa fa-file-text-o">
-                                Permissions
-                            </span>
-                        </button>
-                    }
-                    <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-danger" title="Remove from Group">
-                        <span class="fa fa-times-circle">
-                            @Html.ActionLink("Remove", "RemoveFromGroup", "Group", new { uId = @Model.UserId, guId = @Model.CurrentGroupId }, null)
-                        </span>
-                    </button>
-                }
-            }
-            else
-            {
-                <b>InActive</b> <br /> <br />
-                <button type="button" data-userid="@Model.UserId" class="btn btn-sm btn-warning" title="Trigger Password Reset">
-                    <span class="fa fa-key">
-                        @Html.ActionLink("Reset Password", "TriggerPasswordReset", "Group", new { email = @Model.EmailAddress }, null)
-                    </span>
-                </button>
-            }
-        }
-        <br />
-
-
-
-    </p>
-    <br />
-    <vr />
-</div>
-
-<script type="text/javascript">
-    function loadPermissions(UserId)
+    @if (!ViewBag.IsOwner && Model.UserId != user.UserId)
     {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load(`@Url.Action("Permissions", "User")?UserId=${UserId}`);
+        if (ViewBag.IsAdmin)
+        {
+            <button type="button" data-action="@Url.Action("Demote", "Group", new { id = Model.UserId })" class="btn btn-sm btn-warning btnMember" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
+            <button type="button" data-action="@Url.Action("Remove", "Group", new { id = Model.UserId })" class="btn btn-sm btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+        }
+        else
+        {
+            <button type="button" data-action="@Url.Action("Promote", "Group",new { id = Model.UserId })" class="btn btn-sm btn-primary btnMember" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
+            <button type="button" data-action="@Url.Action("Permissions", "Group",new { id = Model.UserId })" class="btn btn-sm btn-info" title="Edit Permissions"><span class="fa fa-file-text-o"></span></button>
+            <button type="button" data-action="@Url.Action("Remove", "Group",new { id = Model.UserId })" class="btn btn-sm btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+        }
+        <br />
+        <vr />
     }
-</script>
-
-<style>
-    a{
-        color:white;
-    }
-</style>
+</div>

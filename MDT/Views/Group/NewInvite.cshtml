@@ -2,27 +2,29 @@
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h2>Invite members to your group</h2>
 </div>
-<div class="modal-body">
-    <div class="row">
-        @using (Ajax.BeginForm("NewInvite", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "invites" }))
-        {
+@using (Ajax.BeginForm("NewInvite", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "invites", OnSuccess="hideModal" }))
+{
+    <div class="modal-body">
+        <div class="row">
             @Html.AntiForgeryToken()
             <div class="form-horizontal">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(model => model.EmailAddress, htmlAttributes: new { @class = "control-label col-xs-4" } )
-                    <div class="col-xs-8">
-                        @Html.EditorFor(model => model.EmailAddress, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
-                        @Html.ValidationMessageFor(model => model.EmailAddress, "", new { @class = "text-danger" })
-                    </div>
+                <div class="row col-xs-10 col-xs-offset-1">
+                    @Html.HiddenFor(model => model.GroupId)
+
+                    @Html.TextAreaFor(model => model.EmailAddress, htmlAttributes: new { @class = "form-control", @rows = 5, placeholder = "Email addresses to send invites to. Serparate email addresses with a comma or semicolon." })
                 </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="row">
                 <div class="form-group">
                     <div class="col-xs-8">
-                        <button type="button" class="btn btn-sm btn-info" id="btnSendInvite">Send Invite</button>
+                        <button type="submit" class="btn btn-sm btn-success" id="btnSendInvite">Send Invite</button>
                     </div>
                 </div>
             </div>
-        }
+        </div>
     </div>
-</div>
+}
