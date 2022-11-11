@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using MDT.Models;
 
 namespace MDT.ViewModels
@@ -40,6 +41,7 @@ namespace MDT.ViewModels
         public string DayName { get; set; }
         public string Abbr { get; set; }
         public int DayNumber { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:hh\\:mm}")]
         public TimeSpan? DrawTime { get; set; }
         public bool Active { get; set; }
     }

@@ -38,15 +38,8 @@ namespace MDT.Controllers
         public ActionResult EditDrawType(int id = 0)
         {
             DrawTypeVM vm = GetDrawTypeVM(id);
-            if (Request.IsAjaxRequest())
-            {
-                return PartialView(vm);
-            }
-            else
-            {
-                return View(vm);
-            }
-
+            return PartialView(vm);
+            
         }
 
         [HttpPost]
@@ -68,6 +61,13 @@ namespace MDT.Controllers
             {
                 vm.TypeName = dt.DrawTypeName;
                 ModelState.Clear();
+                for (int i = 0; i < 7; i++)
+                {
+                    DayOfWeek d = (DayOfWeek)i;
+                    vm.Schedule.Days[i].DayName = d.ToString();
+                    vm.Schedule.Days[i].Abbr = d.ToString().Substring(0, 3);
+                    vm.Schedule.Days[i].DayNumber = i;
+                }
                 TryValidateModel(vm);
             }
 
@@ -126,9 +126,11 @@ namespace MDT.Controllers
                 }
 
                 db.SaveChanges();
-                return View("ViewDrawType", new DrawTypeVM(dt));
+                return PartialView("DrawTypeRules", new DrawTypeVM(dt));
             }
-            return View(vm);
+            Response.StatusCode = 400;
+            ModelState.AddModelError("MaxEntriesPerUser", "I'll ooga your booga");
+            return PartialView(vm);
         }
 
         public ActionResult DrawTypeDescription(int id)

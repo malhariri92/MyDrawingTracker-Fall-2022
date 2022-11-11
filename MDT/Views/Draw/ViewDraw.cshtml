@@ -24,7 +24,7 @@
     </div>
     <div class="col-md-12" id="Entries">
         @{ 
-            Html.RenderAction("ViewEntries", Model.DrawId);
+            Html.RenderAction("ViewEntries", new { id = Model.DrawId });
         }
     </div>
 

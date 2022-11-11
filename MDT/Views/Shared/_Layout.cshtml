@@ -58,6 +58,11 @@
         function hideModal() {
             $('#popup').modal("hide");
         }
+        function showModalError(result) {
+            console.log(result);
+            $('#modaldiv').empty();
+            $('#modaldiv').append(result.responseText);
+        }
     </script>
 </body>
 

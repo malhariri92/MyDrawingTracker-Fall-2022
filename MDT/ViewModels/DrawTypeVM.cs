@@ -16,7 +16,7 @@ namespace MDT.ViewModels
         [MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
         public string TypeName { get; set; }
 
-        [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greataer than $0.0")]
+        [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greataer than 0")]
         [Display(Name = "Entry Cost")]
         public decimal EntryCost { get; set; }
 
@@ -32,10 +32,11 @@ namespace MDT.ViewModels
         public int EntriesToDraw { get; set; }
 
         [Display(Name = "Max entries per user")]
+        [Range(0, int.MaxValue, ErrorMessage = "{0} cannot be negative")]
         public int MaxEntriesPerUser { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0")]
         [DefaultValue(1)]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0")]
         [Display(Name = "Number of draws")]
         public int NumberOfDraws { get; set; }
 
