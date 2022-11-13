@@ -90,7 +90,7 @@ namespace MDT.Controllers
             return PartialView(vm);
         }
 
-        public ActionResult ChangeUserDetails()
+        public ActionResult Edit()
         {
             if (user != null)
             {
@@ -100,35 +100,20 @@ namespace MDT.Controllers
                     .Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
                 ViewBag.Groups = groups;
 
-                return View(new UserDetailsChangeVM(user));
+                return PartialView(new UserDetailsChangeVM(user));
             }
             return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ChangeUserDetails(UserDetailsChangeVM vm)
+        public ActionResult Edit(UserDetailsChangeVM vm)
         {
             if (!ModelState.IsValid)
             {
-                return View(vm);
+                Response.StatusCode = 400;
+                return PartialView(vm);
             }
-
-            /*if (vm.UserName.Length < 6)
-            {
-                vm.Success = false;
-                vm.Error = true;
-                vm.Message = "Please make sure that your username is more than 1 characters.";
-                return View(vm);
-            }
-
-            if (vm.UserName.Length > 25)
-            {
-                vm.Success = false;
-                vm.Error = true;
-                vm.Message = "Please make sure that your username is at most 25 characters.";
-                return View(vm);
-            }*/
 
             GroupDTO groupDTO = WebManager.GetGroupDTO(vm.CurrentGroupId);
             if (groupDTO == null || String.IsNullOrEmpty(groupDTO.GroupName))
@@ -136,20 +121,17 @@ namespace MDT.Controllers
                 vm.Success = false;
                 vm.Error = true;
                 vm.Message = "Invalid GroupId";
-                return View(vm);
+                return PartialView(vm);
             }
 
             try
             {
-                using (var db = new DbEntities())
-                {
-                    User user = db.Users.Find(vm.UserId);
                     if (user == null)
                     {
                         vm.Success = false;
                         vm.Error = true;
                         vm.Message = "User Retrieval Error (1)";
-                        return View(vm);
+                        return PartialView(vm);
                     }
 
                     user.UserName = vm.UserName;
@@ -161,7 +143,7 @@ namespace MDT.Controllers
 
                     Session["User"] = new UserDTO(vm);
                     Session["Group"] = groupDTO;
-                }
+               
             }
             catch
             {

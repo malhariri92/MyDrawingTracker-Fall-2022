@@ -1,0 +1,64 @@
+﻿@using MDT.ViewModels;
+@model List<GroupVM>
+@{
+    ViewBag.Title = "Pending Group Approvals";
+}
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="text-success">@ViewBag.Message</h2>
+    <br />
+}
+
+@if (ViewBag.Error != null)
+{
+    <h2 class="text-danger">@ViewBag.Error</h2>
+    <br />
+}
+
+@if (Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Primary Admin</th>
+                <th>Request</th>
+                <th>Approve?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (GroupVM grp in Model)
+            {
+                <tr>
+                    <td>@grp.GroupName</td>
+                    <td>@Html.Raw(grp.Admins.Select(u => $"<a href=\"mailto:{u.EmailAddress}\">{u.UserName}</a>").FirstOrDefault())</td>
+                    <td>@grp.Descriptions.Where(d => d.Key == 5).Select(d => d.Value.FirstOrDefault().TextBody).FirstOrDefault()</td>
+                    <td>
+                        <button type="button" class="btn btn-xs btn-danger btnReject" data-groupid="@grp.GroupId" title="Reject this group"><span class="fa fa-times-circle"></span></button>
+                        <button type="button" class="btn btn-xs btn-success btnApprove" data-groupid="@grp.GroupId" title="Approve this group"><span class="fa fa-check-circle"></span></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h3>No Groups need approved.</h3>
+}
+
+<script type="text/javascript">
+    $(document).on('click', '.btnReject', function () {
+        let id = $(this).attr('data-groupid');
+        $('#modaldiv').empty();
+        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+        $('#popup').modal("show");
+        $('#modaldiv').load(`@Url.Action("Reject", "Admin", null)?id=${id}`);
+    });
+
+    $(document).on('click', '.btnApprove', function () {
+        let id = $(this).attr('data-groupid');
+       window.top.location.href = `@Url.Action("Approved", "Admin", null)?id=${id}`;
+    });
+</script>

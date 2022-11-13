@@ -1,33 +1,44 @@
-﻿<div class="modal-header">
+﻿@{
+    string code = (string)ViewBag.AccessCode;
+
+}
+<div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
     <div class="row text-center">
-        <input type="checkbox" id="createToggle" data-toggle="toggle" data-on="Group Admin" data-off="Group User" />
+        <input type="checkbox" id="createToggle" data-toggle="toggle" data-on="Group Admin" data-off="Group User" data-width="125" data-onstyle="primary" data-offstyle="info"/>
+    </div>
+    <div class="row text-center">
+        <p id="groupUserP">Create a new user account and join an existing group.</p>
+        <p id="groupAdminP" style="display:none;">Create a new user account and a new group.</p>
     </div>
 </div>
-<div class="modal-body">
 
-    <div class="row">
-        <div id="groupAdmin" style="display:none">
-            @{
-                Html.RenderPartial("CreateAdmin");
-            }
-        </div>
-        <div id="groupUser" style="display:none">
-            @{
-                Html.RenderPartial("CreateUser");
-            }
-        </div>
-    </div>
+
+<div id="groupAdmin" style="display:none">
+    @{
+        Html.RenderPartial("CreateAdmin");
+    }
+</div>
+<div id="groupUser" style="display:none">
+    @{
+        Html.RenderPartial("CreateUser", new MDT.ViewModels.GroupUserVM() { AccessCode = code});
+    }
 </div>
 <script type="text/javascript">
     $(function () {
         $('#createToggle').bootstrapToggle();
         if ($('#createToggle').is(':checked')) {
             $('#groupAdmin').show();
+            $('#groupAdminP').show();
+            $.validator.unobtrusive.parse('#NewAdminForm');
             $('#groupUser').hide();
+            $('#groupUserP').hide();
         } else {
             $('#groupAdmin').hide();
+            $('#groupAdminP').hide();
             $('#groupUser').show();
+            $('#groupUserP').show();
+            $.validator.unobtrusive.parse('#NewUserForm');
         }
     });
 </script>

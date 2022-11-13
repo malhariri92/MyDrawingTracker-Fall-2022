@@ -11,21 +11,38 @@
     <h1>@Model.TypeName</h1>
 </div>
 <div class="row">
-    <div class="col-md-3 col-xs-12">
-        @{
-            Html.RenderPartial("DrawTypeRules", Model);
-        }
-    </div>
-    <div class="col-md-3 col-xs-12" id="divDesc">
+
+    <div class="col-md-6 col-xs-12" id="divDesc">
         @{
             Html.RenderPartial("DrawTypeDescription", Model);
         }
     </div>
 
     <div class="col-md-6 col-xs-12">
-        @{
-            Html.RenderPartial("DrawList", Model.Draws);
+        <div class="row">
+            <div class="col-xs-12" id="divRules">
+                @{
+                    Html.RenderPartial("DrawTypeRules", Model);
+                }
+            </div>
+        </div>
+        @if (Model.UserOptions.Any(u => !u.IsApproved))
+        {
+            <div class="row">
+                <div class="col-xs-12" id="divRequests">
+                    @{
+                        Html.RenderPartial("UserRequests", Model.Draws);
+                    }
+                </div>
+            </div>
         }
+        <div class="row">
+            <div class="col-xs-12" id="divDraws">
+                @{
+                    Html.RenderPartial("DrawList", Model.Draws);
+                }
+            </div>
+        </div>
     </div>
 </div>
 
@@ -76,16 +93,15 @@
                 $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
                 $('#popup').modal("show");
                 $('#modaldiv').load('@Url.Action("CreateDraw", "Draw", new { id = Model.DrawTypeId})');
-            });
+     });
 
 
-            $(document).on('click', '#btnDescEdit', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })');
-            });
-
+     $(document).on('click', '#btnDescEdit', function () {
+         $('#modaldiv').empty();
+         $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+         $('#popup').modal("show");
+         $('#modaldiv').load('@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })');
+     });
 
     </script>
 }

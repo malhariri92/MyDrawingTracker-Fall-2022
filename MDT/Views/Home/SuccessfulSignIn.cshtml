@@ -20,7 +20,7 @@
 <div class="modal-footer">
     <div class="form-group">
         <div class="col-md-offset-1 col-md-10">
-            @if (string.IsNullOrEmpty(url))
+            @if (!string.IsNullOrEmpty(url))
             {
                 <button type="button" class="btn btn-success" data-dismiss="modal" onclick="window.top.location.href='@url'">Continue</button>
             }

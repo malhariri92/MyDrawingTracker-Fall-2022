@@ -1,10 +1,12 @@
 ﻿using MDT.Filters;
 using MDT.Models;
+using MDT.Models.DTO;
 using MDT.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -15,6 +17,17 @@ namespace MDT.Controllers
     public class AdminController : BaseController
     {
         public ActionResult Index()
+        {
+            List<GroupVM> vm = db.Groups.Where(g => g.IsApproved ?? false )
+                                       .Include(g => g.GroupUsers)
+                                       .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                       .Include(g => g.GroupInvites)
+                                       .ToList()
+                                       .Select(g => new GroupVM(g))
+                                       .ToList();
+            return View(vm);
+        }
+        public ActionResult Applications()
         {
             if (TempData.ContainsKey("Message"))
             {
@@ -81,7 +94,7 @@ namespace MDT.Controllers
             WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 4, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
-            return RedirectToAction("Index");
+            return RedirectToAction("Applications");
         }
 
         public ActionResult Reject(int id)
@@ -104,7 +117,7 @@ namespace MDT.Controllers
             if (g.IsApproved != null)
             {
                 TempData["Error"] = $"Group:  {g.GroupName} has already been {(g.IsApproved.Value ? "approved" : "rejected")}";
-                return RedirectToAction("Index");
+                return RedirectToAction("Applications");
             }
 
             g.IsApproved = false;
@@ -133,6 +146,44 @@ namespace MDT.Controllers
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
             return RedirectToAction("Index");
+        }
+
+        public ActionResult Impersonate(string email)
+        {
+            UserDTO imp = WebManager.GetUserDTOByEmail(email);
+            if (imp != null)
+            {
+                SessionSetup(imp);
+            }
+
+            return RedirectToAction("Index", "Home", null);
+        }
+
+        private void SessionSetup(UserDTO imp)
+        {
+            string role;
+
+            if (WebManager.IsGroupAdmin(0, imp.UserId))
+            {
+                role = "Site Admin";
+            }
+            else
+            {
+                if (WebManager.IsGroupAdmin(imp.CurrentGroupId, imp.UserId))
+                {
+                    role = "Admin";
+                }
+                else
+                {
+                    role = "User";
+                }
+            }
+
+            Session["User"] = WebManager.GetUserDTO(imp.UserId);
+            Session["Group"] = WebManager.GetGroupDTO(imp.CurrentGroupId);
+            Session["VerifiedUser"] = WebManager.GetUserDTO(imp.UserId).IsVerified;
+            Session["ApprovedGroup"] = (WebManager.GetGroupDTO(imp.CurrentGroupId).IsApproved ?? false);
+            Session["Ident"] = new GenericPrincipal(new GenericIdentity(imp.EmailAddress), new string[] { role });
         }
     }
 }

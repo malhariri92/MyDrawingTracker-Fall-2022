@@ -16,7 +16,7 @@ namespace MDT.ViewModels
         [MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
         public string TypeName { get; set; }
 
-        [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greataer than $0.0")]
+        [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greataer than 0")]
         [Display(Name = "Entry Cost")]
         public decimal EntryCost { get; set; }
 
@@ -32,10 +32,11 @@ namespace MDT.ViewModels
         public int EntriesToDraw { get; set; }
 
         [Display(Name = "Max entries per user")]
+        [Range(0, int.MaxValue, ErrorMessage = "{0} cannot be negative")]
         public int MaxEntriesPerUser { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0")]
         [DefaultValue(1)]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0")]
         [Display(Name = "Number of draws")]
         public int NumberOfDraws { get; set; }
 
@@ -63,6 +64,9 @@ namespace MDT.ViewModels
         [Display(Name = "Isolate balance?")]
         public bool IsolateBalance { get; set; }
 
+        [Display(Name = "Allow allocation?")]
+        public bool AllowAllocation { get; set; }
+
         [Display(Name = "Initial user balance?")]
         [Range(0, double.MaxValue, ErrorMessage = "{0} cannot be negative")]
         public decimal InitialUserBalance { get; set; }
@@ -76,12 +80,15 @@ namespace MDT.ViewModels
 
         public List<DrawVM> Draws { get; set; }
 
+        public List<UserOptionVM> UserOptions { get; set; }
+
         public DrawTypeVM()
         {
             Schedule = new ScheduleVM();
             NumberOfDraws = 1;
             Draws = new List<DrawVM>();
             Descriptions = new List<Description>();
+            UserOptions = new List<UserOptionVM>();
         }
 
         /// <summary>
@@ -112,6 +119,7 @@ namespace MDT.ViewModels
                 NumberOfDraws = dt.NumberOfDraws;
                 InitialUserBalance = dt.InitialUserBalance;
                 IsolateBalance = dt.IsolateBalance;
+                AllowAllocation = dt.AllowAllocation;
                 Draws = dt.Draws.Select(d => new DrawVM(d)).ToList();
             }
         }
@@ -123,6 +131,11 @@ namespace MDT.ViewModels
             {
                 d.IsActive = true;
             }
+        }
+
+        public void SetUserOptions(List<UserDrawTypeOption> opts)
+        {
+            UserOptions = opts.Select(o => new UserOptionVM(o)).ToList(); 
         }
     }
 }

@@ -11,9 +11,16 @@ namespace MDT.Filters
 
         public void OnAuthentication(AuthenticationContext filterContext)
         {
+            
             UserDTO user = (UserDTO)filterContext.HttpContext.Session["User"];
 
-
+            if (filterContext.RequestContext.RouteData.Values["controller"].ToString().Equals("home", System.StringComparison.CurrentCultureIgnoreCase) &&
+                filterContext.RequestContext.RouteData.Values["action"].ToString().Equals("verify", System.StringComparison.CurrentCultureIgnoreCase))
+            {
+                string key = filterContext.HttpContext.Request.Params["key"].ToString();
+                filterContext.HttpContext.Session["VerifyKey"] = key;
+            }
+            
             if (user == null)
             {
                 filterContext.HttpContext.Session["RedirectUrl"] = filterContext.HttpContext.Request.RawUrl;

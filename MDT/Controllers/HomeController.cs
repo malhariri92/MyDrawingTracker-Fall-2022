@@ -20,8 +20,12 @@ namespace MDT.Controllers
     {
         private DbEntities db = new DbEntities();
 
-        public ActionResult Index()
+        public ActionResult Index(string code = null)
         {
+            if (code != null)
+            {
+                Session["AccessCode"] = code;
+            }
 
             if (TempData["Message"] != null)
             {
@@ -38,8 +42,11 @@ namespace MDT.Controllers
         }
 
 
+
+
         public ActionResult NewUser()
         {
+            ViewBag.AccessCode = (string)Session["AccessCode"];
             return PartialView();
         }
 

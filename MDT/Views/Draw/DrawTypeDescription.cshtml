@@ -21,17 +21,19 @@
 @if (Model.Descriptions.Any())
 {
     <div class="row">
-        @foreach (Description d in Model.Descriptions)
-        {
-            if (!string.IsNullOrEmpty(d.Title))
+        <div class="col-xs-12">
+            @foreach (Description d in Model.Descriptions)
             {
-                <h3>@d.Title</h3>
+                if (!string.IsNullOrEmpty(d.Title))
+                {
+                    <h3>@d.Title</h3>
+                }
+                if (!string.IsNullOrEmpty(d.TextBody))
+                {
+                    <p>@d.TextBody</p>
+                }
             }
-            if (!string.IsNullOrEmpty(d.TextBody))
-            {
-                <p>@d.TextBody</p>
-            }
-        }
+        </div>
     </div>
 }
 else

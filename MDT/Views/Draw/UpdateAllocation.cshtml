@@ -5,7 +5,7 @@
 </div>
 <div class="modal-body">
 
-    @using (Ajax.BeginForm("UpdateAllocation", "Draw", null, new AjaxOptions { HttpMethod="POST", UpdateTargetId="modaldiv" })
+    @using (Ajax.BeginForm("UpdateAllocation", "Draw", null, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "modaldiv" }))
     {
         @Html.AntiForgeryToken()
 

@@ -110,12 +110,44 @@ namespace MDT.Controllers
                     }
                     else
                     {
+                        ViewBag.Message = $"{targetUser.User.UserName} has been removed";
                         db.Entry(targetUser).State = EntityState.Deleted;
                         db.SaveChanges();
-                        ViewBag.Message = $"{targetUser.User.UserName} has been removed";
+
+                        User u = db.Users.Find(id);
+                        List<GroupUser> groupUsers = db.GroupUsers.Where(gu => gu.UserId == id).ToList();
+                        if (!groupUsers.Any(gu => gu.Group.IsActive))
+                        {
+                            if (!groupUsers.Any(gu => gu.GroupId == -1))
+                            {
+                                GroupUser groupUser = new GroupUser()
+                                {
+                                    GroupId = -1,
+                                    UserId = id,
+                                    IsAdmin = false,
+                                    IsApproved = true,
+                                    IsOwner = false,
+                                    CanManageDrawings = false,
+                                    CanManageDrawTypes = false,
+                                    CanManageTransactions = false,
+                                    CanManageUsers = false
+                                };
+
+                                db.Entry(groupUser).State = EntityState.Added;
+                                u.CurrentGroupId = -1;
+                            }
+                        }
+                        else
+                        {
+                            u.CurrentGroupId = groupUsers.Where(gu => gu.Group.IsActive).FirstOrDefault().GroupId;
+                        }
+
+                        db.Entry(u).State = EntityState.Modified;
+                        db.SaveChanges();
                     }
                 }
             }
+
             return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
 
@@ -223,35 +255,40 @@ namespace MDT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult NewInvite(GroupInvite vm)
         {
-            GroupInvite invite = db.GroupInvites.Find(group.GroupId, vm.EmailAddress);
-            if (invite != null)
+            List<string> Emails = vm.EmailAddress.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach (string email in Emails)
             {
-                ViewBag.Error = $"{invite.EmailAddress} has already been invited to this group.";
-                return PartialView("GroupInvites", GetGroupVM(group.GroupId));
-            }
+                string address = email.Trim().ToLower();
+                GroupInvite invite = db.GroupInvites.Find(group.GroupId, address);
+                if (invite != null)
+                {
+                    ViewBag.Error += $"{invite.EmailAddress} has already been invited to this group.<br />";
+                    continue;
+                }
 
-            GroupUser gu = db.GroupUsers.Where(u => u.GroupId == group.GroupId && u.User.EmailAddress.Equals(vm.EmailAddress, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
-            if (gu != null)
-            {
-                ViewBag.Error = $"{gu.User.UserName} is already a {(gu.IsApproved ? "" : "pending ")} member of this group.";
-                return PartialView("GroupInvites", GetGroupVM(group.GroupId));
-            }
+                GroupUser gu = db.GroupUsers.Where(u => u.GroupId == group.GroupId && u.User.EmailAddress.Equals(address, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                if (gu != null)
+                {
+                    ViewBag.Error += $"{gu.User.UserName} ({address}) is already a {(gu.IsApproved ? "" : "pending ")} member of this group.<br />";
+                    continue;
+                }
 
-            UserDTO targetUser = WebManager.GetUserDTOByEmail(vm.EmailAddress);
+                UserDTO targetUser = WebManager.GetUserDTOByEmail(address);
 
-            invite = new GroupInvite()
-            {
-                GroupId = group.GroupId,
-                EmailAddress = vm.EmailAddress,
-                LastInviteDate = DateTime.Now,
-                InviteCount = 1
-            };
+                invite = new GroupInvite()
+                {
+                    GroupId = group.GroupId,
+                    EmailAddress = address,
+                    LastInviteDate = DateTime.Now,
+                    InviteCount = 1
+                };
 
 
-            db.Entry(invite).State = EntityState.Added;
-            db.SaveChanges();
+                db.Entry(invite).State = EntityState.Added;
+                db.SaveChanges();
 
-            Dictionary<string, string> variables = new Dictionary<string, string>()
+                Dictionary<string, string> variables = new Dictionary<string, string>()
                 {
                     { "[[Name]]", targetUser?.UserName ?? "" },
                     { "[[AdminName]]", user.UserName },
@@ -260,17 +297,16 @@ namespace MDT.Controllers
                 };
 
 
-            if (WebManager.SendTemplateEmail(targetUser == null ? $"{invite.EmailAddress}" : $"{targetUser.EmailAddress}\t{targetUser.UserName}", targetUser == null ? 11 : 12, variables))
-            {
-                ViewBag.Message = $"Invitation reminder has been sent to {invite.EmailAddress}";
-            }
-            else
-            {
+                if (WebManager.SendTemplateEmail(targetUser == null ? $"{address}" : $"{address}\t{targetUser.UserName}", targetUser == null ? 11 : 12, variables))
+                {
+                    ViewBag.Message += $"An invitation has been sent to {address}.<br />";
+                }
+                else
+                {
 
-                ViewBag.Error = $"Error sending invitation reminder to {invite.EmailAddress}. Please try again.";
+                    ViewBag.Error += $"Error sending invitation to {address}. <br />";
+                }
             }
-
-            ViewBag.Message = $"An invite has been sent to {vm.EmailAddress}.";
             return PartialView("GroupInvites", GetGroupVM(group.GroupId));
 
         }
@@ -312,7 +348,6 @@ namespace MDT.Controllers
             return PartialView("GroupInvites", GetGroupVM(group.GroupId));
         }
 
-        [ValidateAntiForgeryToken]
         public ActionResult DeleteInvite(string email)
         {
 
@@ -406,7 +441,7 @@ namespace MDT.Controllers
                 return PartialView("GroupMembers", GetGroupVM(group.GroupId));
 
             }
-            
+
             if (!usr.IsApproved)
             {
                 ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
@@ -460,7 +495,7 @@ namespace MDT.Controllers
         [AdminFilter(Role = "Admin")]
         public ActionResult Permissions(int id)
         {
-            GroupUser gu = db.GroupUsers.Find(group.GroupId,id);
+            GroupUser gu = db.GroupUsers.Find(group.GroupId, id);
             if (gu == null)
             {
                 ViewBag.Error = "Error, could not find this user in this group.";

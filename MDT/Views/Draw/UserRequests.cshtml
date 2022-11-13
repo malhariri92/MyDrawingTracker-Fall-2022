@@ -1,0 +1,46 @@
+﻿@using MDT.Models
+@using MDT.Models.DTO
+@using MDT.ViewModels
+@model List<UserOptionVM>
+
+@{
+    UserDTO user = (UserDTO)Session["User"];
+}
+<br />
+<br />
+<div class="row">
+    <h3>
+       User Requests
+    </h3>
+</div>
+
+@if (!Model.Any(o => o.IsApproved))
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserOptionVM opt in Model.Where(O => !O.IsApproved))
+            {
+                <tr>
+                    <td>@opt.Name</td>
+                    <td>
+                        <button type="button" class="btn btn-xs btn-success btnPanel" data-action="" data-panel=""><span class="fa fa-check-circle"></span></button>
+                        <button type="button" class="btn btn-xs btn-danger btnPanel" data-action="" data-panel=""><span class="fa fa-times-circle"></span></button>
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div>
+        <p>No pending user requests.</p>
+    </div>
+}

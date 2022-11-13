@@ -7,14 +7,14 @@
 @if (ViewBag.Message != null)
 {
     <div class="row text-center">
-        <h3 class="text-success">@ViewBag.Message</h3>
+        <h3 class="text-success">@Html.Raw(ViewBag.Message)</h3>
     </div>
 }
 
 @if (ViewBag.Error != null)
 {
     <div class="row text-center">
-        <h3 class="text-danger">@ViewBag.Error</h3>
+        <h3 class="text-danger">@Html.Raw(ViewBag.Error)</h3>
     </div>
 }
 
@@ -37,8 +37,8 @@
                     <td>@u.EmailAddress</td>
                     <td>@u.LastInviteDate.ToString("yyyy-MM-dd HH:mm")</td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-info btnMember" data-action="@Url.Action("SendReminder", "Group",new { email = u.EmailAddress })" title="Send Reminder"><span class="fa fa-envelope"></span></button>
-                        <button type="button" class="btn btn-sm btn-danger btnMember" data-action="@Url.Action("DeleteInvite", "Group",new { email = u.EmailAddress })" title="Delete Invitation"><span class="fa fa-trash"></span></button>
+                        <button type="button" class="btn btn-xs btn-info btnMember" data-action="@Url.Action("SendReminder", "Group",new { email = u.EmailAddress })" title="Send Reminder"><span class="fa fa-envelope"></span></button>
+                        <button type="button" class="btn btn-xs btn-danger btnMember" data-action="@Url.Action("DeleteInvite", "Group",new { email = u.EmailAddress })" title="Delete Invitation"><span class="fa fa-trash"></span></button>
                     </td>
                 </tr>
             }

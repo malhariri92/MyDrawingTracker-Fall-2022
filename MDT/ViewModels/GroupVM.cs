@@ -43,6 +43,7 @@ namespace MDT.ViewModels
                 Members = g.GroupUsers.Where(u => u.IsApproved && !u.IsAdmin).Select(u => new UserVM(u)).ToList();
                 PendingMembers = g.GroupUsers.Where(u => !u.IsApproved).Select(u => new UserVM(u)).ToList();
                 OwnerUserId = g.GroupUsers.Where(u => u.IsOwner).Select(u => u.UserId).FirstOrDefault();
+                Invites = g.GroupInvites.ToList();
                 AccessCode = g.AccessCode;
                 JoinConfirmation = g.JoinConfirmationRequired;
             }
