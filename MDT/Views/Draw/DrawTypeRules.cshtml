@@ -5,6 +5,7 @@
 
 @{
     UserDTO user = (UserDTO)Session["User"];
+    UserOptionVM udto = Model.UserOptions.Find(u => u.UserId == user.UserId);
 }
 <br />
 <br />
@@ -20,7 +21,7 @@
 <div class="row">
     <div class="col-xs-12">
         <b>Entry Cost: </b> @Model.EntryCost <br />
-        <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "∞" : $"{Model.MaxEntriesPerUser}" ) <br />
+        <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "No Limit" : $"{Model.MaxEntriesPerUser}" ) <br />
         <b>Entries Selected: </b> @Model.EntriesToDraw <br />
         @if (Model.EntriesToDraw > 1)
         {
@@ -42,13 +43,31 @@
             <b>Using: </b> @s <br />
         }
 
-        @if (Model.JoinConfirmationRequired)
+        @if (udto == null)
         {
-            <button class="btn btn-sm btn-warning" type="button" id="btnRequest">Request to Join</button>
+            if (Model.JoinConfirmationRequired)
+            {
+                <button class="btn btn-sm btn-warning btnPanel" type="button" data-action="@Url.Action("JoinDrawType", "Draw", new { id = Model.DrawTypeId})" data-panel="divRules">Request to Join</button>
+            }
+            else
+            {
+                <button class="btn btn-sm btn-success btnPanel" type="button" data-action="@Url.Action("JoinDrawType", "Draw", new { id = Model.DrawTypeId})" data-panel="divRules">Join</button>
+            }
         }
         else
         {
-            <button class="btn btn-sm btn-success" type="button" id="btnEnter">Join</button>
+            if (udto.IsApproved)
+            {
+                <b>Status: </b> <span> Joined </span><br />
+                if (Model.AllowAllocation)
+                {
+                    <button class="btn btn-sm btn-success btnModal" type="button" id="btnAllocate" data-action="@Url.Action("UpdateAllocation", "Draw", new { id = Model.DrawTypeId})">Allocate Funds</button>
+                }
+            }
+            else
+            {
+                <button class="btn btn-sm btn-warning" type="button" disabled title="Pending approval from group admin">Request to Join</button>
+            }
         }
     </div>
 </div>

@@ -34,12 +34,12 @@ namespace MDT.Controllers
 
         }
 
-        [AdminFilter(Role = "Admin", Permission ="DrawTypes")]
+        [AdminFilter(Role = "Admin", Permission = "DrawTypes")]
         public ActionResult EditDrawType(int id = 0)
         {
             DrawTypeVM vm = GetDrawTypeVM(id);
             return PartialView(vm);
-            
+
         }
 
         [HttpPost]
@@ -85,6 +85,8 @@ namespace MDT.Controllers
                 dt.RemoveDrawnUsers = vm.RemoveDrawnUsers;
                 dt.JoinConfirmationRequired = vm.JoinConfirmationRequired;
                 dt.RefundConfirmationRequired = vm.RefundConfirmationRequired;
+                dt.IsolateBalance = vm.IsolateBalance;
+                dt.AllowAllocation = vm.AllowAllocation;
                 dt.AutoDraw = vm.AutoDraw;
                 dt.NumberOfDraws = vm.NumberOfDraws;
                 dt.InitialUserBalance = vm.InitialUserBalance;
@@ -207,12 +209,31 @@ namespace MDT.Controllers
             return PartialView("DrawTypeRules");
         }
 
+        public ActionResult Approve(int id, int uId)
+        {
+            UserDrawTypeOption udto = GetUserDrawTypeOption(id, uId);
+            udto.IsApproved = true;
+            db.Entry(udto).State = EntityState.Modified;
+            db.SaveChanges();
+            return PartialView("UserRequests", GetDrawTypeVM(id).UserOptions);
+        }
+
+        public ActionResult Reject(int id, int uId)
+        {
+            UserDrawTypeOption udto = GetUserDrawTypeOption(id, uId);
+            udto.IsApproved = true;
+            db.Entry(udto).State = EntityState.Deleted;
+            db.SaveChanges();
+            return PartialView("UserRequests", GetDrawTypeVM(id).UserOptions);
+        }
+
+
         public ActionResult UpdateAllocation(int id)
         {
             DrawType dt = db.DrawTypes.Find(id);
             if (dt == null || dt.GroupId != group.GroupId)
             {
-                return View("Error");
+                return PartialView("Error");
             }
 
             ViewBag.Users = GetDdl(db.GroupUsers);
@@ -228,6 +249,7 @@ namespace MDT.Controllers
             DrawType dt = db.DrawTypes.Find(vm.DrawTypeId);
             if (dt == null || dt.GroupId != group.GroupId)
             {
+                Response.StatusCode = 400;
                 return PartialView("Error");
             }
 
@@ -242,7 +264,8 @@ namespace MDT.Controllers
 
             if (!BalanceAvailable(source.LedgerId, vm.UserId, vm.Amount))
             {
-                return PartialView("Error");
+                Response.StatusCode = 400;
+                return PartialView("InsufficientFunds");
             }
 
             UserDrawTypeOption option = GetUserDrawTypeOption(vm.DrawTypeId, vm.UserId);
@@ -260,7 +283,7 @@ namespace MDT.Controllers
                     foreach (Draw draw in Draws)
                     {
                         int entryCount = draw.DrawEntries.Where(e => e.UserId == vm.UserId).Count();
-                        int maxEntries = draw.DrawOption.MaxEntriesPerUser == 0 ? option.MaxPlay : draw.DrawOption.MaxEntriesPerUser > option.MaxPlay ? option.MaxPlay : draw.DrawOption.MaxEntriesPerUser;
+                        int maxEntries = (draw.DrawOption?.MaxEntriesPerUser ?? dt.MaxEntriesPerUser) == 0 ? option.MaxPlay : (draw.DrawOption?.MaxEntriesPerUser ?? dt.MaxEntriesPerUser) > option.MaxPlay ? option.MaxPlay : (draw.DrawOption?.MaxEntriesPerUser ?? dt.MaxEntriesPerUser);
 
                         if (entryCount < maxEntries)
                         {
@@ -521,7 +544,7 @@ namespace MDT.Controllers
             {
                 int count = 0;
 
-                foreach(DrawEntry entry in el)
+                foreach (DrawEntry entry in el)
                 {
                     if (entry.UserId == member.UserId)
                     {
@@ -529,10 +552,10 @@ namespace MDT.Controllers
                     }
                 }
 
-                if(count > 0)
+                if (count > 0)
                 {
                     vm.Add(new UserDrawEntriesVM(id, member.UserId, member.UserName, count));
-                    if(member.UserId == user.UserId)
+                    if (member.UserId == user.UserId)
                     {
                         myEntries = count;
                     }
@@ -564,9 +587,9 @@ namespace MDT.Controllers
             {
                 return null;
             }
-            RemoveDrawEntries(db.DrawEntries.Where(de => de.DrawId == vm.DrawId && de.UserId ==vm.UserId).Take(vm.RemovedEntries).Select(de => de.EntryId).ToList(), true);
+            RemoveDrawEntries(db.DrawEntries.Where(de => de.DrawId == vm.DrawId && de.UserId == vm.UserId).Take(vm.RemovedEntries).Select(de => de.EntryId).ToList(), true);
 
-            
+
             return null;
         }
 
@@ -607,11 +630,11 @@ namespace MDT.Controllers
 
             return PartialView(winners);
         }
-        
+
         [AdminFilter(Role = "Admin")]
         public void SingleWinnerDrawing(DrawVM vm)
         {
-            var entries= db.DrawEntries.Where(de => de.DrawId == vm.DrawId).ToList();
+            var entries = db.DrawEntries.Where(de => de.DrawId == vm.DrawId).ToList();
             if (entries.Any())
             {
                 Random r = new Random();
@@ -637,8 +660,8 @@ namespace MDT.Controllers
 
             //possible error redirect depending on how you plan to implement this?
         }
-        
-        
+
+
         public ActionResult SelectWinnersSUP(int drawId)
         {
             int diffUsers = 0;
@@ -719,7 +742,7 @@ namespace MDT.Controllers
         {
             List<DrawResult> drawResults = db.DrawResults.Where(r => r.DrawId == drawId).ToList();
             List<DrawEntry> we = new List<DrawEntry>();
-            foreach(DrawResult result in drawResults)
+            foreach (DrawResult result in drawResults)
             {
                 DrawEntry de = db.DrawEntries.Find(result.EntryId);
                 we.Add(de);

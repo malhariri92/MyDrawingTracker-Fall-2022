@@ -63,7 +63,8 @@
             {
                 if (WebManager.IsGroupAdmin(0, user.UserId))
                 {
-                    <li>@Html.ActionLink("Group Requests", "Index", "Admin", null, null)</li>
+                    <li>@Html.ActionLink("Group List", "Index", "Admin", null, null)</li>
+                    <li>@Html.ActionLink("Group Requests", "Applications", "Admin", null, null)</li>
                 }
                 <li>@Html.ActionLink("Sign Out", "SignOut", "Home", null, null)</li>
             }

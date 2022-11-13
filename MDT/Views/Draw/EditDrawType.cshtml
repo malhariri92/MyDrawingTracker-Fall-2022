@@ -123,6 +123,23 @@
                     @Html.EditorFor(model => model.RefundConfirmationRequired, new { htmlAttributes = new { @class = "switch" } })
                 </div>
             </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsolateBalance, htmlAttributes: new { @class = "col-xs-4" })
+                <div class="col-xs-8">
+                    @Html.EditorFor(model => model.IsolateBalance, new { htmlAttributes = new { @class = "switch" } })
+                </div>
+            </div>
+
+            <div id="allocate" style="@(Model.IsolateBalance ? "display:none" : "")">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AllowAllocation, htmlAttributes: new { @class = "col-xs-4" })
+                    <div class="col-xs-8">
+                        @Html.EditorFor(model => model.AllowAllocation, new { htmlAttributes = new { @class = "switch" } })
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 @Html.LabelFor(model => model.HasSchedule, htmlAttributes: new { @class = "col-xs-4" })
                 <div class="col-xs-8`">
@@ -137,7 +154,7 @@
                             <tr>
                                 @for (int i = 0; i < 7; i++)
                                 {
-                                <th class="text-center">@Html.LabelFor(modelItem => Model.Schedule.Days[i].DrawTime, Model.Schedule.Days[i].Abbr,new { })</th>
+                                    <th class="text-center">@Html.LabelFor(modelItem => Model.Schedule.Days[i].DrawTime, Model.Schedule.Days[i].Abbr, new { })</th>
                                 }
                             </tr>
                         </thead>
@@ -145,7 +162,7 @@
                             <tr>
                                 @for (int i = 0; i < 7; i++)
                                 {
-                                    <td class="text-center">@Html.EditorFor(modelItem => Model.Schedule.Days[i].DrawTime, new { htmlAttributes = new { style= "max-width:50px;text-align:center;" } })</td>
+                                    <td class="text-center">@Html.EditorFor(modelItem => Model.Schedule.Days[i].DrawTime, new { htmlAttributes = new { style = "max-width:50px;text-align:center;" } })</td>
                                 }
                             </tr>
 
@@ -192,6 +209,7 @@
 
     });
 
+
     $(document).on('change', '#EntriesToDraw', function () {
         let val = +$(this).val();
         if (val > 1) {
@@ -207,6 +225,16 @@
             $('#schedule').show();
         } else {
             $('#schedule').hide();
+        }
+
+    });
+
+    $(document).on('change', '#IsolateBalance', function () {
+        let val = $(this).is(':checked');
+        if (val) {
+            $('#allocate').hide();
+        } else {
+            $('#allocate').show();
         }
 
     });

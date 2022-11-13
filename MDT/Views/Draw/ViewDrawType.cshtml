@@ -26,6 +26,16 @@
                 }
             </div>
         </div>
+        @if (Model.UserOptions.Any(u => !u.IsApproved))
+        {
+            <div class="row">
+                <div class="col-xs-12" id="divRequests">
+                    @{
+                        Html.RenderPartial("UserRequests", Model.Draws);
+                    }
+                </div>
+            </div>
+        }
         <div class="row">
             <div class="col-xs-12" id="divDraws">
                 @{

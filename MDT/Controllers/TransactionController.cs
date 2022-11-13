@@ -15,27 +15,19 @@ namespace MDT.Controllers
     {
         public ActionResult Index()
         {
-            bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
-            TransactionListVM vm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId && (admin || t.UserId == user.UserId)).ToList(),
-                                                         db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId && (admin || pt.UserId == user.UserId)).ToList());
+            TransactionListVM vm = GetTransactionListVM();
             return View(vm);
         }
 
         public ActionResult Transactions()
         {
-            bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
-            TransactionListVM vm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId && (admin || t.UserId == user.UserId)).ToList(),
-                                                         db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId && (admin || pt.UserId == user.UserId)).ToList());
-
+            TransactionListVM vm = GetTransactionListVM();
             return PartialView(vm);
         }
 
         public ActionResult TransactionsPending()
         {
-            bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
-            TransactionListVM vm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId && (admin || t.UserId == user.UserId)).ToList(),
-                                                         db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId && (admin || pt.UserId == user.UserId)).ToList());
-
+            TransactionListVM vm = GetTransactionListVM();
             return PartialView(vm);
         }
 
@@ -55,24 +47,24 @@ namespace MDT.Controllers
         {
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = 400;
                 return View(vm);
             }
             CreateTransaction(vm.UserId, vm.TransactionTypeId, vm.Amount, 0, false, group.AccountBalanceLedgerId, true);
 
-            TransactionListVM tlvm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId).ToList(),
-                                                           db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId).ToList());
+            TransactionListVM tlvm = GetTransactionListVM();
             ViewBag.Message = "Transaction has been added.";
             return PartialView("Transactions", tlvm);
         }
 
         [AdminFilter(Role = "Admin", Permission = "Transactions")]
-        public ActionResult AcceptTransaction(int id)
+        public ActionResult Accept(int id)
         {
             PendingTransaction pending = db.PendingTransactions.Find(id);
             if (pending == null || pending.GroupId != group.GroupId)
             {
                 ViewBag.Error = "Invalid pending transaction";
-             
+
             }
             else
             {
@@ -82,13 +74,12 @@ namespace MDT.Controllers
                 ViewBag.Message = "Pending transaction approved";
                 ViewBag.RefreshTransactions = true;
             }
-            TransactionListVM tlvm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId).ToList(),
-                                                           db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId).ToList());
+            TransactionListVM tlvm = GetTransactionListVM();
             return PartialView("TransactionsPending", tlvm);
         }
 
         [AdminFilter(Role = "Admin", Permission = "Transactions")]
-        public ActionResult RejectTransaction(int id)
+        public ActionResult Reject(int id)
         {
             PendingTransaction pending = db.PendingTransactions.Find(id);
             if (pending == null || pending.GroupId != group.GroupId)
@@ -102,9 +93,7 @@ namespace MDT.Controllers
                 ViewBag.Message = "Pending transaction rejected";
             }
 
-            bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
-            TransactionListVM tlvm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId).ToList(),
-                                                           db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId).ToList());
+            TransactionListVM tlvm = GetTransactionListVM();
             return PartialView("TransactionsPending", tlvm);
         }
 
@@ -113,7 +102,7 @@ namespace MDT.Controllers
             TransactionVM vm = new TransactionVM();
             vm.UserId = user.UserId;
             ViewBag.TransactionTypes = GetDdl(db.TransactionTypes);
-            return View(vm);
+            return PartialView(vm);
         }
 
         [HttpPost]
@@ -122,30 +111,56 @@ namespace MDT.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(vm);
+                Response.StatusCode = 400;
+                return PartialView(vm);
             }
 
-            else
+            PendingTransaction entry = new PendingTransaction()
             {
-                PendingTransaction entry = new PendingTransaction()
-                {
-                    TransactionTypeId = vm.TransactionTypeId,
-                    Amount = vm.Amount,
-                    UserId = user.UserId,
-                    GroupId = group.GroupId,
-                    TransactionDateTime = DateTime.Now,
-                    SourceLedger = 0,
-                    DestinationLedger = group.AccountBalanceLedgerId
-                };
+                TransactionTypeId = vm.TransactionTypeId,
+                Amount = vm.Amount,
+                UserId = user.UserId,
+                GroupId = group.GroupId,
+                TransactionDateTime = DateTime.Now,
+                SourceLedger = 0,
+                DestinationLedger = group.AccountBalanceLedgerId
+            };
 
-                db.PendingTransactions.Add(entry);
-                db.SaveChanges();
+            db.PendingTransactions.Add(entry);
+            db.SaveChanges();
 
-                TransactionListVM tlvm = new TransactionListVM(db.Transactions.Where(t => t.GroupId == group.GroupId &&  t.UserId == user.UserId).ToList(),
-                                                               db.PendingTransactions.Where(pt => pt.GroupId == group.GroupId && pt.UserId == user.UserId).ToList());
-                ViewBag.Message = "Pending transaction has been reported.";
-                return PartialView("TransactionsPending", tlvm);
-            }
+            TransactionListVM tlvm = GetTransactionListVM();
+            ViewBag.Message = "Pending transaction has been reported.";
+            return PartialView("TransactionsPending", tlvm);
+        }
+
+        private TransactionListVM GetTransactionListVM()
+        {
+            return new TransactionListVM(GetTransactions(), GetPending());
+        }
+
+        private List<Transaction> GetTransactions()
+        {
+            bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
+            return db.Transactions.Where(t => t.GroupId == group.GroupId && (admin || t.UserId == user.UserId))
+                                  .Include(t => t.User)
+                                  .Include(t => t.TransactionType)
+                                  .Include(t => t.FromLedger)
+                                  .Include(t => t.ToLedger)
+                                  .Include(t => t.User)
+                                  .ToList();
+        }
+
+        private List<PendingTransaction> GetPending()
+        {
+            bool admin = WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || WebManager.HasPermission(user.CurrentGroupId, user.UserId, "Transactions");
+            return db.PendingTransactions.Where(t => t.GroupId == group.GroupId && (admin || t.UserId == user.UserId))
+                                         .Include(t => t.User)
+                                         .Include(t => t.TransactionType)
+                                         .Include(t => t.FromLedger)
+                                         .Include(t => t.ToLedger)
+                                         .Include(t => t.User)
+                                         .ToList();
         }
     }
 }

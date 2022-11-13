@@ -25,7 +25,7 @@
         }
         <b>Ends: </b> @Model.EndDate.ToString("yyyy-MM-dd HH:mm")<br />
         <b>Entry Cost: </b> @Model.EntryCost <br />
-        <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "∞" : $"{Model.MaxEntriesPerUser}" ) <br />
+        <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "No Limit" : $"{Model.MaxEntriesPerUser}" ) <br />
         <b>Entries Selected: </b> @Model.EntriesToDraw <br />
         @if (Model.EntriesToDraw > 1)
         {

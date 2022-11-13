@@ -55,11 +55,18 @@
             $('#modaldiv').load(action);
         });
 
+        $(document).on('click', '.btnPanel', function () {
+            let action = $(this).attr('data-action');
+            let panel = `#${$(this).attr('data-panel')}`;
+            $(panel).empty();
+            $(panel).append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $(panel).load(action);
+        });
+
         function hideModal() {
             $('#popup').modal("hide");
         }
         function showModalError(result) {
-            console.log(result);
             $('#modaldiv').empty();
             $('#modaldiv').append(result.responseText);
         }

@@ -113,9 +113,41 @@ namespace MDT.Controllers
                         ViewBag.Message = $"{targetUser.User.UserName} has been removed";
                         db.Entry(targetUser).State = EntityState.Deleted;
                         db.SaveChanges();
+
+                        User u = db.Users.Find(id);
+                        List<GroupUser> groupUsers = db.GroupUsers.Where(gu => gu.UserId == id).ToList();
+                        if (!groupUsers.Any(gu => gu.Group.IsActive))
+                        {
+                            if (!groupUsers.Any(gu => gu.GroupId == -1))
+                            {
+                                GroupUser groupUser = new GroupUser()
+                                {
+                                    GroupId = -1,
+                                    UserId = id,
+                                    IsAdmin = false,
+                                    IsApproved = true,
+                                    IsOwner = false,
+                                    CanManageDrawings = false,
+                                    CanManageDrawTypes = false,
+                                    CanManageTransactions = false,
+                                    CanManageUsers = false
+                                };
+
+                                db.Entry(groupUser).State = EntityState.Added;
+                                u.CurrentGroupId = -1;
+                            }
+                        }
+                        else
+                        {
+                            u.CurrentGroupId = groupUsers.Where(gu => gu.Group.IsActive).FirstOrDefault().GroupId;
+                        }
+
+                        db.Entry(u).State = EntityState.Modified;
+                        db.SaveChanges();
                     }
                 }
             }
+
             return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
 
@@ -409,7 +441,7 @@ namespace MDT.Controllers
                 return PartialView("GroupMembers", GetGroupVM(group.GroupId));
 
             }
-            
+
             if (!usr.IsApproved)
             {
                 ViewBag.Error = $"{usr.User.UserName} has not yet been approved!";
@@ -463,7 +495,7 @@ namespace MDT.Controllers
         [AdminFilter(Role = "Admin")]
         public ActionResult Permissions(int id)
         {
-            GroupUser gu = db.GroupUsers.Find(group.GroupId,id);
+            GroupUser gu = db.GroupUsers.Find(group.GroupId, id);
             if (gu == null)
             {
                 ViewBag.Error = "Error, could not find this user in this group.";

@@ -54,7 +54,7 @@
                 Completed Draws <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                @foreach (DrawVM dvm in Model.ActiveDraws.OrderBy(d => d.EndDate))
+                @foreach (DrawVM dvm in Model.EndedDraws.OrderByDescending(d => d.EndDate))
                 {
                     <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
                 }

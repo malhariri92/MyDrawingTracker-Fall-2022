@@ -180,6 +180,7 @@ namespace MDT.Controllers
             if (drawType != null)
             {
                 vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectTypeId == 2 && d.ObjectId == drawType.DrawTypeId).ToList());
+                vm.SetUserOptions(db.UserDrawTypeOptions.Where(d => d.DrawTypeId == drawType.DrawTypeId).Include(u => u.User).ToList());
             }
 
             return vm;
@@ -230,6 +231,7 @@ namespace MDT.Controllers
                     DrawTypeId = drawtypeId,
                     UserId = userId,
                     PlayAll = false,
+                    IsApproved = false,
                     MaxPlay = 0,
                     Priority = 1
                 };
@@ -323,7 +325,7 @@ namespace MDT.Controllers
             }
 
             int userEntryCount = d.DrawEntries.Where(e => e.UserId == userId).Count();
-            if (d.DrawOption.MaxEntriesPerUser != 0 && userEntryCount + count > d.DrawOption.MaxEntriesPerUser)
+            if ((d.DrawOption?.MaxEntriesPerUser ?? dt.MaxEntriesPerUser) != 0 && userEntryCount + count > (d.DrawOption?.MaxEntriesPerUser ?? dt.MaxEntriesPerUser))
             {
                 TempData["Error"] = "Request causes user entries to exceed maximum allowed entries.";
                 return false;

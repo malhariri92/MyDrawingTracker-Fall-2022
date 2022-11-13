@@ -7,7 +7,9 @@
     UserDTO user = (UserDTO)Session["user"];
 }
 <div class="col-md-3">
-    <h1>About Me</h1>
+    <h1>About Me
+        <button type="button" class="btn btn-success btn-xs btnModal" data-action="@Url.Action("Edit","User", null)" title="Change user details"><span class="fa fa-pencil"></span></button>
+    </h1>
     <p>
         <b>Name: </b> @Model.UserName <br />
         <b>Email: </b> @Model.EmailAddress <br />
@@ -66,8 +68,9 @@
             }
         }
         <br />
-        @Ajax.ActionLink("Change Password", "ChangePass", null, new AjaxOptions() { UpdateTargetId = "screen" }, new { @class = "btn btn-info" })
-        <button type="button" id="btnJoinGroup" class="btn btn-info">Join a Group</button>
+        
+        
+        <button type="button" class="btn btn-info btnModal" data-action="@Url.Action("","", new {})">Join a Group</button>
     </p>
     <br />
     <vr />
@@ -101,32 +104,36 @@
         </div>
         <hr />
     }
-@if (@Model.Balances.Count > 0)
-    {
-        <div>
-                <h2>Balance Details</h2>
+    <div>
+        <h2>Balance Details</h2>
+        @if (Model.Balances.Count > 0)
+        {
             <table class="table table-bordered table-responsive" style="width:60%">
                 <thead>
-                    <tr> 
+                    <tr>
                         <th>Ledger Name</th>
                         <th>Amount</th>
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                     @foreach (Balance b in @Model.Balances)
                     {
-                    <tr>
-                        <td>@b.Ledger.LedgerName</td>
-                        <td>$@b.CurrentBalance</td>
-                    </tr>
+                        <tr>
+                            <td>@b.Ledger.LedgerName</td>
+                            <td>$@b.CurrentBalance</td>
+                        </tr>
                     }
-                
+
 
                 </tbody>
             </table>
-        </div>
-    }
+        }
+        else
+        {
+            <p> No balances to display.</p>
+        }
+    </div>
 </div>
 
 <script type="text/javascript">

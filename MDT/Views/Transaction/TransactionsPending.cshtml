@@ -30,76 +30,71 @@
                     <th>Transaction Type</th>
                     <th>Amount</th>
                     <th>Date</th>
-                    <th>Source Ledger</th>
-                    <th>Destination Ledger</th>
-                    <th>Accept</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    @if (admin)
+                    {
+                        <th>Accept</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (TransactionDTO pt in Model.PendingTransactions)
                 {
-                    <tr>
-                        @if (admin)
-                        {
-                            <td>@pt.UserName</td>
-                        }
-                        <td>@pt.TransactionTypeName</td>
-                        <td>$@pt.Amount</td>
-                        <td>@pt.TransactionDateTime</td>
-                        <td>@pt.SourceLedgerName</td>
-                        <td>@pt.DestinationLedgerName</td>
-                        <td>
-                            <input type="submit" class="btn btn-sm" value="Approve" onclick="location.href='@Url.Action("AcceptTransaction", "Transaction",
-                                                                                                           new {pendTransactionId = pt.TransactionId})'" />
-                        </td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot>
                 <tr>
                     @if (admin)
                     {
-                        <th>User</th>
+                        <td>@pt.UserName</td>
                     }
-                    <th>Transaction Type</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Source Ledger</th>
-                    <th>Destination Ledger</th>
+                    <td>@pt.TransactionTypeName</td>
+                    <td>$@pt.Amount</td>
+                    <td>@($"{pt.TransactionDateTime:yyyy-MM-dd HH:mm}")</td>
+                    <td>@pt.SourceLedgerName</td>
+                    <td>@pt.DestinationLedgerName</td>
+                    @if (admin)
+                    {
+                        <td>
+                            <button type="button" class="btn btn-xs btn-success btnPanel" title="Accept this transaction" data-panel="pending" data-action="@Url.Action("Accept", "Transaction", new { id = pt.TransactionId }, null)"><span class="fa fa-plus-circle"></span></button>
+                            <button type="button" class="btn btn-xs btn-danger  btnPanel" title="Reject this transaction" data-panel="pending" data-action="@Url.Action("Reject", "Transaction", new { id = pt.TransactionId }, null)"><span class="fa fa-times-circle"></span></button>
+                        </td>
+                    }
                 </tr>
-            </tfoot>
+                }
+            </tbody>
         </table>
     </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#tblPending').DataTable();
+        });
+    </script>
 }
 else
 {
     <h2 class="text-center">No pending transactions found</h2>
 }
 
-<script src="~/Scripts/jquery.dataTables.min.js"></script>
-<script src="~/Scripts/dataTables.searchPanes.min.js"></script>
-<script src="~/Scripts/dataTables.select.min.js"></script>
-<link rel="stylesheet" type="text/css" href="~/Content/jquery.dataTables.min.css" />
-<link rel="stylesheet" type="text/css" href="~/Content/select.dataTables.min.css" />
-<link rel="stylesheet" type="text/css" href="~/Content/searchPanes.dataTables.min.css" />
+@if (ViewBag.RefreshTransactions ?? false)
+{
+    <script type="text/javascript">
+        $(function () {
+            $('#transactions').empty();
+            $('#transactions').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+            $('#transactions').load('@Url.Action("Transactions", "Transaction", null, null)');
 
-<script type="text/javascript">
-    $(function () {
-        $('#tblPending tfoot th').each(function () {
-            var title = $(this).text();
-            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            if ($('#tblPending').length) {
+                $('#tblPending').DataTable();
+            }
         });
-
-        var pendingTable = $('#tblPending').DataTable();
-
-        pendingTable.columns().every(function () {
-            var that = this;
-
-            $('input', this.footer()).on('keyup change', function () {
-                if (that.search() !== this.value) {
-                    that.search(this.value).draw();
-                }
-            });
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+        $(function () {
+            if ($('#tblPending').length) {
+                $('#tblPending').DataTable();
+            }
         });
-    });
-</script>
+    </script>
+}
