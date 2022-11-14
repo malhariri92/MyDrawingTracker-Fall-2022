@@ -21,7 +21,8 @@ namespace MDT.ViewModels
         public List<Description> InfoDesc { get; set; }
         public string TextArea { get; set; }
         public int OwnerUserId { get; set; }
-
+        public bool IsActive {get; set;}
+        public bool? IsApproved {get; set;}
         public GroupVM()
         {
             Admins = new List<UserVM>();
@@ -46,6 +47,8 @@ namespace MDT.ViewModels
                 Invites = g.GroupInvites.ToList();
                 AccessCode = g.AccessCode;
                 JoinConfirmation = g.JoinConfirmationRequired;
+                IsActive = g.IsActive;
+                IsApproved = g.IsApproved;
             }
         }
 

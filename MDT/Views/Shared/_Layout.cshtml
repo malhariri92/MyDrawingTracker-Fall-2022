@@ -63,12 +63,22 @@
             $(panel).load(action);
         });
 
+        $(document).on('click', '.btnWindow', function () {
+            let action = $(this).attr('data-action');
+            window.top.location.href = action;
+        });
+
         function hideModal() {
             $('#popup').modal("hide");
         }
+
         function showModalError(result) {
             $('#modaldiv').empty();
             $('#modaldiv').append(result.responseText);
+        }
+
+        function replacePage(result) {
+            $("html").html($("html", result).html());
         }
     </script>
 </body>

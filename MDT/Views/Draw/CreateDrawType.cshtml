@@ -2,7 +2,7 @@
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <h2>Edit @Model.TypeName</h2>
+    <h2>@(Model.DrawTypeId == 0 ? "Create New Draw Type" : $"Edit {Model.TypeName}")</h2>
 </div>
 
 @using (Ajax.BeginForm("EditDrawType", "Draw", null, new AjaxOptions() { HttpMethod="Post", OnSuccess="hideModal", UpdateTargetId= "divRules", OnFailure="showModalError" }))

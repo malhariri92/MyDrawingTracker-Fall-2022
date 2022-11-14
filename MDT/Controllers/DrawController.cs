@@ -35,7 +35,100 @@ namespace MDT.Controllers
         }
 
         [AdminFilter(Role = "Admin", Permission = "DrawTypes")]
-        public ActionResult EditDrawType(int id = 0)
+        public ActionResult CreateDrawType()
+        {
+            DrawTypeVM vm = new DrawTypeVM();
+            return PartialView(vm);
+
+        }
+
+        [HttpPost]
+        [AdminFilter(Role = "Admin", Permission = "DrawTypes")]
+        public ActionResult CreateDrawType(DrawTypeVM vm)
+        {
+            if (ModelState.IsValid)
+            {
+                DrawType dt = new DrawType()
+                {
+                    GroupId = group.GroupId,
+                    Ledger = new Ledger()
+                    {
+                        GroupId = group.GroupId,
+                        LedgerName = vm.TypeName,
+                        Balance = 0.0m
+                    },
+                    DrawTypeName = vm.TypeName,
+                    EntryCost = vm.EntryCost,
+                    IsActive = vm.IsActive,
+                    IsInternal = vm.IsInternal,
+                    PassDrawnToNext = vm.PassDrawnToNext,
+                    PassUndrawnToNext = vm.PassUndrawnToNext,
+                    EntriesToDraw = vm.EntriesToDraw,
+                    MaxEntriesPerUser = vm.MaxEntriesPerUser,
+                    RemoveDrawnEntries = vm.RemoveDrawnEntries,
+                    RemoveDrawnUsers = vm.RemoveDrawnUsers,
+                    JoinConfirmationRequired = vm.JoinConfirmationRequired,
+                    RefundConfirmationRequired = vm.RefundConfirmationRequired,
+                    IsolateBalance = vm.IsolateBalance,
+                    AllowAllocation = vm.AllowAllocation,
+                    AutoDraw = vm.AutoDraw,
+                    NumberOfDraws = vm.NumberOfDraws,
+                    InitialUserBalance = vm.InitialUserBalance
+                };
+
+                db.Entry(dt).State = EntityState.Added;
+                db.SaveChanges();
+
+                if (vm.HasSchedule)
+                {
+                    for (int i = 0; i < vm.Schedule.Days.Count; i++)
+                    {
+                        ScheduleDayVM schedule = vm.Schedule.Days[i];
+
+                        if (schedule.DrawTime != null)
+                        {
+                            Schedule sch = new Schedule()
+                            {
+                                DrawTypeId = dt.DrawTypeId,
+                                DayOfWeek = i,
+                                Time = schedule.DrawTime.Value
+                            };
+
+                            if (db.Schedules.FirstOrDefault(s => s.DrawTypeId == sch.DrawTypeId && s.DayOfWeek == sch.DayOfWeek) != null)
+                            {
+                                sch = db.Schedules.FirstOrDefault(s => s.DrawTypeId == sch.DrawTypeId && s.DayOfWeek == sch.DayOfWeek);
+                                sch.Time = schedule.DrawTime.Value;
+                                db.Entry(sch).State = EntityState.Modified;
+                            }
+                            else
+                            {
+                                db.Schedules.Add(sch);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    db.Schedules.RemoveRange(db.Schedules.Where(s => s.DrawTypeId == dt.DrawTypeId));
+                }
+
+                db.SaveChanges();
+                return View("ViewDrawType", GetDrawTypeVM(dt.DrawTypeId));
+            }
+
+            Response.StatusCode = 400;
+            for (int i = 0; i < 7; i++)
+            {
+                DayOfWeek d = (DayOfWeek)i;
+                vm.Schedule.Days[i].DayName = d.ToString();
+                vm.Schedule.Days[i].Abbr = d.ToString().Substring(0, 3);
+                vm.Schedule.Days[i].DayNumber = i;
+            }
+            return PartialView(vm);
+        }
+
+        [AdminFilter(Role = "Admin", Permission = "DrawTypes")]
+        public ActionResult EditDrawType(int id)
         {
             DrawTypeVM vm = GetDrawTypeVM(id);
             return PartialView(vm);
