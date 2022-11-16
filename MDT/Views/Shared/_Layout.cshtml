@@ -80,6 +80,10 @@
         function replacePage(result) {
             $("html").html($("html", result).html());
         }
+
+        function redirectPage(result) {
+            window.top.location.href = result;
+        }
     </script>
 </body>
 

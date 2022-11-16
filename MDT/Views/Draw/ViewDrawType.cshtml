@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-xs-12" id="divRequests">
                     @{
-                        Html.RenderPartial("UserRequests", Model.Draws);
+                        Html.RenderPartial("UserRequests", Model.UserOptions);
                     }
                 </div>
             </div>
@@ -97,10 +97,9 @@
 
 
      $(document).on('click', '#btnDescEdit', function () {
-         $('#modaldiv').empty();
-         $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-         $('#popup').modal("show");
-         $('#modaldiv').load('@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })');
+         $('#divDesc').empty();
+         $('#divDesc').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
+         $('#divDesc').load('@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })');
      });
 
     </script>

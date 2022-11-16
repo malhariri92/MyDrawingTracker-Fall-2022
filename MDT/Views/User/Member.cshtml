@@ -34,3 +34,34 @@
         <vr />
     }
 </div>
+<div>
+    <h2>Balance Details</h2>
+    @if (Model.Balances.Count > 0)
+    {
+        <table class="table table-bordered table-responsive" style="width:60%">
+            <thead>
+                <tr>
+                    <th>Ledger Name</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (Balance b in @Model.Balances)
+                {
+                    <tr>
+                        <td>@b.Ledger.LedgerName</td>
+                        <td>$@b.CurrentBalance</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p> No balances to display.</p>
+    }
+</div>
+</div>

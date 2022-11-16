@@ -27,7 +27,7 @@ namespace MDT.ViewModels
             {
                 DrawTypeVM dtvm = new DrawTypeVM(dt);
                 ActiveDraws.AddRange(dtvm.Draws.Where(d => d.IsActive));
-                InactiveDraws.AddRange(dtvm.Draws.Where(d => !d.IsActive));
+                InactiveDraws.AddRange(dtvm.Draws.Where(d => !d.IsActive && d.Results == null));
                 EndedDraws.AddRange(dtvm.Draws.Where(d => d.Results != null));
 
                 DrawTypes.Add(dtvm);

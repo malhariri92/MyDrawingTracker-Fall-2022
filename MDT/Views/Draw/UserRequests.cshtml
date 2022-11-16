@@ -14,7 +14,7 @@
     </h3>
 </div>
 
-@if (!Model.Any(o => o.IsApproved))
+@if (Model.Any(o => !o.IsApproved))
 {
     <table class="table table-bordered">
         <thead>
@@ -24,13 +24,13 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (UserOptionVM opt in Model.Where(O => !O.IsApproved))
+            @foreach (UserOptionVM opt in Model.Where(o => !o.IsApproved))
             {
                 <tr>
                     <td>@opt.Name</td>
                     <td>
-                        <button type="button" class="btn btn-xs btn-success btnPanel" data-action="" data-panel=""><span class="fa fa-check-circle"></span></button>
-                        <button type="button" class="btn btn-xs btn-danger btnPanel" data-action="" data-panel=""><span class="fa fa-times-circle"></span></button>
+                        <button type="button" class="btn btn-xs btn-success btnPanel" data-action="@Url.Action("Approve", "Draw", new { id=opt.DrawTypeId, uId = opt.UserId})" data-panel="divRequests"><span class="fa fa-check-circle"></span></button>
+                        <button type="button" class="btn btn-xs btn-danger btnPanel" data-action="@Url.Action("Reject", "Draw", new { id=opt.DrawTypeId, uId = opt.UserId})" data-panel="divRequests"><span class="fa fa-times-circle"></span></button>
                     </td>
                     
                 </tr>

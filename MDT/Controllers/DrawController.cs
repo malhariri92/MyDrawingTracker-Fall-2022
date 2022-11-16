@@ -113,7 +113,7 @@ namespace MDT.Controllers
                 }
 
                 db.SaveChanges();
-                return View("ViewDrawType", GetDrawTypeVM(dt.DrawTypeId));
+                return Content(Url.Action("ViewDrawType", "Draw", new { id = dt.DrawTypeId }));
             }
 
             Response.StatusCode = 400;
@@ -299,7 +299,7 @@ namespace MDT.Controllers
                 db.SaveChanges();
             }
 
-            return PartialView("DrawTypeRules");
+            return PartialView("DrawTypeRules", GetDrawTypeVM(id));
         }
 
         public ActionResult Approve(int id, int uId)

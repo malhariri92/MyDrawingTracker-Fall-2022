@@ -163,7 +163,11 @@ namespace MDT.Controllers
         {
             ViewBag.IsOwner = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsOwner == true).Any();
             ViewBag.IsAdmin = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsAdmin == true).Any();
-            return View(new UserVM(db.Users.Find(id)));
+            return View(new UserVM(db.Users.Where(u => u.UserId == id)
+                                      .Include(u => u.GroupUsers)
+                                      .Include(u => u.Balances)
+                                      .Include(u => u.Balances.Select(b => b.Ledger))
+                                      .FirstOrDefault()));
         }
 
         public ActionResult JoinGroupWithCode()
