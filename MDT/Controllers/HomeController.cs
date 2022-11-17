@@ -41,13 +41,141 @@ namespace MDT.Controllers
             return View();
         }
 
-
-
-
         public ActionResult NewUser()
         {
-            ViewBag.AccessCode = (string)Session["AccessCode"];
-            return PartialView();
+            string code = (string)Session["AccessCode"];
+            NewUserVM vm = new NewUserVM()
+            {
+                CreateAdmin = true,
+                AccessCode = code
+            };
+
+            return PartialView(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult NewUser(NewUserVM vm)
+        {
+            if (db.Users.Any(u => u.EmailAddress.Equals(vm.EmailAddress)))
+            {
+                ModelState.AddModelError("EmailAddress", "Email addrress is already in use.");
+            }
+            Group group = null;
+            if (vm.CreateAdmin)
+            {
+                ModelState.Remove("AccessCode");
+            }
+            else
+            {
+                ModelState.Remove("GroupName");
+                ModelState.Remove("Reason");
+                group = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
+                if (group == null)
+                {
+                    ModelState.AddModelError("AccessCode", "Invalid Group Access Code.");
+                }
+            }
+            
+            if (!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return PartialView("NewUser", vm);
+            }
+
+            Dictionary<string, string> variables;
+
+            if (vm.CreateAdmin)
+            {
+                group = new Group()
+                {
+                    GroupName = vm.GroupName,
+                    IsActive = true,
+                    AccessCode = WebManager.GetUniqueKey(10),
+                    JoinConfirmationRequired = true,
+                };
+
+                db.Groups.Add(group);
+                db.SaveChanges();
+                variables = new Dictionary<string, string>()
+                {
+                    { "[[GroupName]]", group.GroupName },
+                    { "[[Reason]]", vm.Reason }
+                };
+
+                List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
+                WebManager.SendTemplateEmail(recipients, 3, variables);
+
+                Description desc = new Description()
+                {
+                    ObjectTypeId = 5,
+                    ObjectId = group.GroupId,
+                    SortOrder = 1,
+                    TextBody = vm.Reason,
+                    IsHTML = false
+                };
+
+                db.Entry(desc).State = EntityState.Added;
+            }
+
+            User user = new User()
+            {
+                UserName = vm.UserName,
+                EmailAddress = vm.EmailAddress,
+                CurrentGroupId = group.GroupId,
+                IsActive = true,
+                IsVerified = false,
+            };
+
+            db.Users.Add(user);
+            db.SaveChanges();
+            PasswordManager.SetNewHash(user.UserId, vm.Password);
+
+            string key = WebManager.GetUniqueKey(10);
+            db.VerificationKeys.Add(new VerificationKey()
+            {
+                UserId = user.UserId,
+                EmailAddress = user.EmailAddress,
+                VKey = key,
+                SentOn = DateTime.Now
+            });
+            db.SaveChanges();
+
+            variables = new Dictionary<string, string>()
+            {
+                { "[[Name]]", user.UserName },
+                { "[[VerifyKey]]", key },
+            };
+
+            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
+
+            //Create the GroupUser entry
+            GroupUser newGroupUser = new GroupUser()
+            {
+                GroupId = group.GroupId,
+                UserId = user.UserId,
+                IsAdmin = vm.CreateAdmin,
+                IsApproved = vm.CreateAdmin || !group.JoinConfirmationRequired,
+            };
+            db.GroupUsers.Add(newGroupUser);
+            db.SaveChanges();
+
+            if (!vm.CreateAdmin)
+            {
+                //Generate notification email
+                User groupAdmin = db.GroupUsers.Where(u => u.GroupId == group.GroupId && u.IsAdmin).Select(gu => gu.User).FirstOrDefault();
+                variables = new Dictionary<string, string>()
+            {
+                { "[[Name]]", groupAdmin.UserName },
+                { "[[GroupName]]", group.GroupName },
+                { "[[UserName]]", user.UserName },
+                { "[[ConfirmUrl]]", "Group/Index" }
+            };
+                WebManager.SendTemplateEmail($"{groupAdmin.EmailAddress}\t{groupAdmin.UserName}", group.JoinConfirmationRequired ? 8 : 7, variables);
+            }
+            SessionSetup(WebManager.GetUserDTO(user.UserId));
+            ViewBag.IsNewUser = true;
+            return PartialView("SuccessfulSignIn", user);
         }
 
         public ActionResult SignIn()
@@ -56,10 +184,9 @@ namespace MDT.Controllers
             if (user == null)
             {
                 return PartialView();
-
             }
-            return PartialView("UserAccess", user);
 
+            return PartialView("SuccessfulSignIn", user);
         }
 
         [HttpPost]
@@ -75,6 +202,7 @@ namespace MDT.Controllers
                 {
                     SessionSetup(WebManager.GetUserDTO(cred.User.UserId));
 
+                    ViewBag.IsNewUser = false;
                     return PartialView("SuccessfulSignIn", cred.User);
 
                 }
@@ -234,180 +362,6 @@ namespace MDT.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult CreateUser(GroupUserVM vm)
-        {
-            if (db.Users.Any(u => u.EmailAddress.Equals(vm.EmailAddress)))
-            {
-                ModelState.AddModelError("EmailAddress", "Email addrress is already in use.");
-            }
-
-            Group groupMatch = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
-            if (groupMatch == null)
-            {
-                ModelState.AddModelError("AccessCode", "Invalid Group Access Code.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return PartialView(vm);
-            }
-
-            User user = new User()
-            {
-                UserName = vm.UserName,
-                EmailAddress = vm.EmailAddress,
-                CurrentGroupId = groupMatch.GroupId,
-                IsActive = true,
-                IsVerified = false,
-            };
-
-            db.Users.Add(user);
-            db.SaveChanges();
-            PasswordManager.SetNewHash(user.UserId, vm.Password);
-
-            string key = WebManager.GetUniqueKey(10);
-            db.VerificationKeys.Add(new VerificationKey()
-            {
-                UserId = user.UserId,
-                EmailAddress = user.EmailAddress,
-                VKey = key,
-                SentOn = DateTime.Now
-            });
-            db.SaveChanges();
-
-            Dictionary<string, string> variables = new Dictionary<string, string>()
-            {
-                { "[[Name]]", user.UserName },
-                { "[[VerifyKey]]", key },
-            };
-
-            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
-
-
-
-
-            //Create the GroupUser entry
-            GroupUser newGroupUser = new GroupUser()
-            {
-                GroupId = groupMatch.GroupId,
-                UserId = user.UserId,
-                IsAdmin = false,
-                IsApproved = !groupMatch. JoinConfirmationRequired,
-            };
-            db.GroupUsers.Add(newGroupUser);
-            db.SaveChanges();
-
-            //Generate notification email
-            User groupAdmin = db.GroupUsers.Where(u => u.GroupId == groupMatch.GroupId && u.IsAdmin).Select(gu => gu.User).FirstOrDefault();
-            variables = new Dictionary<string, string>()
-            {
-                { "[[Name]]", groupAdmin.UserName },
-                { "[[GroupName]]", groupMatch.GroupName },
-                { "[[UserName]]", user.UserName },
-                { "[[ConfirmUrl]]", "Group/Index" }
-            };
-            WebManager.SendTemplateEmail($"{groupAdmin.EmailAddress}\t{groupAdmin.UserName}", groupMatch.JoinConfirmationRequired ? 8 : 7, variables);
-
-            SessionSetup(WebManager.GetUserDTO(user.UserId));
-            return PartialView("UnverifiedEmail");
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult CreateAdmin(AdminUserVM vm)
-        {
-
-            User user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
-            if (user != null)
-            {
-                ModelState.AddModelError("EmailAddress", "Email addrress is already in use.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return PartialView(vm);
-            }
-
-            // Create a new group
-            Group group = new Group()
-            {
-                GroupName = vm.GroupName,
-                IsActive = true,
-                AccessCode = WebManager.GetUniqueKey(10),
-                JoinConfirmationRequired = true,
-            };
-
-            db.Groups.Add(group);
-            db.SaveChanges();
-            Dictionary<string, string> variables = new Dictionary<string, string>()
-            {
-                { "[[GroupName]]", group.GroupName },
-                { "[[Reason]]", vm.Reason }
-            };
-            List<string> recipients = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
-            WebManager.SendTemplateEmail(recipients, 3, variables);
-
-            Description desc = new Description()
-            {
-                ObjectTypeId = 5,
-                ObjectId = group.GroupId,
-                SortOrder = 1,
-                TextBody = vm.Reason,
-                IsHTML = false
-            };
-
-            db.Entry(desc).State = EntityState.Added;
-            user = new User()
-            {
-                UserName = vm.UserName,
-                EmailAddress = vm.EmailAddress,
-                CurrentGroupId = group.GroupId,
-                IsActive = true,
-                IsVerified = false,
-            };
-            db.Users.Add(user);
-            string key = WebManager.GetUniqueKey(10);
-            db.VerificationKeys.Add(new VerificationKey()
-            {
-                UserId = user.UserId,
-                EmailAddress = user.EmailAddress,
-                VKey = key,
-                SentOn = DateTime.Now
-            });
-            db.SaveChanges();
-
-            variables = new Dictionary<string, string>()
-            {
-                { "[[Name]]", user.UserName },
-                { "[[VerifyKey]]", key },
-            };
-
-            WebManager.SendTemplateEmail($"{user.EmailAddress}\t{user.UserName}", 2, variables);
-
-            //Hash the password and add to the newly created user.
-            //user = db.Users.Where(u => u.EmailAddress.Equals(vm.EmailAddress)).FirstOrDefault();
-            PasswordManager.SetNewHash(user.UserId, vm.Password);
-
-            //Create the admin group user.
-            db.GroupUsers.Add(new GroupUser()
-            {
-                GroupId = group.GroupId,
-                UserId = user.UserId,
-                IsAdmin = true,
-                IsOwner = true
-            });
-
-            db.SaveChanges();
-
-            ViewBag.SuccessMessage = "Your account has been created successfully!";
-            ModelState.Clear();
-
-            SessionSetup(WebManager.GetUserDTO(user.UserId));
-            return PartialView("UnverifiedEmail");
-        }
         public ActionResult SendVerification()
         {
             UserDTO user = (UserDTO)Session["User"];

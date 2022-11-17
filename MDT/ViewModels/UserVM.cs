@@ -24,7 +24,7 @@ namespace MDT.ViewModels
 
         }
 
-        public UserVM(User u)
+        public UserVM(User u, int groupId)
         {
             if (u != null)
             {
@@ -34,10 +34,10 @@ namespace MDT.ViewModels
                 CurrentGroupId = u.CurrentGroupId;
                 IsVerified = u.IsVerified;
                 IsActive = u.IsActive;
-                Balances = u.Balances.Where(x => x.Ledger.GroupId == CurrentGroupId).ToList();
+                Balances = u.Balances.Where(x => x.Ledger.GroupId == groupId).ToList();
                 AdminGroups = u.GroupUsers.Where(g => g.IsAdmin).Select(g => g.GroupId).ToList();
                 MemberGroups = u.GroupUsers.Select(g => g.GroupId).ToList();
-                IsOwner = u.GroupUsers.Where(x => x.GroupId == CurrentGroupId).FirstOrDefault().IsOwner;
+                IsOwner = u.GroupUsers.Where(x => x.GroupId == groupId).FirstOrDefault().IsOwner;
 
             }
         }

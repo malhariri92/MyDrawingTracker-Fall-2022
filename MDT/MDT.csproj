@@ -234,7 +234,7 @@
     </Compile>
     <Compile Include="Models\WebManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\AdminUserVM.cs" />
+    <Compile Include="ViewModels\NewUserVM.cs" />
     <Compile Include="ViewModels\AllocationVM.cs" />
     <Compile Include="ViewModels\GroupNavVM.cs" />
     <Compile Include="ViewModels\DrawOptionsVM.cs" />
@@ -679,13 +679,10 @@
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
-    <Content Include="Views\Home\CreateUser.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Shared\Nope.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\Reject.cshtml" />
-    <Content Include="Views\Home\CreateAdmin.cshtml" />
-    <Content Include="Views\Home\UserAccess.cshtml" />
     <Content Include="Views\Home\UnverifiedEmail.cshtml" />
     <Content Include="Views\Home\UnverifiedGroup.cshtml" />
     <Content Include="Views\Home\SuccessfulSignIn.cshtml" />

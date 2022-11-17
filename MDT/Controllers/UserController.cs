@@ -34,7 +34,7 @@ namespace MDT.Controllers
 
         private UserVM GetUserVM()
         {
-            return new UserVM(db.Users.Where(u => u.UserId == user.UserId).Include(u => u.GroupUsers).FirstOrDefault());
+            return new UserVM(db.Users.Where(u => u.UserId == user.UserId).Include(u => u.GroupUsers).FirstOrDefault(), group.GroupId);
         }
 
         private List<Draw> GetDraws()
@@ -167,7 +167,7 @@ namespace MDT.Controllers
                                       .Include(u => u.GroupUsers)
                                       .Include(u => u.Balances)
                                       .Include(u => u.Balances.Select(b => b.Ledger))
-                                      .FirstOrDefault()));
+                                      .FirstOrDefault(), group.GroupId));
         }
 
         public ActionResult JoinGroupWithCode()

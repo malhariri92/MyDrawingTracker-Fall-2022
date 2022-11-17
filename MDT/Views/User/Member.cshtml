@@ -1,9 +1,10 @@
 @using MDT.Models
+@using MDT.ViewModels
 @using MDT.Models.DTO
-@model MDT.ViewModels.UserVM
+@model UserVM
 
 @{
-    ViewBag.Title = "Member";
+    ViewBag.Title = $"Details for {Model.UserName}";
     Layout = "~/Views/Shared/_Layout.cshtml";
     UserDTO user = (UserDTO)Session["User"];
 }
@@ -63,5 +64,4 @@
     {
         <p> No balances to display.</p>
     }
-</div>
 </div>

@@ -5,7 +5,8 @@
     <button type="button" class="close" data-dismiss="modal">&times;</button>
     <h2>Reject Application</h2>
 </div>
-@using (Ajax.BeginForm($"Rejected", "Admin",new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "groupApps", OnSuccess = "hideModal", OnFailure = "showModalError" }, new { id="modalForm"}))
+
+@using (Ajax.BeginForm($"Rejected", "Admin",new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "groupApps", OnSuccess = "hideModal", OnFailure = "showModalError" }, new { @class="modalForm"}))
 {
     @Html.HiddenFor(model => model.GroupId);
     <div class="modal-body">

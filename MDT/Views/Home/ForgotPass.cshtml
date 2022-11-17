@@ -25,7 +25,7 @@
         }
         @if (!Model.Success && !Model.Error)
         {
-            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "modaldiv" }, htmlAttributes: new { @id = "ForgotPasswordForm" }))
+            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "modaldiv" }, htmlAttributes: new { @class="modalForm" }))
             {
                 <div class="form-horizontal">
                     @Html.AntiForgeryToken()
@@ -41,7 +41,7 @@
 
                     <div class="form-group">
                         <div class="col-xs-8 pull-right">
-                            <button type="button" class="btn btn-warning btnBackToSignIn">Back</button>
+                            <button type="button" class="btn btn-warning btnModal" data-action="@Url.Action("SignIn", "Home", null, null)">Back</button>
                             <button type="submit" class="btn btn-success">Reset Password</button>
                         </div>
                     </div>
