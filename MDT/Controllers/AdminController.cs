@@ -49,7 +49,7 @@ namespace MDT.Controllers
                                        .ToList()
                                        .Select(g => new GroupVM(g))
                                        .ToList();
-            return View(vm);
+            return PartialView(vm);
         }
 
         public ActionResult Applications()
@@ -80,7 +80,7 @@ namespace MDT.Controllers
             }
 
 
-            return View(vm);
+            return PartialView(vm);
         }
 
         public ActionResult Approved(int id)
@@ -132,6 +132,11 @@ namespace MDT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Rejected(GroupVM vm)
         {
+            if(!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return PartialView(vm);
+            }
             Group g = GetGroup(vm.GroupId);
             if (g == null)
             {

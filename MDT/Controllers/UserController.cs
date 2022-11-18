@@ -11,7 +11,6 @@ using System.Net;
 using MDT.Filters;
 using System.Data.Entity;
 using MDT.Models.DTO;
-using System.Text.RegularExpressions;
 
 namespace MDT.Controllers
 {
@@ -170,33 +169,30 @@ namespace MDT.Controllers
                                       .FirstOrDefault(), group.GroupId));
         }
 
-        public ActionResult JoinGroupWithCode()
+        public ActionResult Join()
         {
             return PartialView();
         }
 
         [HttpPost]
 
-        public ActionResult JoinGroupWithCode(string AccessCode = "")
+        public ActionResult Join(JoinVM vm)
         {
-            if (AccessCode.Equals(""))
-            {
-                ViewBag.Error = "You must enter a group access code!";
-                return PartialView();
-            }
-
-            MDT.Models.Group grp = db.Groups.Where(g => g.AccessCode == AccessCode).FirstOrDefault();
-
+            Group grp = db.Groups.Where(g => g.AccessCode.Equals(vm.AccessCode)).FirstOrDefault();
             if (grp == null)
             {
-                ViewBag.Error = $"No group exists with the access code {AccessCode}!";
+                ModelState.AddModelError("AccessCode", "Invalid Group Access Code.");
+                Response.StatusCode = 400;
+                return PartialView(vm);
             }
-            else if (db.GroupUsers.Where(gu => gu.UserId == user.UserId && gu.GroupId == grp.GroupId).Any())
+
+            if (grp.GroupUsers.Any(gu => gu.UserId == user.UserId))
             {
-                ViewBag.Error = $"You are already a member of {grp.GroupName}!";
+                ModelState.AddModelError("AccessCode", $"You are already a member of { grp.GroupName}");
+                Response.StatusCode = 400;
+                return PartialView(vm);
             }
-            else
-            {
+           
                 GroupUser grpUsr = new GroupUser()
                 {
                     GroupId = grp.GroupId,
@@ -210,13 +206,16 @@ namespace MDT.Controllers
 
                 db.SaveChanges();
 
-                ViewBag.SuccessMessage =
-                    grp.JoinConfirmationRequired
-                    ? $"A request to join {grp.GroupName} has been sent!"
-                    : $"You have successfully been added to {grp.GroupName}!";
+            ModalMessageVM mm = new ModalMessageVM()
+            {
+                Header = "Access Code Accepted",
+                Body = grp.JoinConfirmationRequired ? "You have been added to the pending users list for {grp.GroupName}." : $"You have joined {grp.GroupName}",
+                RedirectButton = !grp.JoinConfirmationRequired,
+                RedirectLink = Url.Action("ChangeGroup", "Home", new { groupId = grp.GroupId}),
+                RedirectText = "Go to group"
+            };
 
-            }
-            return PartialView();
+            return PartialView("ModalMessage", mm);
         }
 
 

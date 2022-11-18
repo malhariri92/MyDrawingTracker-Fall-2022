@@ -4,7 +4,7 @@
     <button type="button" class="close" data-dismiss="modal">&times;</button>
     <h2>Invite members to your group</h2>
 </div>
-@using (Ajax.BeginForm("NewInvite", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "invites", OnSuccess="hideModal" }))
+@using (Ajax.BeginForm("NewInvite", "Group", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "invites", OnSuccess = "hideModal", OnFailure="showModalError" }, htmlAttributes: new { id = "ModalForm" }))
 {
     <div class="modal-body">
         <div class="row">

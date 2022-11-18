@@ -12,7 +12,7 @@
                 <h3>Could not send password reset email.</h3>
                 <h3>Please Contact your administrator.</h3>
                 <br />
-                <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
+                <button type="button" class="btn btn-warning btnModal" data-action="@Url.Action("SignIn", "Home", null, null)">Back</button>
             </div>
         }
         @if (Model.Success)
@@ -20,12 +20,12 @@
             <div class="row text-center">
                 <h3>Check your email for password reset instructions.</h3>
                 <br />
-                <button type="button" class="btn btn-warning btnBackToSignIn" id="btnCancelForgot">Back</button>
+                <button type="button" class="btn btn-warning btnModal" data-action="@Url.Action("SignIn", "Home", null, null)">Back</button>
             </div>
         }
         @if (!Model.Success && !Model.Error)
         {
-            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "modaldiv" }, htmlAttributes: new { @class="modalForm" }))
+            using (Ajax.BeginForm("ForgotPass", "Home", null, new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "modaldiv", OnSuccess="hideModalSpinner" }, htmlAttributes: new { id="ModalForm" }))
             {
                 <div class="form-horizontal">
                     @Html.AntiForgeryToken()

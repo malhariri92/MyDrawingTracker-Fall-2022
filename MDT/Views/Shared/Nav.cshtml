@@ -37,7 +37,8 @@
                             }
                             @if ((UserVerified ?? false) && (GroupApproved ?? false))
                             {
-                                <li><a href="#" id="btnCreateNewGroup">Create A New Group</a></li>
+                                <li><a href="#" class="btnModal" data-action="@Url.Action("CreateNew", "Group", null, null)">Create A New Group</a></li>
+                                <li><a href="#" class="btnModal" data-action="@Url.Action("Join", "User", null, null)">Join Another Group</a></li>
                             }
                         </ul>
 
@@ -48,7 +49,8 @@
                     <li>@Html.ActionLink("My Group", "Index", "Group", null, null)</li>
                     if ((UserVerified ?? false) && (GroupApproved ?? false))
                     {
-                        <li><a href="#" id="btnCreateNewGroup">Create A New Group</a></li>
+                        <li><a href="#" class="btnModal" data-action="@Url.Action("CreateNew", "Group", null, null)">Create A New Group</a></li>
+                        <li><a href="#" class="btnModal" data-action="@Url.Action("Join", "User", null, null)">Join Another Group</a></li>
                     }
                 }
 

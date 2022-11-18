@@ -377,6 +377,11 @@ namespace MDT.Controllers
         [HttpPost]
         public ActionResult CreateNew(NewGroupVM vm)
         {
+            if(!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return PartialView(vm);
+            }
             Group group = new Group()
             {
                 GroupName = vm.GroupName,

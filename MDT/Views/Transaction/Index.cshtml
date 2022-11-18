@@ -10,14 +10,16 @@
     ViewBag.title = $"Transactions for {(admin ? group.GroupName : user.UserName)}";
 }
 
-<div id="transactions">
-    @{
-        Html.RenderPartial("Transactions", Model);
-    }
-</div>
-<hr />
 <div id="pending">
     @{
         Html.RenderPartial("TransactionsPending", Model);
+    }
+</div>
+<br />
+<hr />
+<br />
+<div id="transactions">
+    @{
+        Html.RenderPartial("Transactions", Model);
     }
 </div>

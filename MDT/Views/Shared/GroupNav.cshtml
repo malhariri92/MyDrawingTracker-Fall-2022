@@ -20,7 +20,7 @@
         <ul class="dropdown-menu">
             @if (isGroupAdmin)
             {
-                <li><a href="#" id="btnCreateNewDrawType">Create New Draw Type</a></li>
+                <li><a href="#" class="btnModal" data-action="@Url.Action("CreateDrawType", "Draw", null, null)">Create New Draw Type</a></li>
             }
             @foreach (DrawTypeVM dt in Model.DrawTypes)
             {
@@ -83,19 +83,6 @@
         if (isGroupAdmin)
         {
             <li>@Html.ActionLink("Group Members", "Members", "Group", null, null)</li>
-
         }
-    }
-
-    if (isGroupAdmin)
-    {
-        <script type="text/javascript">
-        $('#btnCreateNewDrawType').on('click', function () {
-            $('#modaldiv').empty();
-            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-            $('#popup').modal("show");
-            $('#modaldiv').load(`@Url.Action("CreateDrawType", "Draw", null)`);
-        });
-        </script>
     }
 }

@@ -6,7 +6,7 @@
     <h2>Reject Application</h2>
 </div>
 
-@using (Ajax.BeginForm($"Rejected", "Admin",new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "groupApps", OnSuccess = "hideModal", OnFailure = "showModalError" }, new { @class="modalForm"}))
+@using (Ajax.BeginForm($"Rejected", "Admin",new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "groupApps", OnSuccess = "hideModal", OnFailure = "showModalError" }, new { id = "ModalForm"}))
 {
     @Html.HiddenFor(model => model.GroupId);
     <div class="modal-body">

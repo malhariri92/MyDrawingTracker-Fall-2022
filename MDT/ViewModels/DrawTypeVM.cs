@@ -16,7 +16,7 @@ namespace MDT.ViewModels
         [MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
         public string TypeName { get; set; }
 
-        [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greataer than 0")]
+        [Range(1, double.MaxValue, ErrorMessage = "Entry cost must be greater than 0")]
         [Display(Name = "Entry Cost")]
         public decimal EntryCost { get; set; }
 
