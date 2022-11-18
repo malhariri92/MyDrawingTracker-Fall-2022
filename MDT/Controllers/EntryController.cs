@@ -31,6 +31,8 @@ namespace MDT.Controllers
                 db.SaveChanges();
                 drawEntry = db.DrawEntries.Where(de => de.EntryId == drawEntry.EntryId)
                     .Include(de => de.Draw)
+                    .Include(de => de.Draw.DrawOption)
+                    .Include(de => de.Draw.DrawType)
                     .Include(de => de.User)
                     .FirstOrDefault();
                 EntryVM vm = new EntryVM(drawEntry);
@@ -83,7 +85,7 @@ namespace MDT.Controllers
             EntryVM vm = new EntryVM()
             {
                 DrawId = draw.DrawId,
-                GameName = draw.DrawType.DrawTypeName,
+                DrawTitle = draw.DrawType.DrawTypeName,
                 EntryCount = 1,
             };
 
@@ -137,23 +139,19 @@ namespace MDT.Controllers
                 db.Entry(drawEntry).State = EntityState.Modified;
                 db.SaveChanges();
 
-                entryVM.Success = true;
-                entryVM.Error = false;
-                entryVM.Message = "You have denied the removal of this entry.";
+                ViewBag.Message = "You have denied the removal of this entry.";
 
                 return PartialView("RejectEntryRemoval", entryVM);
             }
             catch
             {
-                entryVM.Success = false;
-                entryVM.Error = true;
-                entryVM.Message = "There was a problem rejecting the removal of this entry. Please contact the site administrator.";
+                ViewBag.Error = "There was a problem rejecting the removal of this entry. Please contact the site administrator.";
             }
 
             return PartialView("RejectEntryRemoval", entryVM);
         }
 
-        //[AdminFilter(Role = "Admin")]
+        
         public ActionResult RemoveEntry(int id = 0)
         {
             if (RemoveDrawEntries(new List<int>() { id }, true))

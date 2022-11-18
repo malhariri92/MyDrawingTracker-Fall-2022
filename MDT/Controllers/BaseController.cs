@@ -85,7 +85,7 @@ namespace MDT.Controllers
         {
             return db.Users
                      .Where(u => ids.Contains(u.UserId))
-                     .Include(u => u.CurrentGroupId)
+                     .Include(u => u.Group)
                      .Include(u => u.GroupUsers)
                      .Include(u => u.UserDrawTypeOptions)
                      .Include(u => u.UserDrawTypeOptions.Select(udto => udto.DrawType))

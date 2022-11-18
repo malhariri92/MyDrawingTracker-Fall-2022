@@ -677,7 +677,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\User\ChangePass.cshtml" />
-    <Content Include="Views\User\ChangeUserDetails.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\Home\ForgotPass.cshtml" />
     <Content Include="Views\Home\ResetPass.cshtml" />
     <Content Include="Views\Home\SignIn.cshtml" />
@@ -707,7 +707,7 @@
     <Content Include="Views\Group\CreateNew.cshtml" />
     <Content Include="Views\Transaction\ReportNewTransaction.cshtml" />
     <Content Include="Views\Entry\GoToEntryForm.cshtml" />
-    <Content Include="Views\User\Info.cshtml" />
+    <Content Include="Views\User\Details.cshtml" />
     <Content Include="Views\Shared\Nav.cshtml" />
     <Content Include="Views\Transaction\TransactionsPending.cshtml" />
     <Content Include="Views\Draw\DrawList.cshtml" />
@@ -737,6 +737,9 @@
     <Content Include="Views\Admin\AllGroups.cshtml" />
     <Content Include="Views\Draw\CreateDrawType.cshtml" />
     <Content Include="Views\Shared\ModalMessage.cshtml" />
+    <Content Include="Views\User\Balances.cshtml" />
+    <Content Include="Views\User\Drawings.cshtml" />
+    <Content Include="Views\User\Groups.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

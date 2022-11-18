@@ -3,12 +3,33 @@
 @using MDT.Models.DTO
 @model UserVM
 @{
-    ViewBag.Title = "My Page";
     GroupDTO group = (GroupDTO)Session["group"];
     UserDTO user = (UserDTO)Session["user"];
+    ViewBag.Title = $"{user.UserName} - {group.GroupName}";
 }
-<div class="row" id="screen">
-    @{
-        Html.RenderPartial("Info", Model);
-    }
+<div class="row">
+    <div class="col-xs-6" id="details">
+        @{
+            Html.RenderPartial("Details", Model);
+        }
+    </div>
+    <div class="col-xs-6">
+        @{
+            Html.RenderPartial("Groups", Model);
+        }
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-xs-6">
+        @{
+            Html.RenderPartial("Balances", Model);
+        }
+    </div>
+
+    <div class="col-xs-6">
+        @{
+            Html.RenderPartial("Drawings", Model);
+        }
+    </div>
 </div>

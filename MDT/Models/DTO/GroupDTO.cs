@@ -17,6 +17,7 @@ namespace MDT.Models.DTO
         public int AccountBalanceLedgerId { get; set; }
         public List<UserDTO> Admins { get; set; }
         public List<UserDTO> Users { get; set; }
+        public int OwnerId { get; set; }
         
         /// <summary>
         /// Create a GroupDTO from a Group entity
@@ -35,6 +36,7 @@ namespace MDT.Models.DTO
                 JoinConfirmationRequired = group.JoinConfirmationRequired;
                 AccessCode = group.AccessCode;
                 AccountBalanceLedgerId = group.LedgerId ?? 2;
+                OwnerId = group.GroupUsers.ToList().Find(g => g.IsOwner)?.UserId ?? -1;
 
                 foreach (GroupUser gu in group.GroupUsers)
                 {

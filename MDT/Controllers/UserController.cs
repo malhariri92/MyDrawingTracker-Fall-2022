@@ -19,22 +19,18 @@ namespace MDT.Controllers
 
         public ActionResult Index()
         {
-            UserVM vm = GetUserVM();
-            ViewBag.Draws = GetDraws();
+            UserVM vm = new UserVM(GetUser(user.UserId), group.GroupId);
+            ViewBag.Draws = db.Draws.Where(d => d.DrawType.GroupId == group.GroupId && d.StartDateTime != null && d.EndDateTime > DateTime.Now)
+                                    .Include(d => d.DrawEntries)
+                                    .Include(d => d.DrawType)
+                                    .Include(d => d.DrawOption)
+                                    .ToList()
+                                    .Select(d => new DrawVM(d))
+                                    .ToList();
             return View(vm);
         }
 
-        public ActionResult IndexPartial()
-        {
-            UserVM vm = GetUserVM();
-            ViewBag.Draws = GetDraws();
-            return PartialView("Index", vm);
-        }
 
-        private UserVM GetUserVM()
-        {
-            return new UserVM(db.Users.Where(u => u.UserId == user.UserId).Include(u => u.GroupUsers).FirstOrDefault(), group.GroupId);
-        }
 
         private List<Draw> GetDraws()
         {
@@ -46,11 +42,7 @@ namespace MDT.Controllers
 
         public ActionResult ChangePass()
         {
-            if (user != null)
-            {
-                return PartialView(new UserPasswordChangeVM());
-            }
-            return RedirectToAction("Index", "Home");
+            return PartialView(new UserPasswordChangeVM());
         }
 
         [HttpPost]
@@ -60,113 +52,77 @@ namespace MDT.Controllers
 
             if (!ModelState.IsValid)
             {
+                Response.StatusCode = 400;
                 return PartialView(vm);
             }
             if (vm.CurrentPassword.Equals(vm.NewPassword))
             {
-                vm.Success = false;
                 ModelState.AddModelError("NewPassword", "New password must be different from current password.");
+                Response.StatusCode = 400;
                 return PartialView(vm);
             }
 
             if (!CheckCurrentHash(user.UserId, vm.CurrentPassword))
             {
-                vm.Success = false;
+                Response.StatusCode = 400;
                 ModelState.AddModelError("CurrentPassword", "Current password incorrect.");
                 return PartialView(vm);
             }
 
+            ModalMessageVM mm = new ModalMessageVM();
             if (PasswordManager.SetNewHash(user.UserId, vm.NewPassword))
             {
-                vm.Success = true;
+                mm.Header = "Password Changed";
+                mm.Body = $"Your password has been updated. You'll use your new password the next time you sign in.";
+                mm.RedirectButton = false;
             }
             else
             {
-                vm.Success = false;
-                vm.Error = true;
-                vm.Message = "Something went wrong updating your password. Please try again.";
+                mm.Header = "Password Not Changed";
+                mm.Body = $"Something went wrong updating your password.Please try again.";
+                mm.RedirectButton = false;
+                mm.HtmlFooter = true;
+                mm.Footer = "<div class=\"form-group\">" +
+                            "<div class=\"col-xs-8 pull-right\">" +
+                            "<button type=\"button\" class=\"btn btn-warning btn-xs btnModal\" data-action=\"@Url.Action(\"ChangePass\", \"User\", null)\">" +
+                            "Try Again" +
+                            "</button>" +
+                            "</div>" +
+                            "</div>";
+
             }
             return PartialView(vm);
         }
 
         public ActionResult Edit()
         {
-            if (user != null)
-            {
-                user = (UserDTO)Session["User"];
-                List<int> ids = db.GroupUsers.Where(g => g.UserId == user.UserId).Select(g => g.GroupId).ToList();
-                List<DdlItem> groups = db.Groups.ToList().Where(g => ids.Contains(g.GroupId))
-                    .Select(g => new DdlItem(g.GroupId, g.GroupName)).ToList();
-                ViewBag.Groups = groups;
-
-                return PartialView(new UserDetailsChangeVM(user));
-            }
-            return RedirectToAction("Index", "Home");
+            return PartialView(db.Users.Find(user.UserId));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(UserDetailsChangeVM vm)
+        public ActionResult Edit(User u)
         {
             if (!ModelState.IsValid)
             {
                 Response.StatusCode = 400;
-                return PartialView(vm);
+                return PartialView(u);
             }
 
-            GroupDTO groupDTO = WebManager.GetGroupDTO(vm.CurrentGroupId);
-            if (groupDTO == null || String.IsNullOrEmpty(groupDTO.GroupName))
-            {
-                vm.Success = false;
-                vm.Error = true;
-                vm.Message = "Invalid GroupId";
-                return PartialView(vm);
-            }
+            User usr = db.Users.Find(user.UserId);
+            usr.UserName = u.UserName;
+            db.Entry(usr).State = EntityState.Modified;
+            db.SaveChanges();
 
-            try
-            {
-                    if (user == null)
-                    {
-                        vm.Success = false;
-                        vm.Error = true;
-                        vm.Message = "User Retrieval Error (1)";
-                        return PartialView(vm);
-                    }
-
-                    user.UserName = vm.UserName;
-                    // user.PhoneNumber = vm.PhoneNumber;
-                    user.CurrentGroupId = vm.CurrentGroupId;
-
-                    db.Entry(user).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    Session["User"] = new UserDTO(vm);
-                    Session["Group"] = groupDTO;
-               
-            }
-            catch
-            {
-                vm.Success = false;
-                vm.Error = true;
-                vm.Message = "User Retrieval Error (2)";
-                return View(vm);
-            }
-
-            vm.Success = true;
-            vm.Error = false;
-            return View(vm);
+            UserVM vm = new UserVM(GetUser(user.UserId), group.GroupId);
+            return PartialView("Details", vm);
 
         }
 
         public ActionResult Member(int id)
         {
-            ViewBag.IsOwner = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsOwner == true).Any();
-            ViewBag.IsAdmin = db.GroupUsers.Where(u => u.UserId == id && u.GroupId == user.CurrentGroupId && u.IsAdmin == true).Any();
-            return View(new UserVM(db.Users.Where(u => u.UserId == id)
-                                      .Include(u => u.GroupUsers)
-                                      .Include(u => u.Balances)
-                                      .Include(u => u.Balances.Select(b => b.Ledger))
-                                      .FirstOrDefault(), group.GroupId));
+            UserVM vm = new UserVM(GetUser(id), group.GroupId);
+            return View(vm);
         }
 
         public ActionResult Join()
@@ -192,30 +148,45 @@ namespace MDT.Controllers
                 Response.StatusCode = 400;
                 return PartialView(vm);
             }
-           
-                GroupUser grpUsr = new GroupUser()
-                {
-                    GroupId = grp.GroupId,
-                    IsAdmin = false,
-                    IsApproved = !grp.JoinConfirmationRequired,
-                    IsOwner = false,
-                    UserId = user.UserId,
-                };
 
-                db.Entry(grpUsr).State = EntityState.Added;
+            GroupUser grpUsr = new GroupUser()
+            {
+                GroupId = grp.GroupId,
+                IsAdmin = false,
+                IsApproved = !grp.JoinConfirmationRequired,
+                IsOwner = false,
+                UserId = user.UserId,
+            };
 
-                db.SaveChanges();
+            db.Entry(grpUsr).State = EntityState.Added;
+
+            db.SaveChanges();
 
             ModalMessageVM mm = new ModalMessageVM()
             {
                 Header = "Access Code Accepted",
-                Body = grp.JoinConfirmationRequired ? "You have been added to the pending users list for {grp.GroupName}." : $"You have joined {grp.GroupName}",
+                Body = grp.JoinConfirmationRequired ? $"You have been added to the pending users list for {grp.GroupName}." : $"You have joined {grp.GroupName}",
                 RedirectButton = !grp.JoinConfirmationRequired,
-                RedirectLink = Url.Action("ChangeGroup", "Home", new { groupId = grp.GroupId}),
+                RedirectLink = Url.Action("ChangeGroup", "Home", new { groupId = grp.GroupId }),
                 RedirectText = "Go to group"
             };
 
             return PartialView("ModalMessage", mm);
+        }
+
+        public ActionResult ChangeGroup(int id)
+        {
+            if (user.CurrentGroupId != id && db.GroupUsers.Find(id, user.UserId) != null)
+            {
+                GroupUser u = db.GroupUsers.Where(gu => gu.GroupId == user.CurrentGroupId && gu.UserId == user.UserId).Include(gu => gu.User).FirstOrDefault();
+                u.User.CurrentGroupId = id;
+                db.Entry(u.User).State = EntityState.Modified;
+                db.SaveChanges();
+                Session["User"] = new UserDTO(u);
+                Session["Group"] = WebManager.GetGroupDTO(id);
+            }
+
+            return RedirectToAction("Index", "User", null);
         }
 
 
