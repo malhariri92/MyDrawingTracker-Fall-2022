@@ -37,7 +37,8 @@
                             }
                             @if ((UserVerified ?? false) && (GroupApproved ?? false))
                             {
-                                <li><a href="#" id="btnCreateNewGroup">Create A New Group</a></li>
+                                <li><a href="#" class="btnModal" data-action="@Url.Action("CreateNew", "Group", null, null)">Create A New Group</a></li>
+                                <li><a href="#" class="btnModal" data-action="@Url.Action("Join", "User", null, null)">Join Another Group</a></li>
                             }
                         </ul>
 
@@ -48,7 +49,8 @@
                     <li>@Html.ActionLink("My Group", "Index", "Group", null, null)</li>
                     if ((UserVerified ?? false) && (GroupApproved ?? false))
                     {
-                        <li><a href="#" id="btnCreateNewGroup">Create A New Group</a></li>
+                        <li><a href="#" class="btnModal" data-action="@Url.Action("CreateNew", "Group", null, null)">Create A New Group</a></li>
+                        <li><a href="#" class="btnModal" data-action="@Url.Action("Join", "User", null, null)">Join Another Group</a></li>
                     }
                 }
 
@@ -64,14 +66,13 @@
                 if (WebManager.IsGroupAdmin(0, user.UserId))
                 {
                     <li>@Html.ActionLink("Group List", "Index", "Admin", null, null)</li>
-                    <li>@Html.ActionLink("Group Requests", "Applications", "Admin", null, null)</li>
                 }
                 <li>@Html.ActionLink("Sign Out", "SignOut", "Home", null, null)</li>
             }
             else
             {
                 <li>
-                    <button class="btn btn-xs btn-secondary" id="btnUserAccess" type="button">
+                    <button class="btn btn-xs btn-secondary btnModal" type="button" data-action="@Url.Action(HasCode ? "NewUser" : "SignIn", "Home", null)">
                         <span class="fa fa-user"></span>
                     </button>
                 </li>
@@ -79,19 +80,3 @@
         </ul>
     </div>
 </nav>
-
-<script type="text/javascript">
-    $('#btnCreateNewGroup').on('click', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load(`@Url.Action("CreateNew", "Group", null)`);
-    });
-
-     $('#btnUserAccess').on('click', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action(HasCode ? "NewUser" : "SignIn", "Home", null, null)');
-    });
-</script>

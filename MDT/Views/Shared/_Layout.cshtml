@@ -36,7 +36,9 @@
 
     <div class="modal fade" id="popup" role="dialog">
         <div class="modal-dialog">
-            <div class="modal-content" id="modaldiv">
+            <div class="modal-content">
+            <div class="spinnerdiv" style="display:none;" id="ModalSpinner"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>
+            <div id="modaldiv"></div>
 
             </div>
         </div>
@@ -49,10 +51,15 @@
     <script type="text/javascript">
         $(document).on('click', '.btnModal', function () {
             let action = $(this).attr('data-action');
+            hideModalSpinner();
             $('#modaldiv').empty();
             $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
             $('#popup').modal("show");
-            $('#modaldiv').load(action);
+            $('#modaldiv').load(action, function () {
+                if ($('#ModalForm').length) {
+                    $.validator.unobtrusive.parse('#ModalForm');
+                }
+            });
         });
 
         $(document).on('click', '.btnPanel', function () {
@@ -63,12 +70,41 @@
             $(panel).load(action);
         });
 
+        $(document).on('click', '.btnWindow', function () {
+            let action = $(this).attr('data-action');
+            window.top.location.href = action;
+        });
+        $(document).on('submit', '#ModalForm', function (e) {
+            $('#modaldiv').hide();
+            $('#ModalSpinner').show();
+        });
+
         function hideModal() {
             $('#popup').modal("hide");
         }
+
+        function hideModalSpinner() {
+            $('#modaldiv').show();
+            $('#ModalSpinner').hide();
+        }
+
         function showModalError(result) {
             $('#modaldiv').empty();
+            $('#ModalSpinner').hide();
             $('#modaldiv').append(result.responseText);
+            $('#modaldiv').show();
+        }
+
+        function replacePage(result) {
+            $("html").html($("html", result).html());
+        }
+
+        function redirectPage(result) {
+            window.top.location.href = result;
+        }
+
+        function finishLogin(result) {
+             $('#Banner').load('@Url.Action("Banner", "Home", null)');
         }
     </script>
 </body>

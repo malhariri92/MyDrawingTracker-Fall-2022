@@ -19,12 +19,18 @@ namespace MDT.ViewModels
 
         [Display(Name = "End Date")]
         [Required(ErrorMessage = "{0} is required.")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
-        public DateTime EndDate { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}", NullDisplayText = "")]
+        public DateTime? EndDate { get; set; }
+
+        [Display(Name = "End Time")]
+        [Required(ErrorMessage = "{0} is required.")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:hh\\:mm}",NullDisplayText ="")]
+        public TimeSpan? EndTime { get; set; }
         public bool IsActive { get; set; }
 
         [Display(Name = "Results")]
         public string Results { get; set; }
+        public List<ResultVM> DrawResults { get; set; }
 
         [Display(Name = "Game")]
         [Required(ErrorMessage = "{0} is required.")]
@@ -39,16 +45,16 @@ namespace MDT.ViewModels
         public bool RemoveDrawnUsers { get; set; }
         public int? NextDrawId { get; set; }
         public bool PassDrawnToNext { get; set; }
-        public bool PassUndrawnToNext { get; set; }
-        public bool AutoDraw { get; set; }
-        public bool JoinConfirmationRequired { get; set; }
-        public bool RefundConfirmationRequired { get; set; }
+        public bool IsInternal { get; set; }
         public decimal EntryCost { get; set; }
 
+        public Dictionary<int, Dictionary<int, string>> RemovalRequests { get; set; }
         public DrawVM()
         {
             Entries = new List<EntryVM>();
             Descriptions = new List<Description>();
+            DrawResults = new List<ResultVM>();
+            RemovalRequests = new Dictionary<int, Dictionary<int, string>>();
         }
 
         /// <summary>
@@ -63,15 +69,38 @@ namespace MDT.ViewModels
                 Title = d.Title;
                 VirtualTitle = $"{d.DrawType.DrawTypeName} {d.EndDateTime:yyyy-MM-dd}";
                 StartDate = d.StartDateTime;
-                EndDate = d.EndDateTime;
+                EndDate = d.EndDateTime.Date;
+                EndTime = d.EndDateTime.TimeOfDay;
                 Results = d.Results;
                 IsActive = d.StartDateTime != null && d.EndDateTime > DateTime.Now && Results == null;
                 DrawTypeId = d.DrawTypeId;
                 DrawTypeName = d.DrawType.DrawTypeName;
-
+                IsInternal = d.DrawType.IsInternal;
+                DrawResults = d.DrawResults.Select(r => new ResultVM(r)).ToList();
                 EntryCost = d.DrawType.EntryCost;
 
-                Entries = d.DrawEntries.Select(e => new EntryVM(e)).ToList();
+                
+                foreach(DrawEntry de in  d.DrawEntries)
+                {
+                    EntryVM vm = Entries.Find(e => e.UserId == de.UserId);
+                    if (vm == null)
+                    {
+                        Entries.Add(new EntryVM(de));                        
+                    }
+                    else
+                    {
+                        vm.EntryCount++;
+                    }
+                    if (de.PendingRemoval)
+                    {
+                        if(!RemovalRequests.ContainsKey(de.UserId))
+                        {
+                            RemovalRequests.Add(de.UserId, new Dictionary<int, string>());
+                        }
+
+                        RemovalRequests[de.UserId].Add(de.EntryId, de.EntryCode);
+                    }
+                }
 
                 if (d.DrawOption == null)
                 {
@@ -80,10 +109,6 @@ namespace MDT.ViewModels
                     RemoveDrawnEntries = d.DrawType.RemoveDrawnEntries;
                     RemoveDrawnUsers = d.DrawType.RemoveDrawnUsers;
                     PassDrawnToNext = d.DrawType.PassDrawnToNext;
-                    PassUndrawnToNext = d.DrawType.PassUndrawnToNext;
-                    AutoDraw = d.DrawType.AutoDraw;
-                    JoinConfirmationRequired = d.DrawType.JoinConfirmationRequired;
-                    RefundConfirmationRequired = d.DrawType.RefundConfirmationRequired;
                     EntryCost = d.DrawType.EntryCost;
                 }
                 else
@@ -94,10 +119,6 @@ namespace MDT.ViewModels
                     RemoveDrawnUsers = d.DrawOption.RemoveDrawnUsers;
                     NextDrawId = d.DrawOption.NextDrawId;
                     PassDrawnToNext = d.DrawOption.PassDrawnToNext;
-                    PassUndrawnToNext = d.DrawOption.PassUndrawnToNext;
-                    AutoDraw = d.DrawOption.AutoDraw;
-                    JoinConfirmationRequired = d.DrawOption.JoinConfirmationRequired;
-                    RefundConfirmationRequired = d.DrawOption.RefundConfirmationRequired;
                 }
 
             }
@@ -116,10 +137,6 @@ namespace MDT.ViewModels
             RemoveDrawnEntries = d.RemoveDrawnEntries;
             RemoveDrawnUsers = d.RemoveDrawnUsers;
             PassDrawnToNext = d.PassDrawnToNext;
-            PassUndrawnToNext = d.PassUndrawnToNext;
-            AutoDraw = d.AutoDraw;
-            JoinConfirmationRequired = d.JoinConfirmationRequired;
-            RefundConfirmationRequired = d.RefundConfirmationRequired;
             EntryCost = d.EntryCost;
         }
 

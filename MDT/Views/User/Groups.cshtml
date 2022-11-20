@@ -1,0 +1,33 @@
+@using MDT.ViewModels
+@using MDT.Models
+@using MDT.Models.DTO
+@model UserVM
+@{
+    GroupDTO group = (GroupDTO)Session["group"];
+    UserDTO user = (UserDTO)Session["user"];
+    ViewBag.Title = $"{user.UserName} - {group.GroupName}";
+}
+
+<h2>
+    Other Groups
+</h2>
+<ul>
+    @foreach (KeyValuePair<int, string> kvp in Model.AdminGroups)
+    {
+        if (kvp.Key == group.GroupId)
+        {
+            continue;
+        }
+        <li><a href="@Url.Action("ChangeGroup", "User", new { id = kvp.Key }) "> @kvp.Value (Admin)</a></li>
+    }
+    @foreach (KeyValuePair<int, string> kvp in Model.MemberGroups)
+    {
+        if (kvp.Key == group.GroupId)
+        {
+            continue;
+        }
+        <li><a href="@Url.Action("ChangeGroup", "User", new { id = kvp.Key }) "> @kvp.Value</a></li>
+    }
+</ul>
+<br />
+

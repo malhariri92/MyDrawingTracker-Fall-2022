@@ -126,7 +126,7 @@ namespace MDT.Controllers
                 DestinationLedger = group.AccountBalanceLedgerId
             };
 
-            db.PendingTransactions.Add(entry);
+            db.Entry(entry).State = EntityState.Added;
             db.SaveChanges();
 
             TransactionListVM tlvm = GetTransactionListVM();

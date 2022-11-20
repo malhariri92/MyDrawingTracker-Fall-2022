@@ -9,33 +9,37 @@
 <br />
 <br />
 <div class="row">
-    <h3>
-        Description
-        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
-        {
-            <button type="button" class="btn btn-xs btn-success" title="Edit Description" id="btnDescEdit"><span class="fa fa-pencil"></span></button>
-        }
-    </h3>
+    <div class="col-xs-12">
+        <h3>
+            Description
+            @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) && Model.Results == null)
+            {
+                <button type="button" class="btn btn-xs btn-success btnPanel" title="Edit Description" data-panel="divDesc" data-action="@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.DrawId })"><span class="fa fa-pencil"></span></button>
+            }
+        </h3>
+    </div>
 </div>
 
-@if (Model.Descriptions.Any())
-{
-    <div class="row">
-        @foreach (Description d in Model.Descriptions)
+<div class="row">
+    <div class="col-xs-12">
+        @if (Model.Descriptions.Any())
         {
-            if (!string.IsNullOrEmpty(d.Title))
+            foreach (Description d in Model.Descriptions)
             {
-                <h3>@d.Title</h3>
-            }
-            if (!string.IsNullOrEmpty(d.TextBody))
-            {
-                <p>@d.TextBody</p>
+                if (!string.IsNullOrEmpty(d.Title))
+                {
+                    <h3>@d.Title</h3>
+                }
+                if (!string.IsNullOrEmpty(d.TextBody))
+                {
+                    <p>@d.TextBody</p>
+                }
             }
         }
+        else
+        {
+            <h3 class="text-danger">No description has been entered for this drawing.</h3>
+            <br />
+        }
     </div>
-}
-else
-{
-    <h3 class="text-danger">No description has been entered for this drawing.</h3>
-    <br />
-}
+</div>

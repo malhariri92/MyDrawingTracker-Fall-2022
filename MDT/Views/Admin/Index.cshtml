@@ -1,52 +1,22 @@
 ﻿@using MDT.ViewModels;
 @model List<GroupVM>
 @{
-    ViewBag.Title = "All Groups";
+    ViewBag.Title = "Site Groups";
 }
 
-@if (ViewBag.Message != null)
-{
-    <h2 class="text-success">@ViewBag.Message</h2>
-    <br />
-}
 
-@if (ViewBag.Error != null)
-{
-    <h2 class="text-danger">@ViewBag.Error</h2>
-    <br />
-}
+<div class="row" id="groupApps">
+    @{ 
+        Html.RenderPartial("Applications", Model.Where(g => g.IsApproved == null).ToList());
+    }
+</div>
 
-@if (Model.Any())
-{
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Owner</th>
-                <th>Other Admins</th>
-                <th>Members</th>
-                <th>Pending</th>
-                <th>Invited</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (GroupVM grp in Model)
-            {
-                <tr>
-                    <td>@grp.GroupName</td>
-                    <td>@Html.Raw(grp.Admins.Where(u => u.IsOwner).Select(u => $"<a href=\"mailto:{u.EmailAddress}\">{u.UserName}</a>").FirstOrDefault())</td>
-                    <td>@grp.Admins.Where(u => !u.IsOwner).Count()</td>
-                    <td>@grp.Members.Count()</td>
-                    <td>@grp.PendingMembers.Count()</td>
-                    <td>@grp.Invites.Count()</td>
-                    
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <h3>No groups exist.</h3>
-}
+<br />
+<hr />
+<br />
 
+<div class="row" id="groupAll">
+    @{ 
+        Html.RenderPartial("AllGroups", Model.Where(g => g.IsApproved ?? false).ToList());
+    }
+</div>

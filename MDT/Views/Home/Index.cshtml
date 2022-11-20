@@ -22,12 +22,9 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="jumbotron">
+            <h2>Welcome to</h2>
             <h1>My Drawing Tracker</h1>
-            <p class="lead">Coming Soon </p>
-            <p>
-                Some stuff about the site
-
-            </p>
+            <p class="lead">The future of drawings.</p>
         </div>
     </div>
 </div>
@@ -54,59 +51,18 @@
 }
 
 <script type="text/javascript">
-    $(document).on('click', '#btnForgotPass', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action("ForgotPass", "Home", null, null)');
-    });
-    $(document).on('click', '.btnBackToSignIn', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action("SignIn", "Home", null, null)');
-    });
-    $(document).on('click', '#btnCreateAccount', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action("NewUser", "Home", null, null)');
-    });
-    $(document).on('click', '#btnSendVerification', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action("SendVerification", "Home", null, null)');
-    });
-
-   
-    $(document).on('submit', '#SignIn', function (e) {
-            $('#SignIn').hide();
-            $('#SignInSpinner').show();
-    });
-
-    //$(document).on('click', '#btnSignIn', function () {
-    //    $('#SignIn').validate();
-    //    if ($('#SignIn').valid()) {
-    //        $('#SignIn').hide();
-    //        $('#SignInSpinner').show();
-    //        $('#SignIn').submit();
-    //    }
-    //});
-
-    $(document).on('change', '#createToggle', function () {
-        if ($(this).is(':checked')) {
-            $('#groupAdmin').show();
-            $('#groupAdminP').show();
-            $.validator.unobtrusive.parse('#NewAdminForm');
-            $('#groupUser').hide();
-            $('#groupUserP').hide();
+    function CreateToggleChanged() {
+        if ($('#CreateToggle').is(':checked')) {
+            $('.groupAdmin').show();
+            $('.groupUser').hide();
         } else {
-            $('#groupAdmin').hide();
-            $('#groupAdminP').hide();
-            $('#groupUser').show();
-            $('#groupUserP').show();
-            $.validator.unobtrusive.parse('#NewUserForm');
+            $('.groupAdmin').hide();
+            $('.groupUser').show();
+            
         }
+    }
+
+    $(document).on('change', '#CreateToggle', function () {
+        CreateToggleChanged();
     });
 </script>

@@ -14,29 +14,16 @@ namespace MDT.Models.DTO
         public string DrawTypeName { get; set; }
         public string Results { get; set; }
         public string DrawCode { get; set; }
-        public int MaxEntriesPerUser { get; set; }
-        public int EntriesToDraw { get; set; }
-        public bool RemoveDrawnEntries { get; set; }
-        public bool RemoveDrawnUsers { get; set; }
-        public int? NextDrawId { get; set; }
-        public bool PassDrawnToNext { get; set; }
-        public bool PassUndrawnToNext { get; set; }
-        public bool AutoDraw { get; set; }
-        public bool JoinConfirmationRequired { get; set; }
-        public bool RefundConfirmationRequired { get; set; }
-
-        public List<int> EntryIds { get; set; }
-        public List<int> TransactionIds { get; set; }
+        public string Title { get; set; }
+        public bool IsActive { get; set; }
 
         /// <summary>
         /// Create a DrawDTO from a Draw entity
         /// </summary>
-        /// <param name="draw">Draw entity, must include DrawType, DrawOption, DrawEntries, and Transactions</param>
+        /// <param name="draw">Draw entity, must include DrawType</param>
         public DrawDTO(Draw draw = null)
         {
-            EntryIds = new List<int>();
-            TransactionIds = new List<int>();
-
+          
             if (draw != null)
             {
                 DrawId = draw.DrawId;
@@ -46,19 +33,10 @@ namespace MDT.Models.DTO
                 DrawTypeName = draw.DrawType?.DrawTypeName;
                 Results = draw.Results;
                 DrawCode = draw.DrawCode;
-                MaxEntriesPerUser = draw.DrawOption.MaxEntriesPerUser;
-                EntriesToDraw = draw.DrawOption.EntriesToDraw;
-                RemoveDrawnEntries = draw.DrawOption.RemoveDrawnEntries;
-                RemoveDrawnUsers = draw.DrawOption.RemoveDrawnUsers;
-                NextDrawId = draw.DrawOption.NextDrawId;
-                PassDrawnToNext = draw.DrawOption.PassDrawnToNext;
-                PassUndrawnToNext = draw.DrawOption.PassUndrawnToNext;
-                AutoDraw = draw.DrawOption.AutoDraw;
-                JoinConfirmationRequired = draw.DrawOption.JoinConfirmationRequired;
-                RefundConfirmationRequired = draw.DrawOption.RefundConfirmationRequired;
+                Title = draw.Title ?? $"{draw.DrawType.DrawTypeName} {draw.EndDateTime:yyyy-MM-dd}";
+                IsActive = draw.StartDateTime != null && draw.EndDateTime > DateTime.Now && draw.Results == null;
 
-                EntryIds = draw.DrawEntries.Select(de => de.EntryId).ToList();
-                TransactionIds = draw.Transactions.Select(t => t.TransactionId).ToList();
+
             }
         }
 

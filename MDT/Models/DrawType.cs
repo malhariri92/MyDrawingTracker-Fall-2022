@@ -36,8 +36,6 @@ namespace MDT.Models
         public bool RemoveDrawnUsers { get; set; }
         public int NumberOfDraws { get; set; }
         public bool PassDrawnToNext { get; set; }
-        public bool PassUndrawnToNext { get; set; }
-        public bool AutoDraw { get; set; }
         public bool JoinConfirmationRequired { get; set; }
         public bool RefundConfirmationRequired { get; set; }
         public decimal InitialUserBalance { get; set; }

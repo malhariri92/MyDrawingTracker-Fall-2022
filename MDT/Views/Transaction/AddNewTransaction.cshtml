@@ -5,7 +5,7 @@
     <button type="button" class="close" data-dismiss="modal">&times;</button>
 </div>
 
-@using (Ajax.BeginForm("AddNewTransaction", "Transaction", new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "transactions", OnSuccess="hideModal", OnFailure="showModalError" }))
+@using (Ajax.BeginForm("AddNewTransaction", "Transaction", new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "transactions", OnSuccess="hideModal", OnFailure="showModalError" }, htmlAttributes: new { id = "ModalForm" }))
 {
     <div class="modal-body">
         @Html.AntiForgeryToken()

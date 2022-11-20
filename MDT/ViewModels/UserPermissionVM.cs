@@ -31,11 +31,11 @@ namespace MDT.ViewModels
 
         public UserPermissionVM(GroupUser user)
         {
-            this.UserId = user.UserId;
-            this.CanManageUsers = user.CanManageUsers;
-            this.CanManageDrawTypes = user.CanManageDrawTypes;
-            this.CanManageDrawings = user.CanManageDrawings;
-            this.CanManageTransactions = user.CanManageTransactions;
+            UserId = user.UserId;
+            CanManageUsers = user.CanManageUsers;
+            CanManageDrawTypes = user.CanManageDrawTypes;
+            CanManageDrawings = user.CanManageDrawings;
+            CanManageTransactions = user.CanManageTransactions;
         }
     }
 }

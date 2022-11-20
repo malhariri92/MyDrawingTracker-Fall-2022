@@ -3,12 +3,10 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
 </div>
-<div class="modal-body">
 
-    <div class="spinnerdiv" style="display:none;" id="SignInSpinner"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>
-
-    @using (Ajax.BeginForm("SignIn", "Home", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "modaldiv" }, new { id = "SignIn" }))
-    {
+@using (Ajax.BeginForm("SignIn", "Home", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "modaldiv", OnSuccess = "hideModalSpinner", OnFailure="showModalError" }, htmlAttributes: new { id = "ModalForm" }))
+{
+    <div class="modal-body">
         @Html.AntiForgeryToken()
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -26,20 +24,15 @@
                     @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
                 </div>
             </div>
-
+        </div>
+        <div class="modal-footer">
             <div class="form-group">
                 <div class="col-xs-8 pull-right">
-                    <button type="button" class="btn btn-sm btn-warning" id="btnForgotPass">Forgot Password</button>
-                    <button type="button" class="btn btn-sm btn-info" id="btnCreateAccount">Create Account</button>
-                    <button type="submit" class="btn btn-sm btn-success" id="btnSignIn">Sign In</button>
+                    <button type="button" class="btn btn-sm btn-warning btnModal" data-action="@Url.Action("ForgotPass", "Home", null, null)" id="btnForgotPass">Forgot Password</button>
+                    <button type="button" class="btn btn-sm btn-info btnModal" data-action="@Url.Action("NewUser", "Home", null, null)">Create Account</button>
+                    <button type="submit" class="btn btn-sm btn-success">Sign In</button>
                 </div>
             </div>
         </div>
-    }
-</div>
-
-<script type="text/javascript">
-    $(function () {
-        $.validator.unobtrusive.parse('#SignIn');
-    });
-</script>
+    </div>
+}

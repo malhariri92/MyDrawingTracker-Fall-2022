@@ -20,4 +20,17 @@ namespace MDT.Models
         [Display(Name = "Text")]
         public string TextBody { get; set; }
     }
+
+    [MetadataType(typeof(UserMetaData))]
+    public partial class User
+    {
+    }
+
+    public class UserMetaData
+    {
+        [Required]
+        [Display(Name = "Name")]
+        [MaxLength(50, ErrorMessage = "{0} cannot exceed {1} characters")]
+        public string UserName { get; set; }
+    }
 }

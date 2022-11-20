@@ -148,6 +148,12 @@ namespace MDT.Controllers
                 }
             }
 
+
+            if (Request.UrlReferrer.ToString().ToLower().Contains("/user/member"))
+            {
+                return RedirectToAction("Members", "Group");
+            }
+
             return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
 
@@ -186,6 +192,14 @@ namespace MDT.Controllers
                 {
                     ViewBag.Error = $"Error sending password reset email to {targetUser.User.EmailAddress}. Please try again.";
                 }
+            }
+
+
+            if (Request.UrlReferrer.ToString().ToLower().Contains("/user/member"))
+            {
+                TempData["Message"] = ViewBag.Message;
+                TempData["Error"] = ViewBag.Error;
+                return RedirectToAction("Member", "User", new { id = targetUser.UserId });
             }
 
             return PartialView("GroupMembers", GetGroupVM(group.GroupId));
@@ -377,6 +391,11 @@ namespace MDT.Controllers
         [HttpPost]
         public ActionResult CreateNew(NewGroupVM vm)
         {
+            if(!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return PartialView(vm);
+            }
             Group group = new Group()
             {
                 GroupName = vm.GroupName,
@@ -426,7 +445,6 @@ namespace MDT.Controllers
         [AdminFilter(Role = "Admin")]
         public ActionResult Promote(int id)
         {
-
             GroupUser usr = db.GroupUsers.Find(group.GroupId, id);
 
             if (usr == null)
@@ -452,6 +470,12 @@ namespace MDT.Controllers
             usr.IsAdmin = true;
             db.Entry(usr).State = EntityState.Modified;
             db.SaveChanges();
+
+            if (Request.UrlReferrer.ToString().ToLower().Contains("/user/member"))
+            {
+                return RedirectToAction("Member", "User", new { id = usr.UserId });
+            }
+
             return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
 
@@ -489,6 +513,12 @@ namespace MDT.Controllers
             usr.IsAdmin = false;
             db.Entry(usr).State = EntityState.Modified;
             db.SaveChanges();
+
+            if (Request.UrlReferrer.ToString().ToLower().Contains("/user/member"))
+            {
+                return RedirectToAction("Member", "User", new { id = usr.UserId });
+            }
+
             return PartialView("GroupMembers", GetGroupVM(group.GroupId));
         }
 

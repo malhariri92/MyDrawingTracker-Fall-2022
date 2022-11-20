@@ -18,15 +18,40 @@ namespace MDT.Controllers
     {
         public ActionResult Index()
         {
-            List<GroupVM> vm = db.Groups.Where(g => g.IsApproved ?? false )
+            List<GroupVM> vm = db.Groups.Include(g => g.GroupUsers)
+                                        .Include(g => g.GroupUsers.Select(gu => gu.User))
+                                        .Include(g => g.GroupInvites)
+                                        .ToList()
+                                        .Select(g => new GroupVM(g))
+                                        .ToList();
+            return View(vm);
+        }
+
+        public ActionResult AllGroups()
+        {
+            if (TempData.ContainsKey("Message"))
+            {
+                ViewBag.Message = TempData["Message"];
+                TempData.Remove("Message");
+            }
+
+            if (TempData.ContainsKey("Error"))
+            {
+                ViewBag.Error = TempData["Error"];
+                TempData.Remove("Error");
+            }
+
+
+            List<GroupVM> vm = db.Groups.Where(g => g.IsApproved ?? false)
                                        .Include(g => g.GroupUsers)
                                        .Include(g => g.GroupUsers.Select(gu => gu.User))
                                        .Include(g => g.GroupInvites)
                                        .ToList()
                                        .Select(g => new GroupVM(g))
                                        .ToList();
-            return View(vm);
+            return PartialView(vm);
         }
+
         public ActionResult Applications()
         {
             if (TempData.ContainsKey("Message"))
@@ -55,7 +80,7 @@ namespace MDT.Controllers
             }
 
 
-            return View(vm);
+            return PartialView(vm);
         }
 
         public ActionResult Approved(int id)
@@ -107,11 +132,16 @@ namespace MDT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Rejected(GroupVM vm)
         {
+            if(!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return PartialView(vm);
+            }
             Group g = GetGroup(vm.GroupId);
             if (g == null)
             {
                 TempData["Error"] = $"Group id {vm.GroupId} not found";
-                return RedirectToAction("Index");
+                return RedirectToAction("Applications");
             }
 
             if (g.IsApproved != null)
@@ -145,7 +175,7 @@ namespace MDT.Controllers
             WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 5, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
-            return RedirectToAction("Index");
+            return RedirectToAction("Applications");
         }
 
         public ActionResult Impersonate(string email)

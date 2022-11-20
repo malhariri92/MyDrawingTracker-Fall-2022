@@ -1,0 +1,54 @@
+﻿@using MDT.ViewModels
+@model List<EntryVM>
+@{
+    int UserId = Model.FirstOrDefault()?.UserId ?? 0;
+    int DrawId = Model.FirstOrDefault()?.DrawId ?? 0;
+    string UserName = Model.FirstOrDefault()?.UserName;
+    string DrawName = Model.FirstOrDefault()?.DrawTitle;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h2>
+        Removal Requests for @UserName<br />
+        (@DrawName)
+    </h2>
+</div>
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Entry Code</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (EntryVM vm in Model)
+                    {
+                        <tr>
+                            <td>@vm.EntryCode</td>
+                            <td>
+                                <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("ApproveRemoval", "Draw", new { id = vm.EntryId })" title="Approve Removal"><span class="fa fa-plus-circle"></span></button>
+                                <button type="button" class="btn btn-xs btn-danger btnModal" data-action="@Url.Action("RejectRemoval", "Draw", new {id = vm.EntryId})" title="Reject Removal"><span class="fa fa-times-circle"></span></button>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @if (Model.Count > 1)
+    {
+        <div class="modal-footer">
+            <div class="row">
+                <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("ApproveAllRemoval", "Draw", new { drawId = DrawId, userId = UserId })">Approve All Removals</button>
+                <button type="button" class="btn btn-xs btn-danger btnModal" data-action="@Url.Action("RejectAllRemoval", "Draw", new {drawId = DrawId, userId = UserId})">Reject All Removals</button>
+            </div>
+        </div>
+    }
+</div>
+

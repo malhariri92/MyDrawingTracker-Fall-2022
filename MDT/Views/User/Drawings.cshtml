@@ -1,0 +1,50 @@
+@using MDT.ViewModels
+@using MDT.Models
+@using MDT.Models.DTO
+@model UserVM
+@{
+    GroupDTO group = (GroupDTO)Session["group"];
+    UserDTO user = (UserDTO)Session["user"];
+    List<DrawVM> Draws = (List<DrawVM>)ViewBag.Draws;
+}
+
+
+    <h2>Upcoming Draws</h2>
+
+    @if (ViewBag.Draws != null && ViewBag.Draws.Count != 0)
+    {
+        <table class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th>Drawing</th>
+                    <th>Draw Type</th>
+                    <th>Ends On</th>
+                    <th>Entries</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (DrawVM draw in Draws.OrderBy(d => d.EndDate).Take(10))
+
+                {
+                    <tr>
+                        <td><a href="@Url.Action("ViewDraw","Draw", new { id = draw.DrawId })">@(draw.Title ?? draw.VirtualTitle)</a></td>
+                        <td><a href="@Url.Action("ViewDrawType","Draw", new { id = draw.DrawTypeId })">@(draw.DrawTypeName)</a></td>
+                        <td>
+                            @($"{draw.EndDate:yyyy-MM-dd HH:mm}")
+
+                        <td>
+                            @draw.Entries.Count(e => e.UserId == Model.UserId) / @draw.Entries.Count()
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="row">
+            <h3>You are not currently set to participate in any draws.</h3>
+        </div>
+        <hr />
+    }

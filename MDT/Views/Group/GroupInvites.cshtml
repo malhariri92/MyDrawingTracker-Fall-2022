@@ -2,8 +2,6 @@
 @using MDT.ViewModels
 @model GroupVM
 
-
-<h2>Group Invitations <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("NewInvite", "Group",null)" title="Invite a new member to the group"><span class="fa fa-plus-circle"></span></button></h2>
 @if (ViewBag.Message != null)
 {
     <div class="row text-center">
@@ -18,7 +16,7 @@
     </div>
 }
 
-
+<h2>Group Invitations <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("NewInvite", "Group",null)" title="Invite a new member to the group"><span class="fa fa-plus-circle"></span></button></h2>
 
 @if (Model.Invites.Count != 0)
 {
@@ -37,8 +35,8 @@
                     <td>@u.EmailAddress</td>
                     <td>@u.LastInviteDate.ToString("yyyy-MM-dd HH:mm")</td>
                     <td>
-                        <button type="button" class="btn btn-xs btn-info btnMember" data-action="@Url.Action("SendReminder", "Group",new { email = u.EmailAddress })" title="Send Reminder"><span class="fa fa-envelope"></span></button>
-                        <button type="button" class="btn btn-xs btn-danger btnMember" data-action="@Url.Action("DeleteInvite", "Group",new { email = u.EmailAddress })" title="Delete Invitation"><span class="fa fa-trash"></span></button>
+                        <button type="button" class="btn btn-xs btn-info btnPanel" data-panel="invites" data-action="@Url.Action("SendReminder", "Group",new { email = u.EmailAddress })" title="Send Reminder"><span class="fa fa-envelope"></span></button>
+                        <button type="button" class="btn btn-xs btn-danger btnPanel" data-panel="invites" data-action="@Url.Action("DeleteInvite", "Group",new { email = u.EmailAddress })" title="Delete Invitation"><span class="fa fa-trash"></span></button>
                     </td>
                 </tr>
             }
@@ -47,5 +45,5 @@
 }
 else
 {
-    <p>There are no pending invites for this group.</p>
+    <h3>There are no pending invites for this group.</h3>
 }

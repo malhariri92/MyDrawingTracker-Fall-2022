@@ -56,10 +56,6 @@
           <Property Name="RemoveDrawnUsers" Type="bit" Nullable="false" />
           <Property Name="NextDrawId" Type="int" />
           <Property Name="PassDrawnToNext" Type="bit" Nullable="false" />
-          <Property Name="PassUndrawnToNext" Type="bit" Nullable="false" />
-          <Property Name="AutoDraw" Type="bit" Nullable="false" />
-          <Property Name="JoinConfirmationRequired" Type="bit" Nullable="false" />
-          <Property Name="RefundConfirmationRequired" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="DrawResults">
           <Key>
@@ -100,8 +96,6 @@
           <Property Name="RemoveDrawnUsers" Type="bit" Nullable="false" />
           <Property Name="NumberOfDraws" Type="int" Nullable="false" />
           <Property Name="PassDrawnToNext" Type="bit" Nullable="false" />
-          <Property Name="PassUndrawnToNext" Type="bit" Nullable="false" />
-          <Property Name="AutoDraw" Type="bit" Nullable="false" />
           <Property Name="JoinConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="RefundConfirmationRequired" Type="bit" Nullable="false" />
           <Property Name="InitialUserBalance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
@@ -1127,10 +1121,6 @@
           <Property Name="RemoveDrawnUsers" Type="Boolean" Nullable="false" />
           <Property Name="NextDrawId" Type="Int32" />
           <Property Name="PassDrawnToNext" Type="Boolean" Nullable="false" />
-          <Property Name="PassUndrawnToNext" Type="Boolean" Nullable="false" />
-          <Property Name="AutoDraw" Type="Boolean" Nullable="false" />
-          <Property Name="JoinConfirmationRequired" Type="Boolean" Nullable="false" />
-          <Property Name="RefundConfirmationRequired" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Draw" Relationship="DbModel.FK_DrawOptions_Draws" FromRole="DrawOption" ToRole="Draw" />
           <NavigationProperty Name="NextDraw" Relationship="DbModel.FK_NextDraw" FromRole="DrawOption" ToRole="Draw" />
         </EntityType>
@@ -1770,8 +1760,6 @@
           <Property Name="RemoveDrawnUsers" Type="Boolean" Nullable="false" />
           <Property Name="NumberOfDraws" Type="Int32" Nullable="false" />
           <Property Name="PassDrawnToNext" Type="Boolean" Nullable="false" />
-          <Property Name="PassUndrawnToNext" Type="Boolean" Nullable="false" />
-          <Property Name="AutoDraw" Type="Boolean" Nullable="false" />
           <Property Name="JoinConfirmationRequired" Type="Boolean" Nullable="false" />
           <Property Name="RefundConfirmationRequired" Type="Boolean" Nullable="false" />
           <Property Name="InitialUserBalance" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
@@ -1889,10 +1877,6 @@
           <EntitySetMapping Name="DrawOptions">
             <EntityTypeMapping TypeName="DbModel.DrawOption">
               <MappingFragment StoreEntitySet="DrawOptions">
-                <ScalarProperty Name="RefundConfirmationRequired" ColumnName="RefundConfirmationRequired" />
-                <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
-                <ScalarProperty Name="AutoDraw" ColumnName="AutoDraw" />
-                <ScalarProperty Name="PassUndrawnToNext" ColumnName="PassUndrawnToNext" />
                 <ScalarProperty Name="PassDrawnToNext" ColumnName="PassDrawnToNext" />
                 <ScalarProperty Name="NextDrawId" ColumnName="NextDrawId" />
                 <ScalarProperty Name="RemoveDrawnUsers" ColumnName="RemoveDrawnUsers" />
@@ -2125,8 +2109,6 @@
                 <ScalarProperty Name="InitialUserBalance" ColumnName="InitialUserBalance" />
                 <ScalarProperty Name="RefundConfirmationRequired" ColumnName="RefundConfirmationRequired" />
                 <ScalarProperty Name="JoinConfirmationRequired" ColumnName="JoinConfirmationRequired" />
-                <ScalarProperty Name="AutoDraw" ColumnName="AutoDraw" />
-                <ScalarProperty Name="PassUndrawnToNext" ColumnName="PassUndrawnToNext" />
                 <ScalarProperty Name="PassDrawnToNext" ColumnName="PassDrawnToNext" />
                 <ScalarProperty Name="NumberOfDraws" ColumnName="NumberOfDraws" />
                 <ScalarProperty Name="RemoveDrawnUsers" ColumnName="RemoveDrawnUsers" />

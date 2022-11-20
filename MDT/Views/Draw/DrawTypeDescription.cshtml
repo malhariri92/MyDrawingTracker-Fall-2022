@@ -13,7 +13,7 @@
         Description
         @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
         {
-            <button type="button" class="btn btn-xs btn-success" title="Edit Description" id="btnDescEdit"><span class="fa fa-pencil"></span></button>
+            <button type="button" class="btn btn-xs btn-success btnPanel" title="Edit Description" data-panel="divDesc" data-action="@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })"><span class="fa fa-pencil"></span></button>
         }
     </h3>
 </div>
@@ -38,6 +38,6 @@
 }
 else
 {
-    <h3 class="text-danger">No description has been entered for this drawing.</h3>
+    <h3 class="text-danger">No description has been entered for this draw type.</h3>
     <br />
 }

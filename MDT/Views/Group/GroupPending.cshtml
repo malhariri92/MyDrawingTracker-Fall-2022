@@ -1,22 +1,21 @@
 ﻿@using MDT.ViewModels
 @model GroupVM
 
-
-
-<h2>New Users Requests</h2>
 @if (ViewBag.Message != null)
 {
     <div class="row text-center">
-        <h3 class="text-success">@ViewBag.Message</h3>
+        <h3 class="text-success">@Html.Raw(ViewBag.Message)</h3>
     </div>
 }
 
 @if (ViewBag.Error != null)
 {
     <div class="row text-center">
-        <h3 class="text-danger">@ViewBag.Error</h3>
+        <h3 class="text-danger">@Html.Raw(ViewBag.Error)</h3>
     </div>
 }
+
+<h2>New Users Requests</h2>
 @if (Model.PendingMembers.Any())
 {
     <table class="table table-bordered">
@@ -34,8 +33,8 @@
                     <td>@u.UserName</td>
                     <td>@u.EmailAddress</td>
                     <td>
-                        <button type="button" data-action="@Url.Action("Approve", "Group",new { id = u.UserId })" class="btn btn-xs btn-success btnMember" title="Approve this user"><span class="fa fa-check-circle"></span></button>
-                        <button type="submit" data-action="@Url.Action("Reject", "Group",new { id = u.UserId })" class="btn btn-xs btn-danger btnMember" title="Reject this user"><span class="fa fa-times-circle"></span></button>
+                        <button type="button" data-panel="pending" data-action="@Url.Action("Approve", "Group",new { id = u.UserId })" class="btn btn-xs btn-success btnPanel" title="Approve this user"><span class="fa fa-check-circle"></span></button>
+                        <button type="button" data-panel="pending" data-action="@Url.Action("Reject", "Group",new { id = u.UserId })" class="btn btn-xs btn-danger  btnPanel" title="Reject this user"><span class="fa fa-times-circle"></span></button>
                     </td>
                 </tr>
             }
@@ -44,7 +43,7 @@
 }
 else
 {
-    <h3 class="text-center">No Users need approval.</h3>
+    <h3>No Users need approval.</h3>
 }
 
 

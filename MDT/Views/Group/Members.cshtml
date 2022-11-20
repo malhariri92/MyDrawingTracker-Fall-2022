@@ -24,13 +24,3 @@
         Html.RenderPartial("GroupInvites", Model);
     }
 </div>
-
-<script type="text/javascript">
-    $(document).on('click', '.btnMember', function () {
-        let div = $(this).closest('.MemberPanel');
-        let action = $(this).attr('data-action');
-        $(div).empty();
-        $(div).append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $(div).load(action);
-    });
-</script>

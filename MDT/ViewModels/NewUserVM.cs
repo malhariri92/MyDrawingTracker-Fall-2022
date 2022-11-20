@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MDT.ViewModels
 {
-    public class AdminUserVM
+    public class NewUserVM
     {
 
         [Display(Name = "Display Name")]
@@ -34,5 +34,10 @@ namespace MDT.ViewModels
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPass { get; set; }
 
+        [Display(Name = "Access Code")]
+        [Required(ErrorMessage = "{0} is required")]
+        public string AccessCode { get; set; }
+
+        public bool CreateAdmin { get; set; }
     }
 }

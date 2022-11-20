@@ -1,0 +1,38 @@
+@using MDT.ViewModels
+@using MDT.Models
+@using MDT.Models.DTO
+@model UserVM
+@{
+    GroupDTO group = (GroupDTO)Session["group"];
+    UserDTO user = (UserDTO)Session["user"];
+    string role = group.OwnerId == user.UserId ? "Owner" : group.Admins.Any(a => a.UserId == user.UserId) ? "Admin" : "Member";
+}
+
+<h2>
+    Details
+    <button type="button" class="btn btn-success btn-xs btnModal" data-action="@Url.Action("Edit","User", null)" title="Edit details"><span class="fa fa-pencil"></span></button>
+    <button type="button" class="btn btn-warning btn-xs btnModal" data-action="@Url.Action("ChangePass","User", null)" title="Change password"><span class="fa fa-key"></span></button>
+</h2>
+<p>
+    <b>Name: </b> @Model.UserName <br />
+    <b>Email: </b>
+    @if (Model.IsVerified)
+    {
+        <span>
+            @Model.EmailAddress <span class="btn-success btn-xs fa fa-check-circle" title="Verified"> </span>
+        </span>
+    }
+    else
+    {
+        <span>
+            @Model.EmailAddress <span class="btn-danger btn-xs fa fa-times-circle" title="Not Verified"></span>
+        </span>
+    }
+    <br />
+
+    <b>Group Name: </b> @group.GroupName<br />
+    <b>Group Role: </b> @role<br />
+
+</p>
+<br />
+

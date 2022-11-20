@@ -21,10 +21,6 @@ namespace MDT.Models
         public bool RemoveDrawnUsers { get; set; }
         public Nullable<int> NextDrawId { get; set; }
         public bool PassDrawnToNext { get; set; }
-        public bool PassUndrawnToNext { get; set; }
-        public bool AutoDraw { get; set; }
-        public bool JoinConfirmationRequired { get; set; }
-        public bool RefundConfirmationRequired { get; set; }
     
         public virtual Draw Draw { get; set; }
         public virtual Draw NextDraw { get; set; }
