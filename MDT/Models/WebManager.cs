@@ -164,73 +164,7 @@ namespace MDT.Models
             }
         }
 
-        public static List<int> OnePrizePerEntry(int DrawId)
-        {
-            // Open the database.
-            using (var db = new DbEntities())
-            {
-                // Get the associated draw from the database.
-                Draw draw = db.Draws.Where(d => d.DrawId == DrawId).FirstOrDefault();
-            
-                // If this draw is not null, its DrawEntries list is not null, and it has draws of some kind,
-                // initiate the draw.
-                if (draw != null 
-                    && draw.DrawEntries != null
-                    && draw.DrawEntries.Count != 0 
-                    && draw.DrawOption != null)
-                {
-                    // List of all entries. Entries will be removed upon being drawn.
-                    List<DrawEntry> listOfEntries = draw.DrawEntries.ToList();
-
-                    // List of DrawEntry objects that have been chose by the RNG algorithm.
-                    List<int> listOfWinners = new List<int>();
-
-                    // Number of total prizes. If the number of entries is actually smaller than the number of Entries that are
-                    // supposed to be drawn, the prizeCount will be updated to reflect this.
-                    int prizeCount = Math.Min(draw.DrawOption.EntriesToDraw, listOfEntries.Count);
-
-                    Random r = new Random();
-
-                    for (int i = 0; i < prizeCount; i++)
-                    {
-                        // Position of the drawn entry.
-                        int drawnPos = r.Next(0, listOfEntries.Count);
-                        
-                        // Add the drawn DrawEntry object to listOfWinners as a new DrawEntryDTO object.
-                        listOfWinners.Add(listOfEntries[drawnPos].EntryId);
-
-                        // Create the DrawResult object for the draw.
-                        DrawResult drawResult = new DrawResult()
-                        {
-                            DrawnDateTime = DateTime.Now,
-                            DrawCount = i + 1,
-                            DrawId = draw.DrawId,
-                            EntryId = listOfWinners[i],
-
-                        };        
-
-                        // Update the state of the drawResult object.
-                        db.Entry(drawResult).State = EntityState.Added;
-
-                        // Remove the drawn entry.
-                        listOfEntries.RemoveAt(drawnPos);
-                    }
-
-                    // Create a comma-separate list of the drawn entry IDs.
-                    draw.Results = String.Join(",", listOfWinners);
-
-                    // Save changes in the database.
-                    db.SaveChanges();
-
-                    // Return the list of winners.
-                    return listOfWinners;
-                }
-            }
-            
-            // Return nothing; an error has probably occurred.
-            return null;
-        }
-        
+       
         internal static string RandomString(int l)
         {
             string rand = "";
@@ -247,46 +181,6 @@ namespace MDT.Models
 
             return rand;
         }
-
-        public static List<DrawEntry> EliminateEntries(Draw draw)
-        {
-            List<DrawEntry> pool = draw.DrawEntries.ToList();
-            return DoEliminateEntries(pool, new List<DrawEntry>(), draw.DrawOption);
-        }
-
-        private static List<DrawEntry> DoEliminateEntries(List<DrawEntry> pool, List<DrawEntry> result, DrawOption options)
-        {
-            if (pool.Count == 0)
-            {
-                result.Reverse();
-                return result;
-            }
-            else if (pool.Count == 1)
-            {
-                result.Add(pool[0]);
-                result.Reverse();
-                return result;
-            }
-            Random random = new Random();
-            List<DrawEntry> nextPool = new List<DrawEntry>();
-            for (int i = 0; i < pool.Count / 2; ++i)
-            {
-                int index = RandomNumber(pool.Count);
-                nextPool.Add(pool[index]);
-
-                pool.RemoveAt(index);
-            }
-
-            if (options.PassDrawnToNext)
-            {
-                result.AddRange(pool);
-                return DoEliminateEntries(nextPool, result, options);
-            }
-
-            result.AddRange(nextPool);
-            return DoEliminateEntries(pool, result, options);
-        }
-    
 
         internal static int RandomNumber(int max)
         {

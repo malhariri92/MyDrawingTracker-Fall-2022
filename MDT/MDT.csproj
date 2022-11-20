@@ -244,21 +244,17 @@
     <Compile Include="ViewModels\EntryVM.cs" />
     <Compile Include="ViewModels\DrawTypeVM.cs" />
     <Compile Include="ViewModels\GroupVM.cs" />
-    <Compile Include="ViewModels\GroupUserVM.cs" />
     <Compile Include="ViewModels\PendingTransactionVM.cs" />
     <Compile Include="ViewModels\NewGroupVM.cs" />
-    <Compile Include="ViewModels\RemoveEntriesVM.cs" />
     <Compile Include="ViewModels\ScheduleVM.cs" />
     <Compile Include="ViewModels\TransactionListVM.cs" />
     <Compile Include="ViewModels\TransactionVM.cs" />
-    <Compile Include="ViewModels\UserDrawEntriesVM.cs" />
     <Compile Include="ViewModels\UserOptionVM.cs" />
     <Compile Include="ViewModels\UserPermissionVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="ViewModels\UserPasswordChangeVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetSetupVM.cs" />
     <Compile Include="ViewModels\UserPasswordResetVM.cs" />
-    <Compile Include="ViewModels\UserDetailsChangeVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -725,8 +721,6 @@
     <Content Include="Views\Group\GroupMembers.cshtml" />
     <Content Include="Views\Transaction\Transactions.cshtml" />
     <Content Include="Views\Group\Permissions.cshtml" />
-    <Content Include="Views\Draw\SelectWinnersSUP.cshtml" />
-    <Content Include="Views\Draw\DisplayDrawnWinners.cshtml" />
     <Content Include="Views\Admin\Applications.cshtml" />
     <Content Include="Views\Draw\UserRequests.cshtml" />
     <Content Include="Views\Admin\AllGroups.cshtml" />

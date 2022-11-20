@@ -60,18 +60,5 @@ namespace MDT.Models.DTO
 
             }
         }
-
-        public UserDTO(UserDetailsChangeVM user = null)
-        {
-            if (user != null)
-            {
-                UserId = user.UserId;
-                UserName = user.UserName;
-                EmailAddress = user.EmailAddress;
-                CurrentGroupId = user.CurrentGroupId;
-                IsVerified = user.IsVerified;
-                IsActive = user.IsActive;
-            }
-        }
     }
 }

@@ -81,12 +81,5 @@
                 $(`#desc-${id}`).hide();
             });
 
-       
-     $(document).on('click', '#btnDescEdit', function () {
-         $('#divDesc').empty();
-         $('#divDesc').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-         $('#divDesc').load('@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })');
-     });
-
     </script>
 }
