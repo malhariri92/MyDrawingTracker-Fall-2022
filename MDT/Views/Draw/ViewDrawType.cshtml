@@ -39,7 +39,7 @@
         <div class="row">
             <div class="col-xs-12" id="divDraws">
                 @{
-                    Html.RenderPartial("DrawList", Model.Draws);
+                    Html.RenderPartial("DrawList", Model);
                 }
             </div>
         </div>
@@ -81,21 +81,7 @@
                 $(`#desc-${id}`).hide();
             });
 
-        $(document).on('click', '#btnRuleEdit', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Url.Action("EditDrawType", "Draw", new { id = Model.DrawTypeId })');
-        });
-
-     $(document).on('click', '#btnAddDraw', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Url.Action("CreateDraw", "Draw", new { id = Model.DrawTypeId})');
-     });
-
-
+       
      $(document).on('click', '#btnDescEdit', function () {
          $('#divDesc').empty();
          $('#divDesc').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');

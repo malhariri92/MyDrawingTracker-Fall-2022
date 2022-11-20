@@ -5,63 +5,98 @@
 
 @{
     ViewBag.Title = $"Details for {Model.UserName}";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-    UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["group"];
+    UserDTO user = (UserDTO)Session["user"];
+    string role = group.OwnerId == user.UserId ? "Owner" : group.Admins.Any(a => a.UserId == user.UserId) ? "Admin" : "Member";
 }
 
+@if (ViewBag.Message != null)
+{
+    <div class="row text-center">
+        <h3 class="text-success">@Html.Raw(ViewBag.Message)</h3>
+    </div>
+}
 
-<div class="col-md-3">
-    <h1>Member Details</h1>
-    <b>Name: </b> @Model.UserName <br />
-    <b>Role: </b> @Model.CurrentGroupId<br />
-    <b>Email: </b> @Model.EmailAddress <br />
-    <b>Status: </b> @(Model.IsVerified ? "Verified" : "Not Verified") <br />
-    <button type="button" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = Model.UserId })" class="btn btn-sm btn-warning btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+@if (ViewBag.Error != null)
+{
+    <div class="row text-center">
+        <h3 class="text-danger">@Html.Raw(ViewBag.Error)</h3>
+    </div>
+}
 
-    @if (!ViewBag.IsOwner && Model.UserId != user.UserId)
-    {
-        if (ViewBag.IsAdmin)
-        {
-            <button type="button" data-action="@Url.Action("Demote", "Group", new { id = Model.UserId })" class="btn btn-sm btn-warning btnMember" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
-            <button type="button" data-action="@Url.Action("Remove", "Group", new { id = Model.UserId })" class="btn btn-sm btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
-        }
-        else
-        {
-            <button type="button" data-action="@Url.Action("Promote", "Group",new { id = Model.UserId })" class="btn btn-sm btn-primary btnMember" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
-            <button type="button" data-action="@Url.Action("Permissions", "Group",new { id = Model.UserId })" class="btn btn-sm btn-info" title="Edit Permissions"><span class="fa fa-file-text-o"></span></button>
-            <button type="button" data-action="@Url.Action("Remove", "Group",new { id = Model.UserId })" class="btn btn-sm btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
-        }
-        <br />
-        <vr />
-    }
-</div>
-<div>
-    <h2>Balance Details</h2>
-    @if (Model.Balances.Count > 0)
-    {
-        <table class="table table-bordered table-responsive" style="width:60%">
-            <thead>
-                <tr>
-                    <th>Ledger Name</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody>
+<div class="row">
+    <div class="col-md-6 col-xs-12">
+        <div class="row">
+            <h2>Member Details</h2>
+            <b>Name: </b> @Model.UserName <br />
+            <b>Email: </b>
+            @if (Model.IsVerified)
+            {
+                <span>
+                    @Model.EmailAddress <span class="btn-success btn-xs fa fa-check-circle" title="Verified"> </span>
+                </span>
+            }
+            else
+            {
+                <span>
+                    @Model.EmailAddress <span class="btn-danger btn-xs fa fa-times-circle" title="Not Verified"></span>
+                </span>
+            }
+            <br />
 
-                @foreach (Balance b in @Model.Balances)
+            <b>Group Name: </b> @group.GroupName<br />
+            <b>Group Role: </b> @role<br />
+        </div>
+        <div class="row">
+            <button type="button" onclick="window.top.location.href='@Url.Action("TriggerPasswordReset", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-warning btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+
+            @if (!Model.IsOwner && Model.UserId != user.UserId)
+            {
+                if (Model.AdminGroups.ContainsKey(group.GroupId))
                 {
-                    <tr>
-                        <td>@b.Ledger.LedgerName</td>
-                        <td>$@b.CurrentBalance</td>
-                    </tr>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Demote", "Group", new { id = Model.UserId })'" class="btn btn-xs btn-warning btnMember" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Remove", "Group", new { id = Model.UserId })'" class="btn btn-xs btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
                 }
+                else
+                {
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Promote", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-primary btnMember" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Remove", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                    <br />
+
+                }
+            }
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-12">
+        <div class="row">
+            <h2>Balance Details</h2>
+            @if (Model.Balances.Count > 0)
+            {
+                <table class="table table-bordered table-responsive" style="width:60%">
+                    <thead>
+                        <tr>
+                            <th>Ledger Name</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (Balance b in @Model.Balances)
+                        {
+                            <tr>
+                                <td>@b.Ledger.LedgerName</td>
+                                <td>$@b.CurrentBalance</td>
+                            </tr>
+                        }
 
 
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p> No balances to display.</p>
-    }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p> No balances to display.</p>
+            }
+        </div>
+    </div>
 </div>

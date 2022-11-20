@@ -271,7 +271,7 @@ namespace MDT.Models
             List<DrawEntry> nextPool = new List<DrawEntry>();
             for (int i = 0; i < pool.Count / 2; ++i)
             {
-                int index = random.Next(0, pool.Count);
+                int index = RandomNumber(pool.Count);
                 nextPool.Add(pool[index]);
 
                 pool.RemoveAt(index);

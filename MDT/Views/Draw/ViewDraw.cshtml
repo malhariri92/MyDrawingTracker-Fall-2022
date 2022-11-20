@@ -5,6 +5,7 @@
 @{
     ViewBag.Title = $"View {(Model.Title ?? Model.VirtualTitle)}";
     UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
 }
 
 <div class="row text-center ">
@@ -17,21 +18,23 @@
             Html.RenderPartial("DrawDescription", Model);
         }
     </div>
-    <div class="col-md-5 col-xs-12" id="rules">
+    <div class="col-md-5 col-xs-12" id="divRules">
         @{
             Html.RenderPartial("DrawRules", Model);
         }
     </div>
-    <div class="col-md-12" id="Entries">
-        @{ 
-            Html.RenderAction("ViewEntries", new { id = Model.DrawId });
-        }
+
+</div>
+@if (WebManager.IsGroupAdmin(group.GroupId, user.UserId))
+{
+    <div class="row">
+        <div class="col-md-12" id="divEntries">
+            @{
+                Html.RenderPartial("DrawEntries",Model);
+            }
+        </div>
     </div>
-
-
-    @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
-    {
-        <script type="text/javascript">
+    <script type="text/javascript">
             let ct = @Model.Descriptions.Count;
 
             $(document).on('click', '#btnAddDesc', function () {
@@ -62,87 +65,5 @@
                 $(`#Descriptions_${id}__IsActive`).val('False');
                 $(`#desc-${id}`).hide();
             });
-
-            $(document).on('click', '#btnDescEdit', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Url.Action("DrawDescriptionEdit", "Draw", new { id = Model.DrawId })');
-            });
-
-            $(document).on('click', '#btnEnter', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Html.Raw(Url.Action("GoToEntryForm", "Entry", new { drawId = Model.DrawId, drawTypeId = Model.DrawTypeId, userId = user.UserId }))');
-            });
-
-            $(document).on('click', '#btnStart', function () {
-                $('#rules').empty();
-                $('#rules').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#rules').load('@Url.Action("StartDraw", "Draw", new { id = Model.DrawId }, null)');
-            });
-
-            $(document).on('click', '#btnRuleEdit', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Url.Action("EditDraw", "Draw", new { id = Model.DrawId })');
-            });
-
-            $(document).on('click', '#submitEntriesBtn', function () {
-                let entryID = $('#EntryId').val();
-                let numEntries = parseInt($('#EntryCount').val());
-                let baseURL = '@Url.Action("AddEntries", "Entry")';
-                let parameters = {
-                    drawId: @Model.DrawId,
-                    drawTypeId: @Model.DrawTypeId,
-                    userId: @user.UserId,
-                    entryCount: numEntries,
-                    entryId: entryID
-                }
-                let paramURL = $.param(parameters, true);
-                let fullURL = baseURL + '?' + paramURL;
-                $('#addEntries').empty();
-                $('#addEntries').load(fullURL);
-            });
-
-            $(document).on('click', '#testWinners', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Url.Action("SelectWinnersSUP", "Draw", new { drawId = Model.DrawId})');
-            });
-        </script>
-    }
-    else
-    {
-        <script type="text/javascript">
-           
-
-            $(document).on('click', '#btnEnter', function () {
-                $('#modaldiv').empty();
-                $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-                $('#popup').modal("show");
-                $('#modaldiv').load('@Html.Raw(Url.Action("GoToEntryForm", "Entry", new { drawId = Model.DrawId, drawTypeId = Model.DrawTypeId, userId = user.UserId }))');
-            });
-
-           
-        </script>
-    }
-    <script type="text/javascript">
-        $(document).on('click', '#btnEntryDisplay', function () {
-            $('#modaldiv').empty();
-            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-            $('#popup').modal("show");
-            $('#modaldiv').load('@Url.Action("ShowEntries", "Entry", new { drawId = Model.DrawId})');
-        });
-
-        $(document).on('click', '#showWinners', function () {
-            $('#modaldiv').empty();
-            $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-            $('#popup').modal("show");
-            $('#modaldiv').load('@Url.Action("DisplayDrawnWinners", "Draw", new {drawId = Model.DrawId})');
-        });
     </script>
-</div>
+}

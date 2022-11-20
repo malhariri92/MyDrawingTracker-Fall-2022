@@ -6,51 +6,48 @@
     UserDTO user = (UserDTO)Session["User"];
 }
 
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
-</div>
-<div class="modal-body">
+<br />
+<br />
+@using (Html.BeginForm("DrawDescriptionEdit", "Draw", FormMethod.Post))
+{
+    <div class="row text-center">
+        <button type="button" class="btn btn-sm btn-danger btnPanel" data-action="@Url.Action("DrawDescription", "Draw", new { id = Model.DrawTypeId })" data-panel="divDesc">Cancel</button>
+        <button type="submit" class="btn btn-sm btn-success">Save</button>
 
+    </div>
     <div class="row">
         <h3>Description Editor <button type="button" class="btn btn-xs btn-success" id="btnAddDesc" title="Add a section"><span class="fa fa-plus-circle"></span></button></h3>
-        @using (Html.BeginForm("DrawDescriptionEdit", "Draw", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.DrawId)
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.DrawTypeId)
 
-            <div id="descedit" style="height:450px; overflow-y:auto;overflow-x:hidden">
-
-                <div class="row">
-                    <div class="col-xs-9">
-                        @Html.EditorFor(model => Model.Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Draw Title" } })
-                    </div>
+        <div id="descedit" style="height:450px; overflow-y:auto;overflow-x:hidden">
+            <div class="row">
+                <div class="col-xs-9">
+                    @Html.EditorFor(model => Model.Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Title" } })
                 </div>
-
-                @for (int i = 0; i < Model.Descriptions.Count; i++)
-                {
-                    <div id="desc-@i">
-                        <div class="row">
-                            @Html.HiddenFor(modelItem => Model.Descriptions[i].SortOrder)
-                            @Html.HiddenFor(modelItem => Model.Descriptions[i].IsActive)
-                            <div class="col-xs-9">
-                                @Html.EditorFor(modelItem => Model.Descriptions[i].Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Paragraph Heading" } })
-                            </div>
-                            <div class="col-xs-1 text-right">
-                                <button type="button" data-desc-id="@i" class="btn btn-xs btn-danger DescDelete" title="Delete"><span class="fa fa-trash-o"></span></button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-10">
-                                @Html.TextAreaFor(modelItem => Model.Descriptions[i].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, placeholder = "Paragraph Text" })
-                            </div>
-                        </div>
-                        <br /><br />
-                    </div>
-                }
             </div>
-            <br /><br />
-            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Cancel Edit</button>
-            <button type="submit" class="btn btn-sm btn-success">Save</button>
-        }
+            <br />
+            @for (int i = 0; i < Model.Descriptions.Count; i++)
+            {
+                <div id="desc-@i">
+                    <div class="row">
+                        @Html.HiddenFor(modelItem => Model.Descriptions[i].SortOrder)
+                        @Html.HiddenFor(modelItem => Model.Descriptions[i].IsActive)
+                        <div class="col-xs-9">
+                            @Html.EditorFor(modelItem => Model.Descriptions[i].Title, new { htmlAttributes = new { @class = "form-control big-input", placeholder = "Paragraph Heading" } })
+                        </div>
+                        <div class="col-xs-1 text-right">
+                            <button type="button" data-desc-id="@i" class="btn btn-xs btn-danger DescDelete" title="Delete"><span class="fa fa-trash-o"></span></button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-10">
+                            @Html.TextAreaFor(modelItem => Model.Descriptions[i].TextBody, htmlAttributes: new { @class = "form-control", @rows = 4, placeholder = "Paragraph Text" })
+                        </div>
+                    </div>
+                    <br /><br />
+                </div>
+            }
+        </div>
     </div>
-</div>
+}

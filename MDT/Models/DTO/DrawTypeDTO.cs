@@ -18,12 +18,10 @@ namespace MDT.Models.DTO
         public bool RemoveDrawnUsers { get; set; }
         public int NumberOfDraws { get; set; }
         public bool PassDrawnToNext { get; set; }
-        public bool PassUndrawnToNext { get; set; }
-        public bool AutoDraw { get; set; }
         public bool JoinConfirmationRequired { get; set; }
         public bool RefundConfirmationRequired { get; set; }
         public decimal InitialUserBalance { get; set; }
-        public List<int> DrawIds { get; set; }
+        public List<DrawDTO> Draws { get; set; }
 
         /// <summary>
         /// Create DrawTypeDTO from a DrawType entity
@@ -31,7 +29,7 @@ namespace MDT.Models.DTO
         /// <param name="drawType">DrawType entity, must include Draws</param>
         public DrawTypeDTO(DrawType drawType = null)
         {
-            DrawIds = new List<int>();
+            Draws = new List<DrawDTO>();
             if (drawType != null)
             {
                 DrawTypeId = drawType.DrawTypeId;
@@ -45,12 +43,10 @@ namespace MDT.Models.DTO
                 RemoveDrawnUsers = drawType.RemoveDrawnUsers;
                 NumberOfDraws = drawType.NumberOfDraws;
                 PassDrawnToNext = drawType.PassDrawnToNext;
-                PassUndrawnToNext = drawType.PassUndrawnToNext;
-                AutoDraw = drawType.AutoDraw;
                 JoinConfirmationRequired = drawType.JoinConfirmationRequired;
                 RefundConfirmationRequired = drawType.RefundConfirmationRequired;
                 InitialUserBalance = drawType.InitialUserBalance;
-                DrawIds = drawType.Draws.Select(d => d.DrawId).ToList();
+                Draws = drawType.Draws.Select(d => new DrawDTO(d)).ToList();
             }
         }
     }

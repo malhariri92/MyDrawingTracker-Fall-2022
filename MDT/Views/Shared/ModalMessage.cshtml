@@ -47,6 +47,11 @@
             @if (Model.RedirectButton)
             {
                 <button type="button" class="btn btn-success" data-dismiss="modal" onclick="window.top.location.href='@Model.RedirectLink'">@Model.RedirectText</button>
+                <script type="text/javascript">
+                    $('#popup').on('hide.bs.modal', function () {
+                       window.top.location.href='@Model.RedirectLink'
+                    })
+                </script>
             }
             else
             {

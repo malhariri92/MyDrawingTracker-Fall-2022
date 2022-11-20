@@ -5,17 +5,20 @@
 
 @{
     UserDTO user = (UserDTO)Session["User"];
+    int UserEntries = Model.Entries.Find(e => e.UserId == user.UserId)?.EntryCount ?? 0;
 }
 <br />
 <br />
 <div class="row">
-    <h3>
-        Rules
-        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) && !Model.IsActive)
-        {
-            <button type="button" class="btn btn-xs btn-success" title="Edit Rules" id="btnRuleEdit"><span class="fa fa-pencil"></span></button>
-        }
-    </h3>
+    <div class="col-xs-12">
+        <h3>
+            Rules
+            @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) && !Model.IsActive && Model.Results == null)
+            {
+                <button type="button" class="btn btn-xs btn-success btnModal" title="Edit Rules" data-action="@Url.Action("EditDraw", "Draw", new { id = Model.DrawId })"><span class="fa fa-pencil"></span></button>
+            }
+        </h3>
+    </div>
 </div>
 <div class="row">
     <div class="col-xs-12">
@@ -23,7 +26,7 @@
         {
             <b>Started: </b> @Model.StartDate.Value.ToString("yyyy-MM-dd HH:mm") <br />
         }
-        <b>Ends: </b> @Model.EndDate.ToString("yyyy-MM-dd HH:mm")<br />
+        <b>Ends: </b> @($"{Model.EndDate:yyyy-MM-dd} {Model.EndTime:hh\\:mm}")<br />
         <b>Entry Cost: </b> @Model.EntryCost <br />
         <b>Maximum Entries: </b> @(Model.MaxEntriesPerUser == 0 ? "No Limit" : $"{Model.MaxEntriesPerUser}" ) <br />
         <b>Entries Selected: </b> @Model.EntriesToDraw <br />
@@ -35,48 +38,29 @@
         @if (Model.NextDrawId != null)
         {
             @Html.ActionLink("Next Drawing", "ViewDraw", "Draw", new { id = Model.NextDrawId.Value }, null) <br />
-            string s = "";
-            if (Model.PassDrawnToNext || Model.PassUndrawnToNext)
+            <b>Using: </b> @(Model.PassDrawnToNext ? "Drawn Entries" : "Undrawn Entries") <br />
+        }
+        <b>Total Entries: </b> @Model.Entries.Sum(e => e.EntryCount) <br />
+        <b>Users Entered: </b> @Model.Entries.Count <br />
+        @if (UserEntries > 0)
+        {
+            <b>You have: </b> @(UserEntries == 1 ? "1 entry" : $"{UserEntries} entries")
+            if (Model.IsActive)
             {
-                s = Model.PassDrawnToNext ? "Drawn Entries" : "Undrawn Entries";
+                <button type="button" class="btn btn-xs btn-danger btnModal" data-action="@Url.Action("RemoveEntries", "Draw", new { id = Model.DrawId })" title="Remove Entries"><span class="fa fa-times-circle"></span></button>
             }
-            else
-            {
-                s = "All Entries";
-            }
-            <b>Using: </b> @s <br />
-
+            <br />
         }
 
         @if (Model.IsActive)
         {
-            if (Model.JoinConfirmationRequired)
-            {
-                <button class="btn btn-sm btn-warning" type="button" id="btnRequest">Request to Join</button>
-            }
-            else
-            {
-                <button class="btn btn-sm btn-success" type="button" id="btnEnter">Get Entries</button>
-            }
-            if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
-            {
-                if (!Model.AutoDraw)
-                {
-                    <button class="btn btn-sm btn-success" type="button" id="btnResult" @(Model.EndDate > DateTime.Now ? "" : "disabled title=\"Result can be drawn after drawing ends.\"")>Draw Results</button>
-
-                    if (Model.Results == null)
-                    {
-                        <button class="btn btn-sm btn-success" type="button" id="testWinners">Select Winners</button>
-                    }
-                }
-            }
-            <button class="btn btn-sm btn-success" type="button" id="btnEntryDisplay">Show Entries</button>
+            <button class="btn btn-sm btn-success btnModal" type="button" data-action="@Url.Action("AddEntries", "Draw", new { id=Model.DrawId})">Get Entries</button>
         }
         else
         {
             if (Model.Results != null)
             {
-                <button class="btn btn-sm btn-info" type="button" id="showWinners">Show Winners</button>
+                <button class="btn btn-sm btn-info btnModal" type="button" data-action="@Url.Action("Results", "Draw", new { id = Model.DrawId })">View Results</button>
             }
             else
             {
@@ -84,7 +68,7 @@
                 {
                     if (Model.EndDate > DateTime.Now)
                     {
-                        <button class="btn btn-sm btn-success" type="button" id="btnStart">Start Drawing</button>
+                        <button class="btn btn-sm btn-success" type="button" onclick="window.top.location.href='@Url.Action("StartDraw", "Draw", new { id = Model.DrawId })'">Start Drawing</button>
                     }
                     else
                     {

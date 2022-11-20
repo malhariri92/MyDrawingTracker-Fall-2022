@@ -72,7 +72,7 @@
             else
             {
                 <li>
-                    <button class="btn btn-xs btn-secondary" id="btnUserAccess" type="button">
+                    <button class="btn btn-xs btn-secondary btnModal" type="button" data-action="@Url.Action(HasCode ? "NewUser" : "SignIn", "Home", null)">
                         <span class="fa fa-user"></span>
                     </button>
                 </li>
@@ -80,19 +80,3 @@
         </ul>
     </div>
 </nav>
-
-<script type="text/javascript">
-    $('#btnCreateNewGroup').on('click', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load(`@Url.Action("CreateNew", "Group", null)`);
-    });
-
-     $('#btnUserAccess').on('click', function () {
-        $('#modaldiv').empty();
-        $('#modaldiv').append('<div class="spinnerdiv"><span class="text-primary fa fa-5x fa-spinner fa-spin center"></span></div>');
-        $('#popup').modal("show");
-        $('#modaldiv').load('@Url.Action(HasCode ? "NewUser" : "SignIn", "Home", null, null)');
-    });
-</script>

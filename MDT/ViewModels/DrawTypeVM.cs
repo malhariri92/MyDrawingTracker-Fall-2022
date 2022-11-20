@@ -28,7 +28,8 @@ namespace MDT.ViewModels
         [Display(Name = "Is internal?")]
         public bool IsInternal { get; set; }
 
-        [Display(Name = "Entries to draw")]
+        [Display(Name = "Number of Winners")]
+        [Range(1, int.MaxValue, ErrorMessage = "{0} must be greater than 0")]
         public int EntriesToDraw { get; set; }
 
         [Display(Name = "Max entries per user")]
@@ -46,14 +47,8 @@ namespace MDT.ViewModels
         [Display(Name = "Remove drawn users?")]
         public bool RemoveDrawnUsers { get; set; }
 
-        [Display(Name = "Pass drawn to next?")]
+        [Display(Name = "Pass to next?")]
         public bool PassDrawnToNext { get; set; }
-
-        [Display(Name = "Pass undrawn to next?")]
-        public bool PassUndrawnToNext { get; set; }
-
-        [Display(Name = "Auto draw?")]
-        public bool AutoDraw { get; set; }
 
         [Display(Name = "Join confirmation required?")]
         public bool JoinConfirmationRequired { get; set; }
@@ -108,14 +103,12 @@ namespace MDT.ViewModels
                 IsActive = dt.IsActive;
                 IsInternal = dt.IsInternal;
                 PassDrawnToNext = dt.PassDrawnToNext;
-                PassUndrawnToNext = dt.PassUndrawnToNext;
                 EntriesToDraw = dt.EntriesToDraw;
                 MaxEntriesPerUser = dt.MaxEntriesPerUser;
                 RemoveDrawnEntries = dt.RemoveDrawnEntries;
                 RemoveDrawnUsers = dt.RemoveDrawnUsers;
                 JoinConfirmationRequired = dt.JoinConfirmationRequired;
                 RefundConfirmationRequired = dt.RefundConfirmationRequired;
-                AutoDraw = dt.AutoDraw;
                 NumberOfDraws = dt.NumberOfDraws;
                 InitialUserBalance = dt.InitialUserBalance;
                 IsolateBalance = dt.IsolateBalance;

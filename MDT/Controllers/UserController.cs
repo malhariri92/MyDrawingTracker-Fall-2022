@@ -121,6 +121,18 @@ namespace MDT.Controllers
 
         public ActionResult Member(int id)
         {
+            if (TempData["Message"] != null)
+            {
+                ViewBag.Message = TempData["Message"];
+                TempData["Message"] = null;
+            }
+
+            if (TempData["Error"] != null)
+            {
+                ViewBag.Error = TempData["Error"];
+                TempData["Error"] = null;
+            }
+
             UserVM vm = new UserVM(GetUser(id), group.GroupId);
             return View(vm);
         }

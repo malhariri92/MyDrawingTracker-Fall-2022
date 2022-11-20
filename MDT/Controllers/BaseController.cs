@@ -160,7 +160,7 @@ namespace MDT.Controllers
                                             .Include(g => g.GroupInvites)
                                             .FirstOrDefault());
 
-            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectId == group.GroupId && new List<int>(){ 1, 5, 6 }.Contains(d.ObjectTypeId)).ToList());
+            vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectId == group.GroupId && new List<int>() { 1, 5, 6 }.Contains(d.ObjectTypeId)).ToList());
             return vm;
         }
 
@@ -191,14 +191,37 @@ namespace MDT.Controllers
             Draw draw = db.Draws.Where(d => d.DrawId == id && d.DrawType.GroupId == group.GroupId)
                                 .Include(d => d.DrawType)
                                 .Include(d => d.DrawOption)
+                                .Include(d => d.DrawEntries)
+                                .Include(d => d.DrawEntries.Select(e => e.User))
+                                .Include(d => d.DrawResults)
+                                .Include(d => d.DrawResults.Select(r => r.DrawEntry))
+                                .Include(d => d.DrawResults.Select(r => r.DrawEntry.User))
                                 .FirstOrDefault();
 
-            DrawVM vm = new DrawVM(draw);
+            DrawVM vm = null;
             if (draw != null)
             {
+
+                if (draw.StartDateTime != null && draw.EndDateTime < DateTime.Now && draw.Results == null)
+                {
+                    if (draw.DrawType.IsInternal)
+                    {
+                        if (draw.DrawEntries.Any())
+                        {
+                            DetermineResults(draw);
+                        }
+                    }
+                    else
+                    {
+                        draw.Results = "Pending";
+                        db.Entry(draw).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+
+                vm = new DrawVM(draw);
                 vm.SetDescriptions(db.Descriptions.Where(d => d.ObjectTypeId == 3 && d.ObjectId == draw.DrawId).ToList());
             }
-
             return vm;
         }
 
@@ -311,11 +334,27 @@ namespace MDT.Controllers
             Draw d = db.Draws.Find(drawId);
             DrawType dt = d?.DrawType;
 
-            if (d == null || dt == null || dt.GroupId != group.GroupId)
+            if (d == null)
             {
-                TempData["Error"] = "Operation Unsuccessful";
+                TempData["Error"] = "Operation Unsuccessful - Invalid Draw";
                 return false;
             }
+            if (dt == null || dt.GroupId != group.GroupId)
+            {
+                TempData["Error"] = "Operation Unsuccessful - Invalid Draw Type";
+                return false;
+            }
+            if (d.StartDateTime == null)
+            {
+                TempData["Error"] = "Operation Unsuccessful - Drawing not started";
+                return false;
+            }
+            if (d.EndDateTime < DateTime.Now)
+            {
+                TempData["Error"] = "Operation Unsuccessful - Drawing has ended.";
+                return false;
+            }
+
             Balance b = GetUserBalance(ledgerId, userId);
 
             if (!BalanceAvailable(ledgerId, userId, count * dt.EntryCost))
@@ -350,36 +389,157 @@ namespace MDT.Controllers
             return true;
         }
 
-        protected bool RemoveDrawEntries(List<int> entryIds, bool isAdmin)
+        protected bool RemoveDrawEntries(List<int> ids, bool isAdmin)
         {
             List<string> Results = new List<string>();
-            foreach(int id in entryIds)
+            foreach (int id in ids)
             {
                 DrawEntry entry = db.DrawEntries.Find(id);
-                if (isAdmin || !entry.Draw.DrawOption.RefundConfirmationRequired)
+
+                if (entry == null)
+                {
+                    TempData["Error"] = "Operation Unsuccessful - Invalid Draw";
+                    continue;
+                }
+
+                Draw d = db.Draws.Find(entry.DrawId);
+                if (d == null)
+                {
+                    TempData["Error"] = "Operation Unsuccessful - Invalid Draw Type";
+                    continue;
+                }
+                if (d.StartDateTime == null)
+                {
+                    TempData["Error"] = "Operation Unsuccessful - Drawing not started";
+                    continue;
+                }
+                if (d.EndDateTime < DateTime.Now)
+                {
+                    TempData["Error"] = "Operation Unsuccessful - Drawing has ended.";
+                    continue;
+                }
+
+                if (isAdmin || !entry.Draw.DrawType.RefundConfirmationRequired)
                 {
                     if (CreateTransaction(entry.UserId, 7, entry.Draw.DrawType.EntryCost, entry.Draw.DrawType.LedgerId, false, group.AccountBalanceLedgerId, true, entry.DrawId))
                     {
-                        Results.Add($"Removed entry {entry.EntryCode}, refunded {entry.Draw.DrawType.EntryCost}");
+                        Results.Add($"Removed entry {entry.EntryCode}, refunded {entry.Draw.DrawType.EntryCost}.");
                         db.Entry(entry).State = EntityState.Deleted;
                     }
                     else
                     {
-                        Results.Add($"Failed to remove entry {entry.EntryCode}: {TempData["Error"]}");
+                        Results.Add($"Failed to remove entry {entry.EntryCode}: {TempData["Error"]}.");
                         TempData.Remove("Error");
                     }
                 }
                 else
                 {
                     entry.PendingRemoval = true;
-                    Results.Add($"Requested removal for entry {entry.EntryCode}");
+                    Results.Add($"Requested removal for entry {entry.EntryCode}.");
                     db.Entry(entry).State = EntityState.Modified;
                 }
             }
-            
+
             db.SaveChanges();
-            TempData["Results"] = Results;
+            TempData["Results"] = string.Join("<br />", Results);
             return true;
+        }
+
+        private void DetermineResults(Draw draw, int drawNumber = 1)
+        {
+            int toDraw = draw.DrawOption.EntriesToDraw;
+           
+            List<DrawEntry> undrawn = draw.DrawEntries.ToList();
+            List<DrawEntry> drawn = new List<DrawEntry>();
+            List<DrawResult> results = new List<DrawResult>();
+            if (draw.DrawType.NumberOfDraws > 1 && drawNumber < draw.DrawType.NumberOfDraws)
+            {
+                toDraw = undrawn.Count / 2;
+            }
+
+            string res = "";
+            for (int i = 1; i <= toDraw; i++)
+            {
+                int winIndex = WebManager.RandomNumber(undrawn.Count);
+                DrawEntry winner = undrawn[winIndex];
+                drawn.Add(winner);
+                DrawResult result = new DrawResult()
+                {
+                    DrawId = draw.DrawId,
+                    DrawCount = (draw.DrawType.NumberOfDraws > 1 ? toDraw + 1 - i : i),
+                    EntryId = winner.EntryId,
+                    DrawnDateTime = DateTime.Now,
+                };
+                res += $"{(res.Length > 0 ? ", " : "")}{winner.EntryCode}";
+                results.Add(result);
+                if (draw.DrawOption.RemoveDrawnEntries)
+                {
+                    undrawn.Remove(winner);
+                }
+
+                if (draw.DrawOption.RemoveDrawnUsers)
+                {
+                    undrawn.RemoveAll(e => e.UserId == winner.UserId);
+                }
+
+                if (!undrawn.Any())
+                {
+                    res += $"{(res.Length > 0 ? ", " : "")} No entries left to draw from";
+                    break;
+                }
+            }
+
+            db.DrawResults.AddRange(results);
+            draw.Results = res;
+
+            if (drawNumber < draw.DrawType.NumberOfDraws)
+            {
+                Draw nextDraw = new Draw()
+                {
+                    DrawTypeId = draw.DrawTypeId,
+                    Title = draw.Title,
+                    StartDateTime = draw.StartDateTime,
+                    EndDateTime = draw.EndDateTime,
+                    DrawCode = WebManager.GetUniqueKey(7)
+                };
+
+                nextDraw.DrawOption = new DrawOption()
+                {
+                    MaxEntriesPerUser = draw.DrawOption.MaxEntriesPerUser,
+                    EntriesToDraw = draw.DrawOption.EntriesToDraw,
+                    RemoveDrawnEntries = draw.DrawOption.RemoveDrawnEntries,
+                    RemoveDrawnUsers = draw.DrawOption.RemoveDrawnUsers,
+                    PassDrawnToNext = draw.DrawOption.PassDrawnToNext
+                };
+
+
+                if (draw.DrawOption.PassDrawnToNext)
+                {
+                    nextDraw.DrawEntries = drawn.Select(e => new DrawEntry()
+                    {
+                        EntryCode = e.EntryCode,
+                        UserId = e.UserId
+                    }).ToList();
+
+                }
+                else
+                {
+                    nextDraw.DrawEntries = undrawn.Select(e => new DrawEntry()
+                    {
+                        EntryCode = e.EntryCode,
+                        UserId = e.UserId
+                    }).ToList();
+                }
+
+                draw.DrawOption.NextDraw = nextDraw;
+            }
+            db.Entry(draw).State = EntityState.Modified;
+            db.SaveChanges();
+
+            if (draw.DrawOption.NextDraw != null)
+            {
+                DetermineResults(draw.DrawOption.NextDraw, drawNumber + 1);
+            }
         }
 
         protected override void Dispose(bool disposing)

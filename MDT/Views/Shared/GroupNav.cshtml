@@ -20,11 +20,11 @@
         <ul class="dropdown-menu">
             @if (isGroupAdmin)
             {
-                <li><a href="#" class="btnModal" data-action="@Url.Action("CreateDrawType", "Draw", null, null)">Create New Draw Type</a></li>
+                <li><a href="#" class="btnModal" data-action="@Url.Action("EditDrawType", "Draw", new { id = 0 } )">Create New Draw Type</a></li>
             }
-            @foreach (DrawTypeVM dt in Model.DrawTypes)
+            @foreach (DrawTypeDTO dt in Model.DrawTypes)
             {
-                <li>@Html.ActionLink(dt.TypeName, "ViewDrawType", "Draw", new { id = dt.DrawTypeId }, null)</li>
+                <li>@Html.ActionLink(dt.DrawTypeName, "ViewDrawType", "Draw", new { id = dt.DrawTypeId }, null)</li>
             }
         </ul>
     </li>
@@ -38,9 +38,9 @@
                 Active Draws <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                @foreach (DrawVM dvm in Model.ActiveDraws.OrderBy(d => d.EndDate))
+                @foreach (DrawDTO dto in Model.ActiveDraws.OrderBy(d => d.EndDateTime))
                 {
-                    <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
+                    <li>@Html.ActionLink(dto.Title, "ViewDraw", "Draw", new { id = dto.DrawId }, null)</li>
                 }
             </ul>
         </li>
@@ -54,9 +54,9 @@
                 Completed Draws <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                @foreach (DrawVM dvm in Model.EndedDraws.OrderByDescending(d => d.EndDate))
+                @foreach (DrawDTO dto in Model.EndedDraws.OrderByDescending(d => d.EndDateTime))
                 {
-                    <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
+                    <li>@Html.ActionLink(dto.Title, "ViewDraw", "Draw", new { id = dto.DrawId }, null)</li>
                 }
             </ul>
         </li>
@@ -70,9 +70,9 @@
                 Inactive Draws <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-                @foreach (DrawVM dvm in Model.InactiveDraws)
+                @foreach (DrawDTO dto in Model.InactiveDraws)
                 {
-                    <li>@Html.ActionLink(dvm.Title ?? dvm.VirtualTitle, "ViewDraw", "Draw", new { id = dvm.DrawId }, null)</li>
+                <li>@Html.ActionLink(dto.Title, "ViewDraw", "Draw", new { id = dto.DrawId }, null)</li>
                 }
             </ul>
         </li>

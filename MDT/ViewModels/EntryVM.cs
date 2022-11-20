@@ -21,10 +21,10 @@ namespace MDT.ViewModels
 
         [Display(Name = "Number of Entries")]
         [Required(ErrorMessage = "{0} is required")]
-        [Range(1,int.MaxValue, ErrorMessage ="{0} must be greater than 0")]
+        [Range(1,10, ErrorMessage ="{0} must be between {1} and {2}")]
         public int EntryCount { get; set; }
         
-        public string Message { get; set; }
+        public string EntryCode { get; set; }
         public bool Success { get; set; }
         public bool Error { get; set; }
 
@@ -41,7 +41,18 @@ namespace MDT.ViewModels
             UserName = e.User.UserName;
             EntryId = e.EntryId;
             EntryCount = 1;
+            EntryCode = e.EntryCode;
             MaxCount = e.Draw.DrawOption?.MaxEntriesPerUser ?? e.Draw.DrawType.MaxEntriesPerUser;
+        }
+
+        public EntryVM(Draw d)
+        {
+            DrawId = d.DrawId;
+            DrawDate = d.EndDateTime;
+            DrawTypeId = d.DrawTypeId;
+            DrawTitle = d.Title ?? $"{d.DrawType.DrawTypeName} {d.EndDateTime:yyyy-MM-dd}";
+            EntryCount = 1;
+            MaxCount = d.DrawOption?.MaxEntriesPerUser ?? d.DrawType.MaxEntriesPerUser;
         }
     }
 }

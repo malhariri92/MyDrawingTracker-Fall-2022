@@ -1,7 +1,7 @@
 ﻿@using MDT.Models
 @using MDT.Models.DTO
 @using MDT.ViewModels
-@model List<DrawVM>
+@model DrawTypeVM
 
 @{
     UserDTO user = (UserDTO)Session["User"];
@@ -13,12 +13,12 @@
         Drawings
         @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
         {
-            <button type="button" class="btn btn-xs btn-success" id="btnAddDraw"><span class="fa fa-plus-circle"></span></button>
+            <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("CreateDraw", "Draw", new { id = Model.DrawTypeId})"><span class="fa fa-plus-circle"></span></button>
         }
     </h3>
 </div>
 
-@if (Model.Count != 0)
+@if (Model.Draws.Any())
 {
     <table class="table table-bordered">
         <thead>
@@ -29,13 +29,13 @@
                 <th>Status</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach (DrawVM draw in Model)
+        <tbody style="max-height:300px; overflow-y:auto;">
+            @foreach (DrawVM draw in Model.Draws)
             {
                 <tr>
                     <td>@Html.ActionLink(draw.Title ?? draw.VirtualTitle, "ViewDraw", "Draw", new { id = draw.DrawId }, null)</td>
-                    <td>@(draw.StartDate?.ToString("MM/dd/yyyy") ?? "Not Started")</td>
-                    <td>@draw.EndDate.ToString("MM/dd/yyyy")</td>
+                    <td>@(draw.StartDate?.ToString("yyyy-MM-dd") ?? "Not Started")</td>
+                    <td>@(draw.EndDate?.ToString("yyyy-MM-dd") ?? "N/A")</td>
                     @if (draw.Results != null)
                     {
                         <td>Ended</td>
