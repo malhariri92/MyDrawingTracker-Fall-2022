@@ -400,28 +400,29 @@ namespace MDT.Controllers
                 Response.StatusCode = 400;
                 return PartialView(vm);
             }
-            Group group = new Group()
+            Group grp = new Group()
             {
                 GroupName = vm.GroupName,
                 IsActive = false,
-                AccessCode = WebManager.GetUniqueKey(10)
+                AccessCode = WebManager.GetUniqueKey(10),
+                AccountBalanceLedger = new Ledger()
+                {
+                    LedgerName = "Account Balance",
+                    Balance = 0.0m
+                }
             };
 
-            db.Groups.Add(group);
+            db.Groups.Add(grp);
             db.SaveChanges();
 
-            UserDTO user = (UserDTO)Session["User"];
-
-            GroupUser groupUser = new GroupUser()
+            grp.GroupUsers.Add(new GroupUser()
             {
-                GroupId = group.GroupId,
                 UserId = user.UserId,
                 IsAdmin = true,
                 IsApproved = true,
                 IsOwner = true
-            };
-            db.GroupUsers.Add(groupUser);
-            db.SaveChanges();
+            });
+            
 
             Dictionary<string, string> variables = new Dictionary<string, string>()
             {
@@ -434,13 +435,14 @@ namespace MDT.Controllers
             Description desc = new Description()
             {
                 ObjectTypeId = 5,
-                ObjectId = group.GroupId,
+                ObjectId = grp.GroupId,
                 SortOrder = 1,
                 TextBody = vm.Reason,
                 IsHTML = false
             };
 
             db.Descriptions.Add(desc);
+
             db.SaveChanges();
 
             return PartialView(vm);

@@ -3,7 +3,7 @@
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
-    Remove Entries
+    <h3>Remove User Entries</h3>
 </div>
 
 @using (Ajax.BeginForm("RemoveUserEntries", "Draw", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "modaldiv", OnSuccess = "hideModalSpinner", OnFailure = "showModalError" }, htmlAttributes: new { id = "ModalForm" }))
@@ -14,7 +14,7 @@
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.UserId)
+            @Html.LabelFor(model => model.UserId, htmlAttributes: new { @class = "control-label col-xs-4" })
             <div class="col-xs-8">
                 @Html.DropDownListFor(model => model.UserId, new SelectList(ViewBag.Users, "val", "txt"), "Select a User", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
@@ -33,7 +33,7 @@
     <div class="modal-footer">
         <div class="form-group">
             <div class="col-xs-8 pull-right">
-                <button type="button" class="btn btn-sm btn-danger" id="btnRemoveEntries">Remove Entries</button>
+                <button type="submit" class="btn btn-sm btn-danger" id="btnRemoveEntries">Remove Entries</button>
             </div>
         </div>
     </div>

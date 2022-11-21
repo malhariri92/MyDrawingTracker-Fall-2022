@@ -10,24 +10,34 @@
 
 <h2>
     Other Groups
+    <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("CreateNew", "Group", null)" title="Create a new group"><span class="fa fa-plus-circle"></span></button>
+    <button type="button" class="btn btn-xs btn-primary btnModal" data-action="@Url.Action("Join", "User", null)" title="Join another group"><span class="fa fa-user-plus"></span></button>
 </h2>
-<ul>
-    @foreach (KeyValuePair<int, string> kvp in Model.AdminGroups)
-    {
-        if (kvp.Key == group.GroupId)
+@if (Model.AdminGroups.Any(g => g.Key != group.GroupId) || Model.MemberGroups.Any(g => g.Key != group.GroupId))
+{
+    <ul>
+        @foreach (KeyValuePair<int, string> kvp in Model.AdminGroups)
         {
-            continue;
+            if (kvp.Key == group.GroupId)
+            {
+                continue;
+            }
+            <li><a href="@Url.Action("ChangeGroup", "User", new { id = kvp.Key }) "> @kvp.Value (Admin)</a></li>
         }
-        <li><a href="@Url.Action("ChangeGroup", "User", new { id = kvp.Key }) "> @kvp.Value (Admin)</a></li>
-    }
-    @foreach (KeyValuePair<int, string> kvp in Model.MemberGroups)
-    {
-        if (kvp.Key == group.GroupId)
+        @foreach (KeyValuePair<int, string> kvp in Model.MemberGroups)
         {
-            continue;
+            if (kvp.Key == group.GroupId)
+            {
+                continue;
+            }
+            <li><a href="@Url.Action("ChangeGroup", "User", new { id = kvp.Key }) "> @kvp.Value</a></li>
         }
-        <li><a href="@Url.Action("ChangeGroup", "User", new { id = kvp.Key }) "> @kvp.Value</a></li>
-    }
-</ul>
+    </ul>
+}
+else
+{
+    <h3>You are not a member of any other groups.</h3>
+}
+
 <br />
 

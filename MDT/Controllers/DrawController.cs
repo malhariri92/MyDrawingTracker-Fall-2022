@@ -241,7 +241,7 @@ namespace MDT.Controllers
 
             ViewBag.Users = GetDdl(db.GroupUsers);
 
-            AllocationVM vm = new AllocationVM(GetUserDrawTypeOption(id, user.UserId), GetUserBalance(dt.LedgerId, user.UserId));
+            AllocationVM vm = new AllocationVM(GetUserDrawTypeOption(id, user.UserId), GetUserBalance(dt.LedgerId, user.UserId), GetUserBalance(group.AccountBalanceLedgerId, user.UserId));
             return PartialView(vm);
         }
 
@@ -253,7 +253,8 @@ namespace MDT.Controllers
             if (dt == null || dt.GroupId != group.GroupId)
             {
                 Response.StatusCode = 400;
-                return PartialView("Error");
+                ViewBag.Error = "Draw Type error";
+                return PartialView(vm);
             }
 
             if (!WebManager.IsGroupAdmin(group.GroupId, user.UserId))
@@ -261,22 +262,26 @@ namespace MDT.Controllers
                 vm.UserId = user.UserId;
             }
 
-            Balance source = GetUserBalance(vm.Amount > 0 ? group.AccountBalanceLedgerId : dt.LedgerId, vm.UserId);
-            Balance destination = GetUserBalance(vm.Amount > 0 ? dt.LedgerId : group.AccountBalanceLedgerId, vm.UserId);
-            vm.Amount = Math.Abs(vm.Amount);
+            Balance source = GetUserBalance(vm.AddAllocation ? group.AccountBalanceLedgerId : dt.LedgerId, vm.UserId);
+            Balance destination = GetUserBalance(vm.AddAllocation ? dt.LedgerId : group.AccountBalanceLedgerId, vm.UserId);
+            vm.Amount = Math.Abs(vm.Amount.Value);
+            
 
-            if (!BalanceAvailable(source.LedgerId, vm.UserId, vm.Amount))
+            if (!BalanceAvailable(source.LedgerId, vm.UserId, vm.Amount.Value))
             {
                 Response.StatusCode = 400;
-                return PartialView("InsufficientFunds");
+                ViewBag.Error = "Insufficient funds for this request.";
+                vm.AllocationBalance = vm.AddAllocation ? destination.CurrentBalance : source.CurrentBalance;
+                vm.AccountBalance = vm.AddAllocation ? source.CurrentBalance : destination.CurrentBalance;
+                return PartialView(vm);
             }
 
             UserDrawTypeOption option = GetUserDrawTypeOption(vm.DrawTypeId, vm.UserId);
 
             option.PlayAll = vm.Join;
-            option.MaxPlay = dt.MaxEntriesPerUser == 0 ? vm.EntriesPerDrawing : dt.MaxEntriesPerUser > vm.EntriesPerDrawing ? vm.EntriesPerDrawing : dt.MaxEntriesPerUser;
+            option.MaxPlay = dt.MaxEntriesPerUser == 0 ? vm.EntriesPerDrawing.Value : dt.MaxEntriesPerUser > vm.EntriesPerDrawing.Value ? vm.EntriesPerDrawing.Value : dt.MaxEntriesPerUser;
             db.Entry(option).State = EntityState.Modified;
-            if (vm.Amount != 0 && CreateTransaction(vm.UserId, 8, vm.Amount, source.LedgerId, true, destination.LedgerId, true))
+            if (vm.Amount != 0 && CreateTransaction(vm.UserId, 8, vm.Amount.Value, source.LedgerId, true, destination.LedgerId, true))
             {
                 if (option.MaxPlay > 0)
                 {
@@ -311,10 +316,11 @@ namespace MDT.Controllers
             {
                 ViewBag.Error = TempData["Error"];
                 TempData.Remove("Error");
-                return PartialView();
+                return PartialView(vm);
             }
 
-            return PartialView();
+            ModelState.Clear();
+            return PartialView(new AllocationVM(GetUserDrawTypeOption(dt.DrawTypeId, user.UserId), GetUserBalance(dt.LedgerId, user.UserId), GetUserBalance(group.AccountBalanceLedgerId, user.UserId)));
         }
 
         public ActionResult ViewDraw(int id)
@@ -516,7 +522,7 @@ namespace MDT.Controllers
 
             EntryVM vm = new EntryVM(draw);
 
-            return View(vm);
+            return PartialView(vm);
         }
 
         [HttpPost]
@@ -542,6 +548,7 @@ namespace MDT.Controllers
                 mm.Header = "Operation could not be completed";
             }
             mm.Body = (string)TempData["Results"];
+            mm.HtmlBody = true;
             TempData.Remove("Results");
             mm.RedirectButton = true;
             mm.RedirectLink = Url.Action("ViewDraw", "Draw", new { id = vm.DrawId });
