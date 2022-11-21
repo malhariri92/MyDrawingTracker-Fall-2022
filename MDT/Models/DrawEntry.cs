@@ -28,7 +28,7 @@ namespace MDT.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawResult> DrawResults { get; set; }
-        public virtual Draw Draw { get; set; }
         public virtual User User { get; set; }
+        public virtual Draw Draw { get; set; }
     }
 }

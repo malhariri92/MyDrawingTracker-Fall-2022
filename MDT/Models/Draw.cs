@@ -20,17 +20,17 @@ namespace MDT.Models
             this.DrawEntries = new HashSet<DrawEntry>();
             this.DrawOptions = new HashSet<DrawOption>();
             this.DrawResults = new HashSet<DrawResult>();
-            this.Transactions = new HashSet<Transaction>();
             this.PendingTransactions = new HashSet<PendingTransaction>();
+            this.Transactions = new HashSet<Transaction>();
         }
     
         public int DrawId { get; set; }
+        public string Title { get; set; }
         public Nullable<System.DateTime> StartDateTime { get; set; }
         public System.DateTime EndDateTime { get; set; }
         public int DrawTypeId { get; set; }
         public string Results { get; set; }
         public string DrawCode { get; set; }
-        public string Title { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawEntry> DrawEntries { get; set; }
@@ -39,10 +39,10 @@ namespace MDT.Models
         public virtual ICollection<DrawOption> DrawOptions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DrawResult> DrawResults { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Transaction> Transactions { get; set; }
+        public virtual DrawType DrawType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PendingTransaction> PendingTransactions { get; set; }
-        public virtual DrawType DrawType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

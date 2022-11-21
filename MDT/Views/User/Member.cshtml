@@ -48,19 +48,19 @@
             <b>Group Role: </b> @role<br />
         </div>
         <div class="row">
-            <button type="button" onclick="window.top.location.href='@Url.Action("TriggerPasswordReset", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-warning btnMember" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+            <button type="button" onclick="window.top.location.href='@Url.Action("TriggerPasswordReset", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-warning" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
 
             @if (!Model.IsOwner && Model.UserId != user.UserId)
             {
                 if (Model.AdminGroups.ContainsKey(group.GroupId))
                 {
-                    <button type="button" onclick="window.top.location.href='@Url.Action("Demote", "Group", new { id = Model.UserId })'" class="btn btn-xs btn-warning btnMember" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
-                    <button type="button" onclick="window.top.location.href='@Url.Action("Remove", "Group", new { id = Model.UserId })'" class="btn btn-xs btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Demote", "Group", new { id = Model.UserId })'" class="btn btn-xs btn-warning" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Remove", "Group", new { id = Model.UserId })'" class="btn btn-xs btn-danger" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
                 }
                 else
                 {
-                    <button type="button" onclick="window.top.location.href='@Url.Action("Promote", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-primary btnMember" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
-                    <button type="button" onclick="window.top.location.href='@Url.Action("Remove", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-danger btnMember" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Promote", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-primary" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
+                    <button type="button" onclick="window.top.location.href='@Url.Action("Remove", "Group",new { id = Model.UserId })'" class="btn btn-xs btn-danger" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
                     <br />
 
                 }

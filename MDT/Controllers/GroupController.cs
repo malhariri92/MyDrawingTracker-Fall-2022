@@ -37,18 +37,22 @@ namespace MDT.Controllers
                 Group grp = db.Groups.Find(group.GroupId);
                 grp.GroupName = vm.GroupName;
                 db.Entry(grp).State = EntityState.Modified;
+
                 Description d1 = db.Descriptions.Find(1, group.GroupId, 1) ?? new Description() { ObjectTypeId = 1, ObjectId = group.GroupId, SortOrder = 1, IsNew = true };
                 d1.Title = vm.InfoDesc[0].Title;
                 d1.TextBody = vm.InfoDesc[0].TextBody;
                 db.Entry(d1).State = d1.IsNew ? EntityState.Added : EntityState.Modified;
+
                 Description d2 = db.Descriptions.Find(1, group.GroupId, 2) ?? new Description() { ObjectTypeId = 1, ObjectId = group.GroupId, SortOrder = 2, IsNew = true };
                 d2.Title = vm.InfoDesc[1].Title;
                 d2.TextBody = vm.InfoDesc[1].TextBody;
                 db.Entry(d2).State = d2.IsNew ? EntityState.Added : EntityState.Modified;
+
                 Description d3 = db.Descriptions.Find(1, group.GroupId, 3) ?? new Description() { ObjectTypeId = 1, ObjectId = group.GroupId, SortOrder = 3, IsNew = true };
                 d3.Title = vm.InfoDesc[2].Title;
                 d3.TextBody = vm.InfoDesc[2].TextBody;
                 db.Entry(d3).State = d3.IsNew ? EntityState.Added : EntityState.Modified;
+
                 db.SaveChanges();
 
                 return RedirectToAction("Index");

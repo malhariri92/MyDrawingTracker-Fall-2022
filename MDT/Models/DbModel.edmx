@@ -77,7 +77,7 @@
           <Property Name="EndDateTime" Type="datetime" Nullable="false" />
           <Property Name="DrawTypeId" Type="int" Nullable="false" />
           <Property Name="Results" Type="nvarchar(max)" />
-          <Property Name="DrawCode" Type="nvarchar" MaxLength="6" />
+          <Property Name="DrawCode" Type="nvarchar" MaxLength="7" />
         </EntityType>
         <EntityType Name="DrawTypes">
           <Key>
@@ -909,7 +909,6 @@
           <EntitySet Name="DrawEntries" EntityType="DbModel.DrawEntry" />
           <EntitySet Name="DrawOptions" EntityType="DbModel.DrawOption" />
           <EntitySet Name="DrawResults" EntityType="DbModel.DrawResult" />
-          <EntitySet Name="Draws" EntityType="DbModel.Draw" />
           <EntitySet Name="EmailTemplates" EntityType="DbModel.EmailTemplate" />
           <EntitySet Name="GroupInvites" EntityType="DbModel.GroupInvite" />
           <EntitySet Name="GroupUsers" EntityType="DbModel.GroupUser" />
@@ -937,29 +936,9 @@
             <End Role="DrawEntry" EntitySet="DrawEntries" />
             <End Role="DrawResult" EntitySet="DrawResults" />
           </AssociationSet>
-          <AssociationSet Name="FK_Entry_Draws" Association="DbModel.FK_Entry_Draws">
-            <End Role="Draw" EntitySet="Draws" />
-            <End Role="DrawEntry" EntitySet="DrawEntries" />
-          </AssociationSet>
           <AssociationSet Name="FK_Entry_User" Association="DbModel.FK_Entry_User">
             <End Role="User" EntitySet="Users" />
             <End Role="DrawEntry" EntitySet="DrawEntries" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DrawOptions_Draws" Association="DbModel.FK_DrawOptions_Draws">
-            <End Role="Draw" EntitySet="Draws" />
-            <End Role="DrawOption" EntitySet="DrawOptions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_NextDraw" Association="DbModel.FK_NextDraw">
-            <End Role="Draw" EntitySet="Draws" />
-            <End Role="DrawOption" EntitySet="DrawOptions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_DrawResults_Draws" Association="DbModel.FK_DrawResults_Draws">
-            <End Role="Draw" EntitySet="Draws" />
-            <End Role="DrawResult" EntitySet="DrawResults" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Transactions_Draws" Association="DbModel.FK_Transactions_Draws">
-            <End Role="Draw" EntitySet="Draws" />
-            <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
           <AssociationSet Name="FK_GroupUser_User" Association="DbModel.FK_GroupUser_User">
             <End Role="User" EntitySet="Users" />
@@ -1014,10 +993,6 @@
             <End Role="VerificationKey" EntitySet="VerificationKeys" />
           </AssociationSet>
           <EntitySet Name="PendingTransactions" EntityType="DbModel.PendingTransaction" />
-          <AssociationSet Name="FK_PendingTransactions_Draws" Association="DbModel.FK_PendingTransactions_Draws">
-            <End Role="Draw" EntitySet="Draws" />
-            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
-          </AssociationSet>
           <AssociationSet Name="FK_PendingTransactions_DestinationLedger" Association="DbModel.FK_PendingTransactions_DestinationLedger">
             <End Role="Ledger" EntitySet="Ledgers" />
             <End Role="PendingTransaction" EntitySet="PendingTransactions" />
@@ -1047,10 +1022,6 @@
             <End Role="PendingTransaction" EntitySet="PendingTransactions" />
           </AssociationSet>
           <EntitySet Name="DrawTypes" EntityType="DbModel.DrawType" />
-          <AssociationSet Name="FK_Draws_DrawType" Association="DbModel.FK_Draws_DrawType">
-            <End Role="DrawType" EntitySet="DrawTypes" />
-            <End Role="Draw" EntitySet="Draws" />
-          </AssociationSet>
           <AssociationSet Name="FK_DrawTypes_Groups" Association="DbModel.FK_DrawTypes_Groups">
             <End Role="Group" EntitySet="Groups" />
             <End Role="DrawType" EntitySet="DrawTypes" />
@@ -1070,6 +1041,35 @@
           <AssociationSet Name="DrawNumberSets" Association="DbModel.DrawNumberSets">
             <End Role="DrawType" EntitySet="DrawTypes" />
             <End Role="NumberSet" EntitySet="NumberSets" />
+          </AssociationSet>
+          <EntitySet Name="Draws" EntityType="DbModel.Draw" />
+          <AssociationSet Name="FK_Entry_Draws" Association="DbModel.FK_Entry_Draws">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="DrawEntry" EntitySet="DrawEntries" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawOptions_Draws" Association="DbModel.FK_DrawOptions_Draws">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="DrawOption" EntitySet="DrawOptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NextDraw" Association="DbModel.FK_NextDraw">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="DrawOption" EntitySet="DrawOptions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DrawResults_Draws" Association="DbModel.FK_DrawResults_Draws">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="DrawResult" EntitySet="DrawResults" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Draws_DrawType" Association="DbModel.FK_Draws_DrawType">
+            <End Role="DrawType" EntitySet="DrawTypes" />
+            <End Role="Draw" EntitySet="Draws" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PendingTransactions_Draws" Association="DbModel.FK_PendingTransactions_Draws">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="PendingTransaction" EntitySet="PendingTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Draws" Association="DbModel.FK_Transactions_Draws">
+            <End Role="Draw" EntitySet="Draws" />
+            <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Balance">
@@ -1106,9 +1106,9 @@
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="EntryCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DrawResults" Relationship="DbModel.FK_DrawResults_Entry" FromRole="DrawEntry" ToRole="DrawResult" />
-          <NavigationProperty Name="Draw" Relationship="DbModel.FK_Entry_Draws" FromRole="DrawEntry" ToRole="Draw" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_Entry_User" FromRole="DrawEntry" ToRole="User" />
           <Property Name="PendingRemoval" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Draw" Relationship="DbModel.FK_Entry_Draws" FromRole="DrawEntry" ToRole="Draw" />
         </EntityType>
         <EntityType Name="DrawOption">
           <Key>
@@ -1135,25 +1135,6 @@
           <Property Name="DrawnDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="DrawEntry" Relationship="DbModel.FK_DrawResults_Entry" FromRole="DrawResult" ToRole="DrawEntry" />
           <NavigationProperty Name="Draw" Relationship="DbModel.FK_DrawResults_Draws" FromRole="DrawResult" ToRole="Draw" />
-        </EntityType>
-        <EntityType Name="Draw">
-          <Key>
-            <PropertyRef Name="DrawId" />
-          </Key>
-          <Property Name="DrawId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="StartDateTime" Type="DateTime" Precision="3" />
-          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="DrawTypeId" Type="Int32" Nullable="false" />
-          <Property Name="Results" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="DrawCode" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="DrawEntries" Relationship="DbModel.FK_Entry_Draws" FromRole="Draw" ToRole="DrawEntry" />
-          <NavigationProperty Name="DrawOption" Relationship="DbModel.FK_DrawOptions_Draws" FromRole="Draw" ToRole="DrawOption" />
-          <NavigationProperty Name="DrawOptions" Relationship="DbModel.FK_NextDraw" FromRole="Draw" ToRole="DrawOption" />
-          <NavigationProperty Name="DrawResults" Relationship="DbModel.FK_DrawResults_Draws" FromRole="Draw" ToRole="DrawResult" />
-          <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_Draws" FromRole="Draw" ToRole="Transaction" />
-          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_Draws" FromRole="Draw" ToRole="PendingTransaction" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="DrawType" Relationship="DbModel.FK_Draws_DrawType" FromRole="Draw" ToRole="DrawType" />
         </EntityType>
         <EntityType Name="EmailTemplate">
           <Key>
@@ -1252,13 +1233,13 @@
           <Property Name="DrawId" Type="Int32" />
           <Property Name="SourceLedger" Type="Int32" Nullable="false" />
           <Property Name="DestinationLedger" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Draw" Relationship="DbModel.FK_Transactions_Draws" FromRole="Transaction" ToRole="Draw" />
           <NavigationProperty Name="ToLedger" Relationship="DbModel.FK_DestinationLedger" FromRole="Transaction" ToRole="Ledger" />
           <NavigationProperty Name="FromLedger" Relationship="DbModel.FK_SourceLedger" FromRole="Transaction" ToRole="Ledger" />
           <NavigationProperty Name="TransactionType" Relationship="DbModel.FK_Transactions_TransactionType" FromRole="Transaction" ToRole="TransactionType" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_Transactions_User" FromRole="Transaction" ToRole="User" />
           <Property Name="GroupId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_Transactions_Groups" FromRole="Transaction" ToRole="Group" />
+          <NavigationProperty Name="Draw" Relationship="DbModel.FK_Transactions_Draws" FromRole="Transaction" ToRole="Draw" />
         </EntityType>
         <EntityType Name="TransactionType">
           <Key>
@@ -1359,18 +1340,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Entry_Draws">
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="1" />
-          <End Type="DbModel.DrawEntry" Role="DrawEntry" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Draw">
-              <PropertyRef Name="DrawId" />
-            </Principal>
-            <Dependent Role="DrawEntry">
-              <PropertyRef Name="DrawId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Entry_User">
           <End Type="DbModel.User" Role="User" Multiplicity="1" />
           <End Type="DbModel.DrawEntry" Role="DrawEntry" Multiplicity="*" />
@@ -1380,54 +1349,6 @@
             </Principal>
             <Dependent Role="DrawEntry">
               <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DrawOptions_Draws">
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="1" />
-          <End Type="DbModel.DrawOption" Role="DrawOption" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="Draw">
-              <PropertyRef Name="DrawId" />
-            </Principal>
-            <Dependent Role="DrawOption">
-              <PropertyRef Name="DrawId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_NextDraw">
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
-          <End Type="DbModel.DrawOption" Role="DrawOption" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Draw">
-              <PropertyRef Name="DrawId" />
-            </Principal>
-            <Dependent Role="DrawOption">
-              <PropertyRef Name="NextDrawId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_DrawResults_Draws">
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="1" />
-          <End Type="DbModel.DrawResult" Role="DrawResult" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Draw">
-              <PropertyRef Name="DrawId" />
-            </Principal>
-            <Dependent Role="DrawResult">
-              <PropertyRef Name="DrawId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Transactions_Draws">
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
-          <End Type="DbModel.Transaction" Role="Transaction" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Draw">
-              <PropertyRef Name="DrawId" />
-            </Principal>
-            <Dependent Role="Transaction">
-              <PropertyRef Name="DrawId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1639,26 +1560,14 @@
           <Property Name="DrawId" Type="Int32" />
           <Property Name="SourceLedger" Type="Int32" Nullable="false" />
           <Property Name="DestinationLedger" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Draw" Relationship="DbModel.FK_PendingTransactions_Draws" FromRole="PendingTransaction" ToRole="Draw" />
           <NavigationProperty Name="ToLedger" Relationship="DbModel.FK_PendingTransactions_DestinationLedger" FromRole="PendingTransaction" ToRole="Ledger" />
           <NavigationProperty Name="FromLedger" Relationship="DbModel.FK_PendingTransactions_SourceLedger" FromRole="PendingTransaction" ToRole="Ledger" />
           <NavigationProperty Name="TransactionType" Relationship="DbModel.FK_PendingTransactions_TransactionType" FromRole="PendingTransaction" ToRole="TransactionType" />
           <NavigationProperty Name="User" Relationship="DbModel.FK_PendingTransactions_User" FromRole="PendingTransaction" ToRole="User" />
           <Property Name="GroupId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_PendingTransactions_Groups" FromRole="PendingTransaction" ToRole="Group" />
+          <NavigationProperty Name="Draw" Relationship="DbModel.FK_PendingTransactions_Draws" FromRole="PendingTransaction" ToRole="Draw" />
         </EntityType>
-        <Association Name="FK_PendingTransactions_Draws">
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
-          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Draw">
-              <PropertyRef Name="DrawId" />
-            </Principal>
-            <Dependent Role="PendingTransaction">
-              <PropertyRef Name="DrawId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PendingTransactions_DestinationLedger">
           <End Type="DbModel.Ledger" Role="Ledger" Multiplicity="1" />
           <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
@@ -1765,25 +1674,13 @@
           <Property Name="InitialUserBalance" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="IsolateBalance" Type="Boolean" Nullable="false" />
           <Property Name="AllowAllocation" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Draws" Relationship="DbModel.FK_Draws_DrawType" FromRole="DrawType" ToRole="Draw" />
           <NavigationProperty Name="Group" Relationship="DbModel.FK_DrawTypes_Groups" FromRole="DrawType" ToRole="Group" />
           <NavigationProperty Name="Ledger" Relationship="DbModel.FK_DrawTypes_Ledgers" FromRole="DrawType" ToRole="Ledger" />
           <NavigationProperty Name="Schedules" Relationship="DbModel.FK_Schedule_DrawType" FromRole="DrawType" ToRole="Schedule" />
           <NavigationProperty Name="UserDrawTypeOptions" Relationship="DbModel.FK_UserDrawTypeOptions_DrawType" FromRole="DrawType" ToRole="UserDrawTypeOption" />
           <NavigationProperty Name="NumberSets" Relationship="DbModel.DrawNumberSets" FromRole="DrawType" ToRole="NumberSet" />
+          <NavigationProperty Name="Draws" Relationship="DbModel.FK_Draws_DrawType" FromRole="DrawType" ToRole="Draw" />
         </EntityType>
-        <Association Name="FK_Draws_DrawType">
-          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="1" />
-          <End Type="DbModel.Draw" Role="Draw" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="DrawType">
-              <PropertyRef Name="DrawTypeId" />
-            </Principal>
-            <Dependent Role="Draw">
-              <PropertyRef Name="DrawTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_DrawTypes_Groups">
           <End Type="DbModel.Group" Role="Group" Multiplicity="1" />
           <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
@@ -1835,6 +1732,109 @@
         <Association Name="DrawNumberSets">
           <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="*" />
           <End Type="DbModel.NumberSet" Role="NumberSet" Multiplicity="*" />
+        </Association>
+        <EntityType Name="Draw">
+          <Key>
+            <PropertyRef Name="DrawId" />
+          </Key>
+          <Property Name="DrawId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StartDateTime" Type="DateTime" Precision="3" />
+          <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DrawTypeId" Type="Int32" Nullable="false" />
+          <Property Name="Results" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DrawCode" Type="String" MaxLength="7" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DrawEntries" Relationship="DbModel.FK_Entry_Draws" FromRole="Draw" ToRole="DrawEntry" />
+          <NavigationProperty Name="DrawOption" Relationship="DbModel.FK_DrawOptions_Draws" FromRole="Draw" ToRole="DrawOption" />
+          <NavigationProperty Name="DrawOptions" Relationship="DbModel.FK_NextDraw" FromRole="Draw" ToRole="DrawOption" />
+          <NavigationProperty Name="DrawResults" Relationship="DbModel.FK_DrawResults_Draws" FromRole="Draw" ToRole="DrawResult" />
+          <NavigationProperty Name="DrawType" Relationship="DbModel.FK_Draws_DrawType" FromRole="Draw" ToRole="DrawType" />
+          <NavigationProperty Name="PendingTransactions" Relationship="DbModel.FK_PendingTransactions_Draws" FromRole="Draw" ToRole="PendingTransaction" />
+          <NavigationProperty Name="Transactions" Relationship="DbModel.FK_Transactions_Draws" FromRole="Draw" ToRole="Transaction" />
+        </EntityType>
+        <Association Name="FK_Entry_Draws">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="1" />
+          <End Type="DbModel.DrawEntry" Role="DrawEntry" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="DrawEntry">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawOptions_Draws">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="1" />
+          <End Type="DbModel.DrawOption" Role="DrawOption" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="DrawOption">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NextDraw">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
+          <End Type="DbModel.DrawOption" Role="DrawOption" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="DrawOption">
+              <PropertyRef Name="NextDrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DrawResults_Draws">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="1" />
+          <End Type="DbModel.DrawResult" Role="DrawResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="DrawResult">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Draws_DrawType">
+          <End Type="DbModel.DrawType" Role="DrawType" Multiplicity="1" />
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DrawType">
+              <PropertyRef Name="DrawTypeId" />
+            </Principal>
+            <Dependent Role="Draw">
+              <PropertyRef Name="DrawTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PendingTransactions_Draws">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
+          <End Type="DbModel.PendingTransaction" Role="PendingTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="PendingTransaction">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_Draws">
+          <End Type="DbModel.Draw" Role="Draw" Multiplicity="0..1" />
+          <End Type="DbModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Draw">
+              <PropertyRef Name="DrawId" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="DrawId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -1893,19 +1893,6 @@
                 <ScalarProperty Name="DrawnDateTime" ColumnName="DrawnDateTime" />
                 <ScalarProperty Name="EntryId" ColumnName="EntryId" />
                 <ScalarProperty Name="DrawCount" ColumnName="DrawCount" />
-                <ScalarProperty Name="DrawId" ColumnName="DrawId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Draws">
-            <EntityTypeMapping TypeName="DbModel.Draw">
-              <MappingFragment StoreEntitySet="Draws">
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="DrawCode" ColumnName="DrawCode" />
-                <ScalarProperty Name="Results" ColumnName="Results" />
-                <ScalarProperty Name="DrawTypeId" ColumnName="DrawTypeId" />
-                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
-                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
                 <ScalarProperty Name="DrawId" ColumnName="DrawId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -2133,6 +2120,19 @@
               <ScalarProperty Name="DrawTypeId" ColumnName="DrawTypeId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Draws">
+            <EntityTypeMapping TypeName="DbModel.Draw">
+              <MappingFragment StoreEntitySet="Draws">
+                <ScalarProperty Name="DrawCode" ColumnName="DrawCode" />
+                <ScalarProperty Name="Results" ColumnName="Results" />
+                <ScalarProperty Name="DrawTypeId" ColumnName="DrawTypeId" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="StartDateTime" ColumnName="StartDateTime" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DrawId" ColumnName="DrawId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

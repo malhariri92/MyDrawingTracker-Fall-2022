@@ -7,7 +7,7 @@
 <div class="modal-body">
 
 
-    @using (Ajax.BeginForm("CreateNew", "Group", new AjaxOptions { HttpMethod = "POST",OnSuccess="hideModalSpinner", OnFailure="showModalError", UpdateTargetId="modaldiv" }, htmlAttributes: new { id = "ModalForm" }))
+    @using (Ajax.BeginForm("CreateNew", "Group", new AjaxOptions { HttpMethod = "POST",OnSuccess="hideModal", OnFailure="showModalError", UpdateTargetId="modaldiv" }, htmlAttributes: new { id = "ModalForm" }))
     {
 
         @Html.AntiForgeryToken()
@@ -25,7 +25,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-xs-4" })
                 <div class="col-xs-8">
-                    @Html.TextAreaFor(model => model.Reason, new { htmlAttributes = new { @class = "form-control", placeholder = "Reason for creating the group" } }) <br />
+                    @Html.TextAreaFor(model => model.Reason, htmlAttributes: new { @class = "form-control", placeholder = "Reason for creating the group" } ) <br />
                     @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
                 </div>
             </div>

@@ -663,7 +663,7 @@ namespace MDT.Controllers
 
             EntryVM vm = new EntryVM(draw);
 
-            return View(vm);
+            return PartialView(vm);
         }
 
         [HttpPost]
