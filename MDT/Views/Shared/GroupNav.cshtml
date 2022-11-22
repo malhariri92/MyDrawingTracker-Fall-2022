@@ -18,7 +18,7 @@
             Draw Types <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            @if (isGroupAdmin)
+            @if (isGroupAdmin || user.CanManageDrawTypes)
             {
                 <li><a href="#" class="btnModal" data-action="@Url.Action("EditDrawType", "Draw", new { id = 0 } )">Create New Draw Type</a></li>
             }
@@ -62,7 +62,7 @@
         </li>
     }
 
-    if (Model.InactiveDraws.Any() && isGroupAdmin)
+    if (Model.InactiveDraws.Any() && (isGroupAdmin || user.CanManageDrawTypes))
     {
 
         <li class="dropdown">
@@ -80,7 +80,7 @@
     if (user != null)
     {
         <li>@Html.ActionLink("Transactions", "Index", "Transaction", null, null)</li>
-        if (isGroupAdmin)
+        if (isGroupAdmin || user.CanManageUsers)
         {
             <li>@Html.ActionLink("Group Members", "Members", "Group", null, null)</li>
         }

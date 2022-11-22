@@ -11,7 +11,7 @@
 <div class="row">
     <h3>
         Drawings
-        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || user.CanManageDrawings)
         {
             <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("CreateDraw", "Draw", new { id = Model.DrawTypeId})"><span class="fa fa-plus-circle"></span></button>
         }

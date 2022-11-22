@@ -306,7 +306,7 @@ namespace MDT.Controllers
         {
             UserDTO user = (UserDTO)Session["User"];
 
-            if (User == null)
+            if (user == null)
             {
                 User key = (User)Session["UserKey"];
 
@@ -317,7 +317,7 @@ namespace MDT.Controllers
                 }
 
 
-                if (key.ResetKey != null)
+                if (key.ResetKey == null)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -330,6 +330,12 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Key has expired. Please request a new key.";
+                    return View(vm);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    Response.StatusCode = 400;
                     return View(vm);
                 }
 

@@ -79,7 +79,7 @@ namespace MDT.Models
                 {
                     return true;
                 }
-                switch (permission.ToLower())
+                switch (permission?.ToLower())
                 {
                     case "users": return gu?.CanManageUsers ?? false;
                     case "drawtypes": return gu?.CanManageDrawTypes ?? false;

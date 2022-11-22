@@ -11,7 +11,7 @@
 <div class="row">
     <h3>
         Description
-        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || user.CanManageDrawTypes)
         {
             <button type="button" class="btn btn-xs btn-success btnPanel" title="Edit Description" data-panel="divDesc" data-action="@Url.Action("DrawTypeDescriptionEdit", "Draw", new { id = Model.DrawTypeId })"><span class="fa fa-pencil"></span></button>
         }

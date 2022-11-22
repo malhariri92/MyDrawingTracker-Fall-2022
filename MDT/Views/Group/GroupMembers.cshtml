@@ -1,9 +1,12 @@
-﻿@using MDT.ViewModels
+﻿@using MDT.Models
+@using MDT.ViewModels
 @using MDT.Models.DTO
 @model GroupVM
 
 @{
     UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
+    bool isGroupAdmin = user != null && group != null ? WebManager.IsGroupAdmin(group.GroupId, user.UserId) : false;
 }
 
 @if (ViewBag.Message != null)
@@ -44,9 +47,13 @@
                     <td>
                         @if (member.UserId != user.UserId && member.UserId != Model.OwnerUserId)
                         {
+
                             <button type="button" data-panel="members" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = member.UserId })" class="btn btn-xs btn-info btnPanel" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
-                            <button type="button" data-panel="members" data-action="@Url.Action("Demote", "Group",new { id = member.UserId })" class="btn btn-xs btn-warning btnPanel" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
-                            <button type="button" data-panel="members" data-action="@Url.Action("Remove", "Group",new { id = member.UserId })" class="btn btn-xs btn-danger btnPanel" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                            if (isGroupAdmin)
+                            {
+                                <button type="button" data-panel="members" data-action="@Url.Action("Demote", "Group", new { id = member.UserId })" class="btn btn-xs btn-warning btnPanel" title="Demote from Admin"><span class="fa fa-arrow-circle-down"></span></button>
+                                <button type="button" data-panel="members" data-action="@Url.Action("Remove", "Group", new { id = member.UserId })" class="btn btn-xs btn-danger btnPanel" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                            }
                         }
                     </td>
                 </tr>
@@ -57,10 +64,17 @@
                     <td>@Html.ActionLink(member.UserName, "Member", "User", new { id = member.UserId }, null)</td>
                     <td>@member.EmailAddress</td>
                     <td>
-                        <button type="button" data-panel="members" data-action="@Url.Action("TriggerPasswordReset", "Group",new { id = member.UserId })" class="btn btn-xs btn-info btnPanel" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
-                        <button type="button" data-panel="members" data-action="@Url.Action("Promote", "Group",new { id = member.UserId })" class="btn btn-xs btn-success btnPanel" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
-                        <button type="button" data-action="@Url.Action("Permissions", "Group",new { id = member.UserId })" class="btn btn-xs btn-primary btnModal" title="Edit Permissions"><span class="fa fa-file-text-o"></span></button>
-                        <button type="button" data-panel="members" data-action="@Url.Action("Remove", "Group",new { id = member.UserId })" class="btn btn-xs btn-danger btnPanel" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                        @if (member.UserId != user.UserId)
+                        {
+                            <button type="button" data-panel="members" data-action="@Url.Action("TriggerPasswordReset", "Group", new { id = member.UserId })" class="btn btn-xs btn-info btnPanel" title="Trigger Password Reset"><span class="fa fa-key"></span></button>
+                            if (isGroupAdmin)
+                            {
+
+                                <button type="button" data-panel="members" data-action="@Url.Action("Promote", "Group", new { id = member.UserId })" class="btn btn-xs btn-success btnPanel" title="Promote to Admin"><span class="fa fa-arrow-circle-up"></span></button>
+                                <button type="button" data-action="@Url.Action("Permissions", "Group", new { id = member.UserId })" class="btn btn-xs btn-primary btnModal" title="Edit Permissions"><span class="fa fa-file-text-o"></span></button>
+                            }
+                            <button type="button" data-panel="members" data-action="@Url.Action("Remove", "Group", new { id = member.UserId })" class="btn btn-xs btn-danger btnPanel" title="Remove from Group"><span class="fa fa-times-circle"></span></button>
+                        }
                     </td>
                 </tr>
             }
