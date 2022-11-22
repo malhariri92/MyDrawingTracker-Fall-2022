@@ -6,7 +6,7 @@
     <h2>Reject Application</h2>
 </div>
 
-@using (Ajax.BeginForm($"Rejected", "Admin",new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "groupApps", OnSuccess = "hideModal", OnFailure = "showModalError" }, new { id = "ModalForm"}))
+@using (Ajax.BeginForm($"Rejected", "Admin", new AjaxOptions() { HttpMethod = "Post", UpdateTargetId = "groupApps", OnSuccess = "hideModal", OnFailure = "showModalError" }, new { id = "ModalForm" }))
 {
     @Html.HiddenFor(model => model.GroupId);
     <div class="modal-body">
@@ -16,7 +16,8 @@
                 <div class="row col-xs-10 col-xs-offset-1">
                     @Html.HiddenFor(model => model.GroupId)
 
-                    @Html.TextAreaFor(model => model.TextArea, htmlAttributes: new { @class = "form-control", @rows = 5, placeholder = "Reason for rejection" })
+                    @Html.TextAreaFor(model => model.TextArea, htmlAttributes: new { @class = "form-control", @rows = 5, placeholder = "Reason for rejection", data_val = "true", data_val_required = "Reason is required" })
+                    @Html.ValidationMessageFor(model => model.TextArea, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

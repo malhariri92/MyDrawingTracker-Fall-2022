@@ -81,6 +81,7 @@ namespace MDT.ViewModels
         {
             Schedule = new ScheduleVM();
             NumberOfDraws = 1;
+            EntriesToDraw = 1;
             Draws = new List<DrawVM>();
             Descriptions = new List<Description>();
             UserOptions = new List<UserOptionVM>();

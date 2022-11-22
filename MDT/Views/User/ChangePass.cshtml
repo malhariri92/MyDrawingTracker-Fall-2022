@@ -16,15 +16,15 @@
         <div class="row">
             <div class="form-horizontal">
                 <div class="form-group">
-                    @Html.LabelFor(model => model.CurrentPassword, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
+                    @Html.LabelFor(model => model.CurrentPassword, htmlAttributes: new { @class = "control-label col-xs-4" })
+                    <div class="col-xs-8">
                         @Html.EditorFor(model => model.CurrentPassword, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
                         @Html.ValidationMessageFor(model => model.CurrentPassword, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <br />
                 <div class="form-group">
-                    <div class="col-md-10 col-md-offset-2">
+                    <div class="col-xs-8 col-md-offset-2">
                         <h3>Requirements for New Password</h3>
                         <ul>
                             <li>10 to 24 characters</li>
@@ -36,16 +36,16 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(model => model.NewPassword, "New Password", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
+                    @Html.LabelFor(model => model.NewPassword, "New Password", htmlAttributes: new { @class = "control-label col-xs-4" })
+                    <div class="col-xs-8">
                         @Html.EditorFor(model => model.NewPassword, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
                         @Html.ValidationMessageFor(model => model.NewPassword, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.ConfirmPassword, "Confirm New Password", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
+                    @Html.LabelFor(model => model.ConfirmPassword, "Confirm New Password", htmlAttributes: new { @class = "control-label col-xs-4" })
+                    <div class="col-xs-8">
                         @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control formVal", @autocomplete = "off" } })
                         @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
                     </div>
@@ -53,7 +53,7 @@
             </div>
             <div class="modal-footer">
                 <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
+                    <div class="col-md-offset-2 col-xs-8">
                         <button type="submit" class="btn btn-success">Change Password</button>
                     </div>
                 </div>

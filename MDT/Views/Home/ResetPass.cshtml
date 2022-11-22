@@ -5,7 +5,7 @@
 
 @if (Model.Success)
 {
-    <h2 class="text-success">Your password has been @(Model.IsChangeRequest ? "reset" : "created").</h2>
+    <h2 class="text-success">Your password has been reset. You may now log in using your new password.</h2>
 
 }
 else
@@ -55,7 +55,7 @@ else
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="@(Model.IsChangeRequest ? "Reset" : "Create") Password" class="btn btn-success" />
+                            <input type="submit" value="Reset Password" class="btn btn-success" />
                         </div>
                         <br />
 

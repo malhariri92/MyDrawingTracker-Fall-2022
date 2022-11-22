@@ -10,7 +10,6 @@
         <EntityTypeShape EntityType="DbModel.DrawEntry" Width="1.5" PointX="10.5" PointY="23" />
         <EntityTypeShape EntityType="DbModel.DrawOption" Width="1.5" PointX="14.75" PointY="32.25" />
         <EntityTypeShape EntityType="DbModel.DrawResult" Width="1.5" PointX="14.75" PointY="28.25" />
-        <EntityTypeShape EntityType="DbModel.Draw" Width="1.5" PointX="12.5" PointY="32.125" />
         <EntityTypeShape EntityType="DbModel.EmailTemplate" Width="1.5" PointX="0.75" PointY="1" />
         <EntityTypeShape EntityType="DbModel.GroupInvite" Width="1.5" PointX="5.25" PointY="19.125" />
         <EntityTypeShape EntityType="DbModel.GroupUser" Width="1.5" PointX="7.5" PointY="19.5" />
@@ -26,12 +25,7 @@
         <AssociationConnector Association="DbModel.FK_Balances_Users" />
         <AssociationConnector Association="DbModel.FK_Descriptions_ObjectTypes" />
         <AssociationConnector Association="DbModel.FK_DrawResults_Entry" />
-        <AssociationConnector Association="DbModel.FK_Entry_Draws" />
         <AssociationConnector Association="DbModel.FK_Entry_User" />
-        <AssociationConnector Association="DbModel.FK_DrawOptions_Draws" />
-        <AssociationConnector Association="DbModel.FK_NextDraw" />
-        <AssociationConnector Association="DbModel.FK_DrawResults_Draws" />
-        <AssociationConnector Association="DbModel.FK_Transactions_Draws" />
         <AssociationConnector Association="DbModel.FK_GroupUser_User" />
         <AssociationConnector Association="DbModel.FK_DestinationLedger" />
         <AssociationConnector Association="DbModel.FK_SourceLedger" />
@@ -49,7 +43,6 @@
         <EntityTypeShape EntityType="DbModel.VerificationKey" Width="1.5" PointX="7.5" PointY="29.5" />
         <AssociationConnector Association="DbModel.FK_VerificationKeys_Users" />
         <EntityTypeShape EntityType="DbModel.PendingTransaction" Width="1.5" PointX="7.5" PointY="14.75" />
-        <AssociationConnector Association="DbModel.FK_PendingTransactions_Draws" />
         <AssociationConnector Association="DbModel.FK_PendingTransactions_DestinationLedger" />
         <AssociationConnector Association="DbModel.FK_PendingTransactions_SourceLedger" />
         <AssociationConnector Association="DbModel.FK_PendingTransactions_TransactionType" />
@@ -58,12 +51,19 @@
         <AssociationConnector Association="DbModel.FK_Transactions_Groups" />
         <AssociationConnector Association="DbModel.FK_PendingTransactions_Groups" />
         <EntityTypeShape EntityType="DbModel.DrawType" Width="1.5" PointX="10.25" PointY="15.75" />
-        <AssociationConnector Association="DbModel.FK_Draws_DrawType" />
         <AssociationConnector Association="DbModel.FK_DrawTypes_Groups" />
         <AssociationConnector Association="DbModel.FK_DrawTypes_Ledgers" />
         <AssociationConnector Association="DbModel.FK_Schedule_DrawType" />
         <AssociationConnector Association="DbModel.FK_UserDrawTypeOptions_DrawType" />
         <AssociationConnector Association="DbModel.DrawNumberSets" />
+        <EntityTypeShape EntityType="DbModel.Draw" Width="1.5" PointX="12.5" PointY="14.75" />
+        <AssociationConnector Association="DbModel.FK_Entry_Draws" />
+        <AssociationConnector Association="DbModel.FK_DrawOptions_Draws" />
+        <AssociationConnector Association="DbModel.FK_NextDraw" />
+        <AssociationConnector Association="DbModel.FK_DrawResults_Draws" />
+        <AssociationConnector Association="DbModel.FK_Draws_DrawType" />
+        <AssociationConnector Association="DbModel.FK_PendingTransactions_Draws" />
+        <AssociationConnector Association="DbModel.FK_Transactions_Draws" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

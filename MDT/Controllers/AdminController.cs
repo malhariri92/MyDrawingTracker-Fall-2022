@@ -175,7 +175,7 @@ namespace MDT.Controllers
             WebManager.SendTemplateEmail($"{u.EmailAddress}\t{u.UserName}", 5, variables);
 
             TempData["Message"] = $"Group: {g.GroupName} has been {(g.IsApproved.Value ? "approved" : "rejected")}";
-            return RedirectToAction("Applications");
+            return PartialView("Applications");
         }
 
         public ActionResult Impersonate(string email)

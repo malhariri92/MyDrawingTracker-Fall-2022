@@ -93,6 +93,11 @@ namespace MDT.Controllers
                     IsActive = true,
                     AccessCode = WebManager.GetUniqueKey(10),
                     JoinConfirmationRequired = true,
+                    AccountBalanceLedger = new Ledger()
+                    {
+                        LedgerName = "Account Balance",
+                        Balance = 0.0m
+                    }
                 };
 
                 db.Groups.Add(group);
@@ -165,14 +170,16 @@ namespace MDT.Controllers
                 //Generate notification email
                 User groupAdmin = db.GroupUsers.Where(u => u.GroupId == group.GroupId && u.IsAdmin).Select(gu => gu.User).FirstOrDefault();
                 variables = new Dictionary<string, string>()
-            {
-                { "[[Name]]", groupAdmin.UserName },
-                { "[[GroupName]]", group.GroupName },
-                { "[[UserName]]", user.UserName },
-                { "[[ConfirmUrl]]", "Group/Index" }
-            };
+                {
+                    { "[[Name]]", groupAdmin.UserName },
+                    { "[[GroupName]]", group.GroupName },
+                    { "[[UserName]]", user.UserName },
+                    { "[[ConfirmUrl]]", "Group/Index" }
+                };
+                
                 WebManager.SendTemplateEmail($"{groupAdmin.EmailAddress}\t{groupAdmin.UserName}", group.JoinConfirmationRequired ? 8 : 7, variables);
             }
+
             SessionSetup(WebManager.GetUserDTO(user.UserId));
             ViewBag.IsNewUser = true;
             return PartialView("SuccessfulSignIn", user);
@@ -186,7 +193,7 @@ namespace MDT.Controllers
                 return PartialView();
             }
 
-            return PartialView("SuccessfulSignIn", user);
+            return PartialView("SuccessfulSignIn", db.Users.Find(user.UserId));
         }
 
         [HttpPost]
@@ -299,7 +306,7 @@ namespace MDT.Controllers
         {
             UserDTO user = (UserDTO)Session["User"];
 
-            if (User == null)
+            if (user == null)
             {
                 User key = (User)Session["UserKey"];
 
@@ -310,7 +317,7 @@ namespace MDT.Controllers
                 }
 
 
-                if (key.ResetKey != null)
+                if (key.ResetKey == null)
                 {
                     vm.Success = false;
                     vm.Error = true;
@@ -323,6 +330,12 @@ namespace MDT.Controllers
                     vm.Success = false;
                     vm.Error = true;
                     vm.Message = "Key has expired. Please request a new key.";
+                    return View(vm);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    Response.StatusCode = 400;
                     return View(vm);
                 }
 

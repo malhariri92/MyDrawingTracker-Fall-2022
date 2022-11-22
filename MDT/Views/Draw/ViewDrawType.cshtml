@@ -5,6 +5,7 @@
 @{
     ViewBag.Title = $"View {Model.TypeName}";
     UserDTO user = (UserDTO)Session["User"];
+    GroupDTO group = (GroupDTO)Session["Group"];
 }
 
 <div class="row text-center ">
@@ -26,7 +27,7 @@
                 }
             </div>
         </div>
-        @if (Model.UserOptions.Any(u => !u.IsApproved))
+        @if ((WebManager.IsGroupAdmin(group.GroupId, user.UserId) || user.CanManageDrawTypes) && Model.UserOptions.Any(u => !u.IsApproved))
         {
             <div class="row">
                 <div class="col-xs-12" id="divRequests">

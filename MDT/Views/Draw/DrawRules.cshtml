@@ -13,7 +13,7 @@
     <div class="col-xs-12">
         <h3>
             Rules
-            @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) && !Model.IsActive && Model.Results == null)
+            @if ((WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || user.CanManageDrawings) && !Model.IsActive && Model.Results == null)
             {
                 <button type="button" class="btn btn-xs btn-success btnModal" title="Edit Rules" data-action="@Url.Action("EditDraw", "Draw", new { id = Model.DrawId })"><span class="fa fa-pencil"></span></button>
             }
@@ -64,7 +64,7 @@
             }
             else
             {
-                if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+                if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || user.CanManageDrawings)
                 {
                     if (Model.EndDate > DateTime.Now)
                     {

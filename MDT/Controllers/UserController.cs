@@ -91,7 +91,7 @@ namespace MDT.Controllers
                             "</div>";
 
             }
-            return PartialView(vm);
+            return PartialView("ModalMessage", mm);
         }
 
         public ActionResult Edit()

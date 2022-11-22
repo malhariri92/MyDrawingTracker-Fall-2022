@@ -91,6 +91,8 @@ namespace MDT.Controllers
                      .Include(u => u.UserDrawTypeOptions.Select(udto => udto.DrawType))
                      .Include(u => u.DrawEntries)
                      .Include(u => u.DrawEntries.Select(de => de.Draw))
+                     .Include(u => u.Balances)
+                     .Include(u => u.Balances.Select(b => b.Ledger))
                      .ToList();
         }
 
@@ -437,6 +439,14 @@ namespace MDT.Controllers
                     entry.PendingRemoval = true;
                     Results.Add($"Requested removal for entry {entry.EntryCode}.");
                     db.Entry(entry).State = EntityState.Modified;
+
+                    List<string> admins = db.GroupUsers.Where(gu => gu.GroupId == 0 && gu.IsAdmin).Select(gu => gu.User).ToList().Select(u => $"{u.EmailAddress}\t{u.UserName}").ToList();
+                    Dictionary<string, string> variables = new Dictionary<string, string>()
+                    {
+                        { "[[ConfirmUrl]]", "Draw/ViewDraw/" + entry.DrawId}
+                    };
+                    
+                    WebManager.SendTemplateEmail(admins, 14, variables);
                 }
             }
 
@@ -448,7 +458,7 @@ namespace MDT.Controllers
         private void DetermineResults(Draw draw, int drawNumber = 1)
         {
             int toDraw = draw.DrawOption.EntriesToDraw;
-           
+
             List<DrawEntry> undrawn = draw.DrawEntries.ToList();
             List<DrawEntry> drawn = new List<DrawEntry>();
             List<DrawResult> results = new List<DrawResult>();

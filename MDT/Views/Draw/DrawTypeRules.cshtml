@@ -13,7 +13,7 @@
 <div class="row">
     <h3>
         Rules
-        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId))
+        @if (WebManager.IsGroupAdmin(user.CurrentGroupId, user.UserId) || user.CanManageDrawTypes)
         {
             <button type="button" class="btn btn-xs btn-success btnModal" data-action="@Url.Action("EditDrawType", "Draw", new { id = Model.DrawTypeId })" title="Edit Rules"><span class="fa fa-pencil"></span></button>
         }

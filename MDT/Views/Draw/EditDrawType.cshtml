@@ -116,7 +116,7 @@
                     <div class="form-group series" style="@(Model.NumberOfDraws == 1 ? "display:none" : "")">
                         @Html.LabelFor(model => model.PassDrawnToNext, htmlAttributes: new { @class = "col-xs-5" })
                         <div class="col-xs-7">
-                            @Html.EditorFor(model => model.PassDrawnToNext, new { htmlAttributes = new { @class = "switch" } })
+                            @Html.EditorFor(model => model.PassDrawnToNext, new { htmlAttributes = new { data_toggle="toggle", data_on="Drawn", data_off="Undrawn", data_onstyle="success", data_width="100px" } })
                         </div>
                     </div>
                 </div>
@@ -201,6 +201,7 @@
             $(this).bootstrapToggle();
         });
 
+        $('#PassDrawnToNext').bootstrapToggle();
         $(`.tp`).timepicker();
 
     });

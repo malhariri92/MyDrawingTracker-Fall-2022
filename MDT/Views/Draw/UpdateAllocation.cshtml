@@ -2,41 +2,65 @@
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h2>Change your allocation for this Draw Type</h2>
 </div>
-<div class="modal-body">
 
-    @using (Ajax.BeginForm("UpdateAllocation", "Draw", null, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "modaldiv" }))
+@using (Ajax.BeginForm("UpdateAllocation", "Draw", null, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "modaldiv", OnFailure = "showModalError", OnSuccess = "hideModalSpinner" }, htmlAttributes: new { id = "ModalForm" }))
+{
+
+    if (ViewBag.Error != null)
     {
+        <div class="row text-center">
+            <h3 class="text-danger">@ViewBag.Error</h3>
+        </div>
+    }
+
+    <div class="modal-body">
+        <p>
+            <b>Account Balance:</b> @Model.AccountBalance<br />
+            <b>Allocated Balance:</b> @Model.AllocationBalance<br />
+            <b>Current Entries:</b> @Model.EntriesPerDrawing<br />
+        </p>
         @Html.AntiForgeryToken()
 
-    <div class="row form-horizontal">
-        @Html.HiddenFor(model => model.DrawTypeId)
-        @Html.HiddenFor(model => model.UserId)
+        <div class="row form-horizontal">
+            @Html.HiddenFor(model => model.DrawTypeId)
+            @Html.HiddenFor(model => model.UserId)
 
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <div class="text-center">
+                    @Html.EditorFor(model => model.AddAllocation, new { htmlAttributes = new { data_toggle="toggle", data_on="Deposit", data_off="Withdraw", data_width="100px" } })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.EntriesPerDrawing, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.EntriesPerDrawing, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EntriesPerDrawing, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-xs-4" })
+                <div class="col-xs-8">
+                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                </div>
             </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.EntriesPerDrawing, htmlAttributes: new { @class = "control-label col-xs-4" })
+                <div class="col-xs-8">
+                    @Html.EditorFor(model => model.EntriesPerDrawing, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.EntriesPerDrawing, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
         </div>
-
-
-
+    </div>
+    <div class="modal-footer">
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+            <div class="col-xs-8 pull-right">
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-sm btn-success">Update</button>
             </div>
         </div>
     </div>
-    }
+}
 
-</div>
+<script type="text/javascript">
+    $('#AddAllocation').bootstrapToggle();
+</script>

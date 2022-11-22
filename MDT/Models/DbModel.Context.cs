@@ -30,7 +30,6 @@ namespace MDT.Models
         public virtual DbSet<DrawEntry> DrawEntries { get; set; }
         public virtual DbSet<DrawOption> DrawOptions { get; set; }
         public virtual DbSet<DrawResult> DrawResults { get; set; }
-        public virtual DbSet<Draw> Draws { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplates { get; set; }
         public virtual DbSet<GroupInvite> GroupInvites { get; set; }
         public virtual DbSet<GroupUser> GroupUsers { get; set; }
@@ -48,5 +47,6 @@ namespace MDT.Models
         public virtual DbSet<VerificationKey> VerificationKeys { get; set; }
         public virtual DbSet<PendingTransaction> PendingTransactions { get; set; }
         public virtual DbSet<DrawType> DrawTypes { get; set; }
+        public virtual DbSet<Draw> Draws { get; set; }
     }
 }

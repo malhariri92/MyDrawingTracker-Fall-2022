@@ -17,10 +17,10 @@ namespace MDT.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public DrawType()
         {
-            this.Draws = new HashSet<Draw>();
             this.Schedules = new HashSet<Schedule>();
             this.UserDrawTypeOptions = new HashSet<UserDrawTypeOption>();
             this.NumberSets = new HashSet<NumberSet>();
+            this.Draws = new HashSet<Draw>();
         }
     
         public int DrawTypeId { get; set; }
@@ -42,8 +42,6 @@ namespace MDT.Models
         public bool IsolateBalance { get; set; }
         public bool AllowAllocation { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Draw> Draws { get; set; }
         public virtual Group Group { get; set; }
         public virtual Ledger Ledger { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -52,5 +50,7 @@ namespace MDT.Models
         public virtual ICollection<UserDrawTypeOption> UserDrawTypeOptions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<NumberSet> NumberSets { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Draw> Draws { get; set; }
     }
 }
